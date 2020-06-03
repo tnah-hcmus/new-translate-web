@@ -1,0 +1,198 @@
+/* Fonts ---------------------------- */
+
+@font-face {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Code Pro'), local('SourceCodePro'), url(/public/assets/fonts/SourceCodePro-Regular.ttf) format('truetype');
+}
+/* Global ---------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-user-drag: none; /* disable dragging */
+  cursor: default; /* use default cursor */
+  overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
+  color: var(--font-color) !important;
+  background-color: var(--main-color);
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+}
+
+a {
+  color: var(--color-link);
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 1.3em;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.12em;
+  font-weight: 600;
+}
+
+svg {
+  fill: currentColor;
+}
+
+blockquote {
+  margin: 20px 0 30px;
+  padding-left: 20px;
+  border-left: 5px solid  var(--border-color);
+  line-height: 25px;
+}
+
+
+/* Utilities ---------------------------- */
+
+.u-avoid-clicks {
+  pointer-events: none;
+}
+
+/* Visually hidden, but will be read by screen readers */
+.u-visible-to-screen-reader {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.no-display {
+  display: none;
+}
+
+.wrap {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+/* Content ------------------ */
+
+.content {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  //margin-left: 25%;;
+}
+.widget__message {
+  font: inherit;
+  padding: 0.3rem;
+  margin-left: 2rem;
+  margin-bottom: 1px;
+}
+
+body {
+  margin: 0; /* remove default margin */
+}
+
+
+/* enable text selection */
+
+.is-selectable,
+pre,
+code {
+  user-select: text;
+  cursor: auto;
+}
+
+
+/* Buttons and links */
+
+button{
+  cursor: default;
+}
+
+/* Internal links */
+a {
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px dashed;
+  outline: none;
+}
+
+/* New window (target) + external links */
+a[target],
+a[href^="https://"],
+a[href^="http://"] {
+  border-bottom: 1px solid;
+}
+
+
+a:hover,
+a:focus {
+  border-bottom: none;
+}
+.toggle-dark-mode {
+  -webkit-appearance: none;
+  outline: 0;
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 25px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-image: var(--gradient-style);
+  box-shadow: 0 0 14px var(--gradient-size) var(--gradient-shadow);
+  cursor: pointer;
+}
+
+.toggle-color-mode {
+  -webkit-appearance: none;
+  outline: 0;
+  border: none;
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background:  var(--color-accent);
+  cursor: pointer;
+}
+
+/* Images */
+
+img {
+  -webkit-user-drag: none; /* disable dragging */
+}
+
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .content * {
+    width: 100%;
+  }
+}

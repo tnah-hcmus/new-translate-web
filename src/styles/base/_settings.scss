@@ -1,0 +1,47 @@
+// Colors
+  :root {
+    --main-color: #fff;
+    --bg-color: hsl(0,0%,96%);
+    --font-color:  hsl(0,0%,22%);
+    --em-font-color:  hsl(0,0%,11%);
+    --link-color: hsl(0,0%,22%);
+    --title-color:  hsl(0,0%,44%);
+    --border-color:  hsl(0,0%,88%);
+    --color-accent:    hsl(222, 53%, 50%);
+    --bg-input-color: hsl(0,0%,96%);
+    --gradient-style: radial-gradient(
+      circle,
+      #f6ff1c,
+      #ffdc00,
+      #ffb800,
+      #ff951a
+    );
+    --gradient-size: 4px;
+    --gradient-shadow: #ffb800;
+  }
+  
+  .toggle-dark-mode:checked,
+  .toggle-dark-mode:checked + * {
+    --gradient-style: radial-gradient(
+      circle,
+      #b8b8b8,
+      #cacac8,
+      #d3d3d2,
+      #e9e9e7,
+      #fffffe
+    );
+    --gradient-size: 3px;
+    --gradient-shadow: #fff;
+  }
+.u-green      { --color-accent: hsl(116, 30%, 36%); }
+.u-light-blue         { --color-accent: hsl(194, 60%, 36%); }
+.u-dark-blue   { --color-accent: hsl(222, 53%, 50%); }
+.u-purple { --color-accent: hsl(285, 47%, 46%); }
+.u-pink       { --color-accent: hsl(330, 65%, 48%); }
+.u-brown      { --color-accent: hsl( 36, 77%, 34%); }
+// Spacing
+$s-size: 1.2rem;
+$m-size: 1.6rem;
+$l-size: 3.2rem;
+$xl-size: 4.8rem;
+$desktop-breakpoint: 45rem;
