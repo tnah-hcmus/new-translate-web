@@ -1,5 +1,5 @@
 {
-  "name": "indecision-app",
+  "name": "TranslateApp",
   "version": "1.0.0",
   "author": "Tnah",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "css-loader": "0.28.4",
     "firebase": "^7.14.6",
     "fs": "^0.0.1-security",
-    "google-translate-api": "^2.3.0",
+    "js-yaml": "^3.14.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.14.1",
     "normalize.css": "7.0.0",
@@ -39,6 +39,6 @@
     "sass-loader": "6.0.6",
     "style-loader": "0.18.2",
     "webpack": "3.1.0",
-    "webpack-dev-server": "2.5.1"
+    "webpack-dev-server": "^3.11.0"
   }
 }
