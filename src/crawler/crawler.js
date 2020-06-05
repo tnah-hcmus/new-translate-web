@@ -16,7 +16,7 @@ const getAward = (data) => {
     let result = data.all_awardings.reduce((award, item) => {
         if(item.name === 'Platinum' ||item.name === 'Gold' ||item.name === 'Silver' ) {
             count++;
-            return award = award + ` x${item.count} ${item.name.toLowerCase()} - `;
+            return award = award + `x${item.count} ${item.name.toLowerCase()} - `;
         }
         else return award;
     },'');
@@ -24,12 +24,12 @@ const getAward = (data) => {
         return data.all_awardings.reduce((award, item) => {
             if(item.name !== 'Platinum' && item.name !== 'Gold' && item.name !== 'Silver' && count < 3) {
                 count++
-                return award = award + ` x${item.count} ${item.name === 'Press F' ? 'press F' : item.name.toLowerCase()} - `;
+                return award = award + `x${item.count} ${item.name === 'Press F' ? 'press F' : item.name.toLowerCase().replace(/\(pro\)/, 'pro')} - `;
             }
             else return award;
-        },result).replace(/( \-\ )$/, '');
+        },result).replace(/(\ \-\ )$/, '');
     }
-    else return result.replace(/( \-\ )$/, '');
+    else return result.replace(/(\ \-\ )$/, '');
 }
 
 //Parse upvote: 11600 -> 11.6k

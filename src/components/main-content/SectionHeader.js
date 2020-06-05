@@ -46,7 +46,7 @@ const SectionHeader = (props) => {
                         <input className="demo-input" name="link" aria-label="Link to translate" placeholder="Nhập link reddit để bắt đầu dịch" defaultValue = {link.replace(/(\/+)$/,'') || ''} disabled = {link !== ''}></input>
                         <button className="demo-button">Bắt đầu dịch</button>
                     </form>
-                    <p>Open <a href={link ? link.replace(/(\/+)$/,'') : props.category !== 'blank' ? `https://www.reddit.com/${props.category}`: 'https://www.reddit.com/'}  target="_blank" >reddit link<span className="u-visible-to-screen-reader">(opens in new window)</span></a> in another tab in your browser.</p>
+                    <p>Mở <a href={link ? link.replace(/(\/+)$/,'') : props.category !== 'blank' ? `https://www.reddit.com/${props.category}`: 'https://www.reddit.com/'}  target="_blank" >link reddit này<span className="u-visible-to-screen-reader">(opens in new window)</span></a> trong tab mới.</p>
                     <div className = "wrap" style = {{justifyContent: 'space-between', marginRight: '10%'}}>
                         <div style = {{marginBottom: '5px'}}>
                         <button className="demo-button" id={tabID + '-preview'} onClick = {props.previewContent}>Preview</button>

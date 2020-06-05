@@ -33,6 +33,7 @@
   .preview-modal {
     background: #ffffff;
     overflow-y: auto;
+    overflow-wrap: break-word;
     max-height: 90%;
     font: inherit;
     color: var(--color-accent);
