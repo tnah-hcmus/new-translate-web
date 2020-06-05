@@ -1,7 +1,7 @@
-import React, {Suspense, lazy} from 'react';
-const NavItem = lazy(() => import('./NavItem'));
+import React from 'react';
 import { connect } from 'react-redux';
 import ThemePanel from './ThemePanel';
+import NavItem from './NavItem';
 
 //Component cho navbar, props truyền vào: title, focus title (hiện tên), category/tên sub (get từ Store) -> show category
 const Nav = (props) => {
@@ -16,12 +16,10 @@ const Nav = (props) => {
         </header>
         {
           props.category.map((category, index) => (
-            <Suspense fallback = {<div></div>} key = {index}>
               <NavItem
                 key={index}
                 category={category.name}
               />
-            </Suspense>
           ))
         }
         <ThemePanel/>

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'; 
 import {setColor, resetTheme} from '../../actions/theme/theme_action';
 import { connect } from 'react-redux';
-import { BlockPicker } from 'react-color';
+import {Block} from 'react-color';
 const ThemePanel = (props) => {
     const [color, setColor] = useState(props.color !== '' ? props.color : (props.mode !== 'dark' ? 'hsl(222, 53%, 50%);' : '#7b8ed8'));
     const [pickerVisible, setVisible] = useState(false);
@@ -21,7 +21,7 @@ const ThemePanel = (props) => {
             <button type="button" className="nav-button" onClick={ () => setVisible(!pickerVisible)} >Pick your theme color </button>
             { pickerVisible && (
             <div style={{ position: 'absolute', left: '150px' }}>
-                <BlockPicker
+                <Block
                 color = {color}
                 colors = {['#447740', '#F47373', '#697689', '#7B8ED8', '#257993','#3C64C3', '#CA2B7A', '#ff8a65', '#913EAC']}
                 onChangeComplete={ handleColorChange }

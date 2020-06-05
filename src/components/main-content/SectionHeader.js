@@ -1,7 +1,7 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {Suspense, lazy, useState, useContext, useEffect} from 'react';
 import {deleteTab} from '../../actions/tabs/tabs_action';
 import { connect } from 'react-redux';
-import NoteModal from './NoteModal';
+const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'./NoteModal'));
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import SectionContext from '../context/section-context'
@@ -61,12 +61,15 @@ const SectionHeader = (props) => {
                     </div>
                 </div>
                 </div>
-                <NoteModal
-                 isOpen = {openNote}
-                 name = {tabID}
-                 saveNote = {props.saveNote}
-                 close = {closeNote}
-                 />
+                <Suspense fallback = {<div></div>} key = {tabID + '-note-suspense'}>
+                    <NoteModal
+                    isOpen = {openNote}
+                    key = {tabID + '-note'}
+                    name = {tabID}
+                    saveNote = {props.saveNote}
+                    close = {closeNote}
+                    />
+                </Suspense>
             </header>
         )
 }

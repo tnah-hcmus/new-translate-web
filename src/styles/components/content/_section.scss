@@ -113,23 +113,23 @@
   }
   //Box
   .react-confirm-alert-body {
-    margin-left: 20%;
+    margin-left: 20% !important;
   }
 .react-confirm-alert-body {
-  font: inherit;
-  text-align: center;
-  align-items: center;
+  font: inherit !important;
+  text-align: center !important;
+  align-items: center !important;
 }
 .react-confirm-alert-button-group {
   margin-left: 15%;
 }
 .react-confirm-alert-button-group button{
-  font: inherit;
-  margin-right: 20%;
-  font-weight: bold;
-  border: none;
-  color: #fff;
-  background-color: var(--color-accent);
+  font: inherit !important;
+  margin-right: 20% !important;
+  font-weight: bold !important;
+  border: none !important;
+  color: #fff !important;
+  background-color: var(--color-accent) !important;
 }
 
 @media only screen and (max-width: 768px) {

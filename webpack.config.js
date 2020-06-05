@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = (env) => {
   return {
@@ -15,6 +16,7 @@ module.exports = (env) => {
   },
   plugins: [
     new webpack.HashedModuleIdsPlugin(),
+    new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,
       templateContent: ({htmlWebpackPlugin}) => `
@@ -84,9 +86,10 @@ module.exports = (env) => {
         },
       },
     },
+    minimizer: [new UglifyJsPlugin()],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'public'),
+    contentBase: path.join(__dirname, 'public/dist'),
     historyApiFallback: true
   }
 }

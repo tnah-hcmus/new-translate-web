@@ -1,13 +1,13 @@
-import React from 'react';
+import React, {Suspense, lazy} from 'react';
 import { connect } from 'react-redux';
 import {crawler} from '../../crawler/crawler';
 import {addCategory} from '../../actions/tabs/category_action'
 import {addTab, deleteTab, updateComments, updateTab} from '../../actions/tabs/tabs_action'
 import {replaceTabID} from '../../actions/replies/replies_action';
-import CommentPreview from './CommentPreview';
-import TitlePreview from './TitlePreview';
-import PreviewModal from './PreviewModal';
-import SectionHeader from './SectionHeader';
+import CommentPreview from '../main-content/CommentPreview'
+const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
+const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
+const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'./PreviewModal'));
 import InputContext from '../context/input-context';
 import SectionContext from '../context/section-context';
 
@@ -297,6 +297,7 @@ class Section extends React.Component {
     return(
       <section id={this.props.tab.id + "-section"} className="section js-section">
       <SectionContext.Provider value = {{tabID: this.props.tab.id, link: this.state.link, title: this.state.info.title, upvotes: this.state.info.upvotes, subReddit: this.state.info.subReddit, id: this.state.info.id }}>
+      <Suspense fallback = {<div></div>} key = {this.props.tab.id + '-header-suspense'}>
         <SectionHeader
           key = {this.props.tab.id + '-header'}
           category = {this.props.tab.category}
@@ -307,14 +308,17 @@ class Section extends React.Component {
           handleSubmitLink = {this.handleSubmitLink}
           handleSubmitCredit = {this.handleSubmitCredit}
         />
+      </Suspense>
         <InputContext.Provider value = {{addTransComment: this.addTransComment, editTransComment: this.editTransComment}}>
           <div className = {this.state.info.id ? "title-panel-shown" : "title-panel-hide"}>
+          <Suspense fallback = {<div></div>} key = {this.state.info.id + '-title-suspense'}>
             <TitlePreview
-              key = {this.state.info.id + '-title'}
-              author = {this.state.info.author}
-              awards = {this.state.info.awards}
-              content = {this.state.info.text}
-            />
+                key = {this.state.info.id + '-title'}
+                author = {this.state.info.author}
+                awards = {this.state.info.awards}
+                content = {this.state.info.text}
+           />
+          </Suspense>
           </div>
           <p id={'loading'+this.props.tab.id} className = "title-wrapper" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div className = "panel" id={this.props.tab.id+'panel'}>
@@ -332,12 +336,14 @@ class Section extends React.Component {
               }
           </div>
         </InputContext.Provider>
-        <PreviewModal
-         key = {this.state.info.id + '-modal'}
-         isOpen = {!!this.state.content} 
-         content = {this.state.content}
-         clear = {this.clearPreview}
-        />          
+        <Suspense fallback = {<div></div>} key = {this.state.info.id + '-modal-suspense'}>
+          <PreviewModal
+          key = {this.state.info.id + '-modal'}
+          isOpen = {!!this.state.content} 
+          content = {this.state.content}
+          clear = {this.clearPreview}
+          />  
+        </Suspense>        
     </SectionContext.Provider>
       </section>
     )

@@ -42,7 +42,7 @@
     padding: $l-size;
     text-align: left;
     white-space: pre-wrap;
-    border: 5px solid darken($color: hsl(222, 53%, 50%), $amount: 0);
+    border: 5px solid var(--color-accent);
     border-radius: 2rem;
   }
   .modal-panel{
