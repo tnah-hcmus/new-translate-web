@@ -17,7 +17,7 @@
     "axios": "^0.19.2",
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.1.0",
-    "css-loader": "0.28.4",
+    "css-loader": "^3.5.3",
     "firebase": "^7.14.6",
     "fs": "^0.0.1-security",
     "lodash": "^4.17.15",
