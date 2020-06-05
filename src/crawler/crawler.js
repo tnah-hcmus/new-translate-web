@@ -37,9 +37,9 @@ const upvoteParse = (upvotes) => {
     if(upvotes > 1000) {
         let first = Math.floor(upvotes/1000);
         let second =  Math.floor((upvotes-first*1000)/100);
-        return first + '.' + second + 'k';
+        return first + '.' + second + 'k' + ' points';
     }
-    else return upvotes;
+    else return ((upvotes > 1 || upvotes <-1) ? `${upvotes} points` : `${upvotes} point`);
 }
 
 //Simplify info trong json -> object cơ bản

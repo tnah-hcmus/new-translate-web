@@ -74,7 +74,7 @@ const CommentPreview = (props) => {
               <input type="checkbox" onChange={showComment} />
               <span className="checkbox-custom rectangular" id={props.info.id + "-span"}></span>
             </label> 
-              <div className="demo-meta u-avoid-clicks">{props.info.awards} {props.info.awards && <span className="demo-meta-divider">|</span>} Upvote: {props.info.upvotes > 1 ? `${props.info.upvotes} points` : `${props.info.upvotes} point`}</div>
+              <div className="demo-meta u-avoid-clicks">{props.info.awards} {props.info.awards && <span className="demo-meta-divider">|</span>} Upvote: {props.info.upvotes}</div>
           </button>
         </div>
         <div className = {isOpen ? "content-wrapper show": "content-wrapper"}>

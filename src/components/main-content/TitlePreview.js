@@ -30,7 +30,7 @@ const TitlePreview = (props) => {
           <div className = "title-wrapper">
             <p>{subReddit}</p>
             {props.author}
-            <div className="demo-meta u-avoid-clicks">{props.awards} {props.awards && <span className="demo-meta-divider">|</span>} Upvote: {upvotes} points</div>
+            <div className="demo-meta u-avoid-clicks">{props.awards} {props.awards && <span className="demo-meta-divider">|</span>} Upvote: {upvotes}</div>
           </div>
           <div className = "content-wrapper show">
             <div className = "demo-box demo-box-display">
