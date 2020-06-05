@@ -204,7 +204,7 @@ class Section extends React.Component {
     let trans = this.state.trans; 
     if(info.id) {
       //tạo content theo format
-      let content = info.subReddit + endLine + info.author + ` (${info.upvotes} points${info.awards && ' - '}${info.awards}) ` + endLine;
+      let content = info.subReddit + endLine + info.author + ` (${info.upvotes}${info.awards && ' - '}${info.awards}) ` + endLine;
       let first = trans[info.id] || null;
       if (first)  content = content + first.body + endLine + commentSeparator + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator;
       else {content = content + commentSeparator};

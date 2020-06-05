@@ -1,13 +1,47 @@
 const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = (env) => {
-  const isProduction = env === "production";
   return {
-  entry: './src/app.js',
-  output: {
-    path: path.join(__dirname, 'public'),
-    filename: 'bundle.js'
+  mode: 'production',
+  entry: {
+    main: './src/app.js'
   },
+  output: {
+    path: path.join(__dirname, './public/dist'),
+    filename: '[name].[contenthash:8].js'
+  },
+  plugins: [
+    new webpack.HashedModuleIdsPlugin(),
+    new HtmlWebpackPlugin({
+      inject: false,
+      templateContent: ({htmlWebpackPlugin}) => `
+      <!DOCTYPE html>
+      <html>      
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Reddit Translate App</title>
+        ${htmlWebpackPlugin.tags.headTags}
+      </head>
+      
+      <body>
+        <div id="app" class="wrap"></div>
+        ${htmlWebpackPlugin.tags.bodyTags}
+        <script src="assets/scripts/demo-btns.js"></script>
+        <script src="assets/scripts/nav.js"></script>
+      </body>
+
+      <script src="/__/firebase/7.14.5/firebase-app.js"></script>
+      <script src="/__/firebase/7.14.5/firebase-analytics.js"></script>
+      <script src="/__/firebase/init.js"></script>
+      </html>
+      
+      `
+    }) // so that file hashes don't change unexpectedly
+  ],
   module: {
     rules: [
         {
@@ -30,7 +64,27 @@ module.exports = (env) => {
         }
       ]
   },
-  devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
+  optimization: {
+    runtimeChunk: 'single',
+    splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            // get the name. E.g. node_modules/packageName/not/this/part.js
+            // or node_modules/packageName
+            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+            // npm package names are URL-safe, but some servers don't like @ symbols
+            return `npm.${packageName.replace('@', '')}`;
+          },
+        },
+      },
+    },
+  },
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback: true

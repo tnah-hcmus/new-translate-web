@@ -1,19 +1,27 @@
-import React from 'react';
-import Nav from './nav-bar/Nav';
-import ContentBoard from './main-content/ContentBoard';
-import ThemeButton from './ThemeButton';
-import ToggleNav from './nav-bar/ToggleNav';
+import React, {Suspense, lazy}  from 'react';
+const Nav = lazy(() => import(/* webpackChunkName: "Nav" */'./nav-bar/Nav'));
+const ContentBoard = lazy(() => import(/* webpackChunkName: "Content" */'./main-content/ContentBoard'));
+const ThemeButton = lazy(() => import(/* webpackChunkName: "ThemeButton" */'./ThemeButton'));
+const ToggleNav = lazy(() => import(/* webpackChunkName: "ToggleNav" */'./nav-bar/ToggleNav'));
 
 const PracticeApp = (props) => {
     return (
       <>
-        <ThemeButton/>
-        <Nav
-          title = {props.title}
-          focusTitle = {props.focusTitle}
-        />
-        <ToggleNav/>
-        <ContentBoard/>
+        <Suspense fallback={<div></div>}>
+         <ThemeButton/>
+        </Suspense>
+        <Suspense fallback={<div></div>}>
+          <Nav
+            title = {props.title}
+            focusTitle = {props.focusTitle}
+          />
+        </Suspense>
+        <Suspense fallback={<div></div>}>
+          <ToggleNav/>
+        </Suspense>
+        <Suspense fallback={<div></div>}>
+          <ContentBoard/>
+        </Suspense>
       </>
     );
 }

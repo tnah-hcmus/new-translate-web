@@ -1,5 +1,5 @@
-import React from 'react';
-import NavItem from './NavItem';
+import React, {Suspense, lazy} from 'react';
+const NavItem = lazy(() => import('./NavItem'));
 import { connect } from 'react-redux';
 import ThemePanel from './ThemePanel';
 
@@ -16,10 +16,12 @@ const Nav = (props) => {
         </header>
         {
           props.category.map((category, index) => (
-            <NavItem
-              key={index}
-              category={category.name}
-            />
+            <Suspense fallback = {<div></div>} key = {index}>
+              <NavItem
+                key={index}
+                category={category.name}
+              />
+            </Suspense>
           ))
         }
         <ThemePanel/>
