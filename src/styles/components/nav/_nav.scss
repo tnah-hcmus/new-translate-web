@@ -9,7 +9,7 @@
 
 .toggle-nav-bar {
   border-radius: 2px;
-  color: var(--em-font-color);
+  color: var(--font-color);
   background-color: var(--bg-input-color);
   text-align: center;
   height: 25px;
@@ -33,7 +33,7 @@
   position: absolute;
   top: 3px;
   right: -9px;
-  color: var(--em-font-color);
+  color: var(--font-color);
   background-color: var(--bg-input-color);
   border: 1px solid var(--border-color);
   border-left: none;
@@ -46,7 +46,7 @@
   margin-left: 287px;
   z-index: 100;
   border-radius: 2px;
-  color: var(--em-font-color);
+  color: var(--font-color);
   background-color: var(--bg-input-color);
   text-align: center;
   height: 25px;
@@ -60,7 +60,7 @@
   content: "";
   width: 16px;
   height: 16px;
-  color: var(--em-font-color);
+  color: var(--font-color);
   background-color: var(--bg-input-color);
   display: block;
   position: absolute;
@@ -177,7 +177,7 @@
   }
   .nav-button:hover,
   .nav-button:focus:not(.is-selected) {
-    background-color: hsla(0,0%,0%,.1);
+    background-color: var(--nav-hover);
   }
   .nav-button.is-selected {
     background-color: var(--color-accent);
@@ -191,7 +191,7 @@
   }
   .add-button:hover,
   .add-button:focus:not(.is-selected) {
-    background-color: hsla(0,0%,0%,.1);
+    background-color: var(--nav-hover);
   }
   .add-button.is-selected {
     background-color: var(--color-accent);

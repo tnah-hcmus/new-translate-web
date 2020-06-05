@@ -1,7 +1,7 @@
 import React from 'react';
 import Nav from './nav-bar/Nav';
 import ContentBoard from './main-content/ContentBoard';
-import ThemeButton from './Theme';
+import ThemeButton from './ThemeButton';
 import ToggleNav from './nav-bar/ToggleNav';
 
 const PracticeApp = (props) => {

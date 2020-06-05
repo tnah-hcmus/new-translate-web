@@ -3,12 +3,13 @@
     --main-color: #fff;
     --bg-color: hsl(0,0%,96%);
     --font-color:  hsl(0,0%,22%);
-    --em-font-color:  hsl(0,0%,11%);
+    --em-font-color: hsl(222, 53%, 50%);
     --link-color: hsl(0,0%,22%);
     --title-color:  hsl(0,0%,44%);
     --border-color:  hsl(0,0%,88%);
     --color-accent:    hsl(222, 53%, 50%);
     --bg-input-color: hsl(0,0%,96%);
+    --nav-hover: hsla(0,0%,0%,.1);
     --gradient-style: radial-gradient(
       circle,
       #f6ff1c,
@@ -33,12 +34,6 @@
     --gradient-size: 3px;
     --gradient-shadow: #fff;
   }
-.u-green      { --color-accent: hsl(116, 30%, 36%); }
-.u-light-blue         { --color-accent: hsl(194, 60%, 36%); }
-.u-dark-blue   { --color-accent: hsl(222, 53%, 50%); }
-.u-purple { --color-accent: hsl(285, 47%, 46%); }
-.u-pink       { --color-accent: hsl(330, 65%, 48%); }
-.u-brown      { --color-accent: hsl( 36, 77%, 34%); }
 // Spacing
 $s-size: 1.2rem;
 $m-size: 1.6rem;

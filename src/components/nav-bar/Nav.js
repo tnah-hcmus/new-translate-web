@@ -1,6 +1,7 @@
 import React from 'react';
 import NavItem from './NavItem';
 import { connect } from 'react-redux';
+import ThemePanel from './ThemePanel';
 
 //Component cho navbar, props truyền vào: title, focus title (hiện tên), category/tên sub (get từ Store) -> show category
 const Nav = (props) => {
@@ -21,6 +22,7 @@ const Nav = (props) => {
             />
           ))
         }
+        <ThemePanel/>
         <footer className="nav-footer">
           <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage">From La Mia with love</a></button>
           <p>Mọi thông tin đóng góp, report bug xin liên lạc với mình qua FB cá nhân ở trên</p>

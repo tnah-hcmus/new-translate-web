@@ -1,5 +1,5 @@
 export const ADD_TAB = 'add_tab';
-export const EDIT_TAB = 'add_tab';
+export const EDIT_TAB = 'edit_tab';
 export const REMOVE_TAB = 'remove_tab';
 export const REMOVE_ALL_TABS = 'remove_all_tabs';
 export const UPDATE_TAB = 'update_tab';

@@ -5,11 +5,13 @@ import {throttle} from 'lodash';
 import tabsReducer from '../reducer/tabsReducer';
 import categoryReducer from '../reducer/categoryReducer';
 import repliesReducer from '../reducer/repliesReducer.js';
+import themeReducer from '../reducer/themeReducer.js';
 //map reducer -> store
 const rootReducer = combineReducers({
   category: categoryReducer,
   tabs: tabsReducer,
-  replies: repliesReducer
+  replies: repliesReducer,
+  theme: themeReducer
 });
 
 //lấy preState từ localStorage nếu có
@@ -21,7 +23,8 @@ store.subscribe(throttle(() => {
   saveState({
     category: store.getState().category,
     tabs: store.getState().tabs,
-    replies: store.getState().replies
+    replies: store.getState().replies,
+    theme: store.getState().theme
   });
 }, 1000));
 
