@@ -85,7 +85,7 @@ const CommentPreview = (props) => {
           parent = {props.parent}
           author = {props.info.author}
           level = {(props.info.prefixed.match(/>/g) || []).length + 1} 
-          description = {` (${props.info.upvotes} points${props.info.awards && ' - '}${props.info.awards})`}
+          description = {` (${props.info.upvotes}${props.info.awards && ' - '}${props.info.awards})`}
           prefixed = {props.info.prefixed}
           />
         </div>

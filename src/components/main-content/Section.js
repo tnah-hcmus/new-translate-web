@@ -185,14 +185,14 @@ class Section extends React.Component {
   getTransReplies = (content, comments, array, level) => {
     let endLine = "\r\n";
     if(comments.children.length === 0) {
-      if(!(comments.body.trim() === '')) content = content + comments.prefixed + comments.author + comments.description + endLine + comments.body + endLine;
+      if(!(comments.body.trim() === '')) content = content + comments.prefixed + comments.author + comments.description.replace(/points\ points/, 'points').replace(/point\ points/, 'point') + endLine + comments.body + endLine;
       return content;
     }
     comments.children.map((id) => {
       if(array[id].level === level) 
       content = content + this.getTransReplies('', array[id], array, level+1);
     })
-    if(!(comments.body.trim() === '')) content = comments.prefixed+ comments.author + comments.description + endLine + comments.body + endLine + content;
+    if(!(comments.body.trim() === '')) content = comments.prefixed+ comments.author + comments.description.replace(/points\ points/, 'points').replace(/point\ points/, 'point')  + endLine + comments.body + endLine + content;
     return content;
   }
 
