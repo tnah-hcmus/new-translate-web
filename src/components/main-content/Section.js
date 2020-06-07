@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {crawler} from '../../crawler/crawler';
 import {addCategory} from '../../actions/tabs/category_action'
 import {addTab, deleteTab, updateComments, updateTab} from '../../actions/tabs/tabs_action'
+import {setCredit} from '../../actions/credit/credit_action';
 import {replaceTabID} from '../../actions/replies/replies_action';
 import CommentPreview from '../main-content/CommentPreview'
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
@@ -26,13 +27,16 @@ class Section extends React.Component {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
   componentDidMount(){
+    //Nếu có credit
+    if(this.props.credit !== '') {
+      this.setState({credit: this.props.credit});
+    }
     //Nếu trước đó có nội dung -> restore nội dung thông tin
     if(this.props.tab.link) {
         this.setState({
         link: this.props.tab.link,
         info: this.props.tab.info,
         trans: this.props.tab.trans,
-        credit: this.props.tab.credit,
         note: this.props.tab.note
       });
       //crawler lại comment (những comment chưa lưu)
@@ -42,8 +46,8 @@ class Section extends React.Component {
         });
         //restore lại những comment đã được trans và nội dung trans
         this.restoreTrans().then(() =>{
-          //sau khi restore thành công comment -> restore credit
-          if(this.state.credit) document.getElementById(this.props.tab.id + '-credit').value = this.state.credit;
+                  //sau khi restore thành công comment -> restore credit
+        document.getElementById(this.props.tab.id + '-credit').value = this.props.credit;
           //Kết thúc restore, hiển thị lại panel -> show comment
           document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
           document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
@@ -82,6 +86,7 @@ class Section extends React.Component {
   handleSubmitCredit = (event) => {
     event.preventDefault();
     const credit = event.target.elements.credit.value.trim();
+    this.props.setCredit(credit);
     this.setState({credit: credit});
   }
 
@@ -190,7 +195,7 @@ class Section extends React.Component {
     }
     comments.children.map((id) => {
       if(array[id].level === level) 
-      content = content + this.getTransReplies('', array[id], array, level+1);
+      content = content + endLine +  this.getTransReplies('', array[id], array, level+1);
     })
     if(!(comments.body.trim() === '')) content = comments.prefixed+ comments.author + comments.description.replace(/points\ points/, 'points').replace(/point\ points/, 'point')  + endLine + comments.body + endLine + content;
     return content;
@@ -198,7 +203,7 @@ class Section extends React.Component {
 
   //preview content theo format
   previewContent = () => {
-    let commentSeparator = "____________________"+"\r\n" + "\r\n";
+    let commentSeparator = "____________________"+"\r\n";
     let endLine = "\r\n";
     let info = this.state.info;
     let trans = this.state.trans; 
@@ -206,20 +211,20 @@ class Section extends React.Component {
       //tạo content theo format
       let content = info.subReddit + endLine + info.author + ` (${info.upvotes}${info.awards && ' - '}${info.awards}) ` + endLine;
       let first = trans[info.id] || null;
-      if (first)  content = content + first.body + endLine + commentSeparator + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator;
+      if (first)  content = content + first.body + endLine + commentSeparator + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator + endLine;
       else {content = content + commentSeparator};
       //DFS trans comment
       for(let id in trans) {
         if(trans[id].level === 1) {
           let deep = this.getTransReplies('', trans[id], trans, 2);
-          if(deep.trim() !== '') content = content + deep + commentSeparator;
+          if(deep.trim() !== '') content = content + deep + commentSeparator + endLine;
         }
       }
       //Thêm note và credit
       if(this.state.note !== '') content = content + this.state.note + endLine + commentSeparator;
-      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | https://reddit-translate.web.app`
+      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | https://reddit-translate.web.app`;
       this.setState({
-        content: content
+        content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });
     }
   }
@@ -272,7 +277,6 @@ class Section extends React.Component {
         info: this.state.info,
         category: this.state.info.subReddit,
         link: this.state.link,
-        credit: this.state.credit,
         note: this.state.note,
         iconHref: this.props.tab.iconHref,
         trans: this.state.trans
@@ -349,7 +353,12 @@ class Section extends React.Component {
     )
   }
 }
-const mapDispatchToProps = {
-  addTab, deleteTab, updateTab, addCategory, updateComments, replaceTabID
+function mapStateToProps(state) {
+  return { 
+    credit: state.credit
+  };
 }
-export default connect(null, mapDispatchToProps)(Section);
+const mapDispatchToProps = {
+  addTab, deleteTab, updateTab, addCategory, updateComments, replaceTabID, setCredit
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Section);

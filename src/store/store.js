@@ -6,12 +6,14 @@ import tabsReducer from '../reducer/tabsReducer';
 import categoryReducer from '../reducer/categoryReducer';
 import repliesReducer from '../reducer/repliesReducer.js';
 import themeReducer from '../reducer/themeReducer.js';
+import creditReducer from '../reducer/creditReducer.js';
 //map reducer -> store
 const rootReducer = combineReducers({
   category: categoryReducer,
   tabs: tabsReducer,
   replies: repliesReducer,
-  theme: themeReducer
+  theme: themeReducer,
+  credit: creditReducer
 });
 
 //lấy preState từ localStorage nếu có
@@ -24,7 +26,8 @@ store.subscribe(throttle(() => {
     category: store.getState().category,
     tabs: store.getState().tabs,
     replies: store.getState().replies,
-    theme: store.getState().theme
+    theme: store.getState().theme,
+    credit: store.getState().credit
   });
 }, 1000));
 
