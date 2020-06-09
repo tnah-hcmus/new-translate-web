@@ -113,7 +113,13 @@
     display: inline-block;
     width: 55%;
     margin-right: 5%;
-    overflow-wrap: break-word;
+    word-break: unset;
+    word-wrap: unset;
+    overflow-wrap: unset;
+    -webkit-hyphens: unset;
+    -moz-hyphens: unset;
+    -ms-hyphens: unset;
+    hyphens: unset;
     animation: demo-box-fade-in .2s cubic-bezier(0, .20, .20, .96);
   }
   .demo-input-box {
@@ -224,7 +230,13 @@
   
   .demo-response {
     flex: 1;
-    word-break: break-word;
+    word-break: unset;
+    word-wrap: unset;
+    overflow-wrap: unset;
+    -webkit-hyphens: unset;
+    -moz-hyphens: unset;
+    -ms-hyphens: unset;
+    hyphens: unset;
   }
   
   .smooth-appear {
