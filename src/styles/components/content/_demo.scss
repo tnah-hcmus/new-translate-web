@@ -17,6 +17,9 @@
   height: 50.2%;
   background-color: hsl(0,0%,88%);
   transition: transform .2s cubic-bezier(.4,.1,0,1);
+  &:focus {
+    background-color: currentColor;
+  }
 }
 %box-class {
   display: none;
@@ -28,17 +31,17 @@
   border: 1px solid var(--border-color);
   background-color:   var(--bg-input-color) !important;
   color: var(--text);
-}
-%box-class-before {
-  content: "";
-  position: absolute;
-  top: -11px;
-  width: 20px;
-  height: 20px;
-  background-color: inherit;
-  border-top: inherit;
-  border-right: inherit;
-  border-top-right-radius: 3px;
+  &:before {
+    content: "";
+    position: absolute;
+    top: -11px;
+    width: 20px;
+    height: 20px;
+    background-color: inherit;
+    border-top: inherit;
+    border-right: inherit;
+    border-top-right-radius: 3px;
+  }
 }
 /*Key frame*/
 @keyframes demo-box-fade-in {
@@ -48,7 +51,6 @@
 /* Demo */
 .demo {
     min-width: 100%;
-
     &-wrapper {
       position: relative;
       max-width: 100%;
@@ -76,18 +78,12 @@
           top: 0;
           transform-origin: bottom center;
           transform: translateX(.7em) rotate(-30deg) scale(.75);
-          &:focus {
-            background-color: currentColor;
-          }
         }
         &:after {
           @extend %demo-toggle-pse;
           bottom: 0;
           transform-origin: top center;
           transform: translateX(.7em) rotate(30deg) scale(.75);
-          &:focus {
-            background-color: currentColor;
-          }
         }
       }
       .is-open {
@@ -97,7 +93,7 @@
           }
         }
       }
-      &-meta {
+      .demo-meta {
         margin-top: .2em;
         font-size: 11px;
         font-weight: 300;
@@ -118,8 +114,7 @@
           -ms-user-select: text;
            user-select: text;
 
-           &:before {
-            @extend %box-class-before;
+          &:before {
             transform: rotate(-45deg);
           }
 
@@ -146,7 +141,6 @@
           max-width: 50%;
 
           &:before {
-            @extend %box-class-before;
             top: 40%;
             left: -11px;
             transform: rotate(-135deg);
