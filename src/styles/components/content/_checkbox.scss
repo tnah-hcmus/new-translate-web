@@ -1,3 +1,22 @@
+/*Mixin*/
+@mixin transition($time) {
+    transition: all $time ease-out;
+    -webkit-transition: all $time ease-out;
+    -moz-transition: all $time ease-out;
+    -ms-transition: all $time ease-out;
+    -o-transition: all $time ease-out;
+}
+@mixin transform($rotate-deg, $scale) {
+    -webkit-transform: rotate($rotate-deg) scale($scale);
+    -ms-transform: rotate($rotate-deg) scale($scale);
+    transform: rotate($rotate-deg) scale($scale);   
+}
+@mixin locate($left, $top, $width, $height) {
+    left: $left;
+    top: $top;
+    width: $width;
+    height: $height;
+}
 /* Styling Checkbox Starts */
 .checkbox-label {
     display: inline-block;
@@ -9,110 +28,63 @@
     height: 18px;
     width: 18px;
     clear: both;
-}
 
-.checkbox-label input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
+    input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
 
-.checkbox-label .checkbox-custom {
-    position: absolute;
-    top: 3.5px;
-    left: 0px;
-    height: 18px;
-    width: 18px;
-    background-color: transparent;
-    border-radius: 5px;
-    transition: all 0.3s ease-out;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    border: 2px solid var(--link-color);
-}
+        &:checked ~ .checkbox-custom{
+            background-color: var(--bg-color);
+            border-radius: 5px;
+            opacity:1; 
+            @include transform(0deg,1);
+            border: 2px solid var(--color-accent);
 
+            &:before{
+                @include locate(-3px, -3px, 24px,24px);
+                @include transform(0deg, 3);
+                @include transition(0.3s);
+                opacity:0;
+                z-index: 999;
+            }
+            &:after {
+                @include transform(45deg, 1);
+                @include locate(3px, -1px, 5.5px, 10.5px);
+                opacity:1;
+                border: solid var(--color-accent);
+                border-width: 0 2px 2px 0;
+                background-color: transparent;
+                border-radius: 0;
+              }
+        }
+    }
+    .checkbox-custom {
+        position: absolute;
+        @include locate(0px, 3.5px, 18px, 18px);
+        background-color: transparent;
+        border-radius: 5px;
+        @include transition(0.3s);
+        border: 2px solid var(--link-color);
 
-.checkbox-label input:checked ~ .checkbox-custom {
-    background-color: var(--bg-color);
-    border-radius: 5px;
-    -webkit-transform: rotate(0deg) scale(1);
-    -ms-transform: rotate(0deg) scale(1);
-    transform: rotate(0deg) scale(1);
-    opacity:1;
-    border: 2px solid var(--color-accent)
-}
-
-
-.checkbox-label .checkbox-custom::after {
-    position: absolute;
-    content: "";
-    left: 12px;
-    top: 12px;
-    height: 0px;
-    width: 0px;
-    border-radius: 5px;
-    border: solid var(--color-accent);
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(0deg) scale(0);
-    -ms-transform: rotate(0deg) scale(0);
-    transform: rotate(0deg) scale(0);
-    opacity:1;
-    transition: all 0.3s ease-out;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-}
-
-
-.checkbox-label input:checked ~ .checkbox-custom::after {
-  -webkit-transform: rotate(45deg) scale(1);
-  -ms-transform: rotate(45deg) scale(1);
-  transform: rotate(45deg) scale(1);
-  opacity:1;
-  left: 3px;
-  top: -1px;
-  width: 5.5px;
-  height: 10.5px;
-  border: solid var(--color-accent);
-  border-width: 0 2px 2px 0;
-  background-color: transparent;
-  border-radius: 0;
-}
-
-
-
-/* For Ripple Effect */
-.checkbox-label .checkbox-custom::before {
-    position: absolute;
-    content: "";
-    left: 10px;
-    top: 10px;
-    width: 0px;
-    height: 0px;
-    border-radius: 5px;
-    border: 2px solid var(--color-accent);
-    -webkit-transform: scale(0);
-    -ms-transform: scale(0);
-    transform: scale(0);    
-}
-
-.checkbox-label input:checked ~ .checkbox-custom::before {
-    left: -3px;
-    top: -3px;
-    width: 24px;
-    height: 24px;
-    border-radius: 5px;
-    -webkit-transform: scale(3);
-    -ms-transform: scale(3);
-    transform: scale(3);
-    opacity:0;
-    z-index: 999;
-    transition: all 0.3s ease-out;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
+        &:after {
+            position: absolute;
+            content: "";
+            @include locate(12px, 12px, 0px, 0px);
+            border-radius: 5px;
+            border: solid var(--color-accent);
+            border-width: 0 3px 3px 0;
+            opacity:1; 
+            @include transform(0deg,0);
+            @include transition(0.3s);
+        }
+        &:before {
+            position: absolute;
+            content: "";
+            @include locate(10px, 10px, 0px, 0px);
+            border-radius: 5px;
+            border: 2px solid var(--color-accent);
+            @include transform(0deg, 0); 
+        }
+    }
 }

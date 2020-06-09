@@ -1,194 +1,196 @@
+/*Mixin*/
+@mixin non-break {
+  word-break: unset;
+  word-wrap: unset;
+  overflow-wrap: unset;
+  -webkit-hyphens: unset;
+  -moz-hyphens: unset;
+  -ms-hyphens: unset;
+  hyphens: unset;
+}
+/*Class*/
+%demo-toggle-pse {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 2px;
+  height: 50.2%;
+  background-color: hsl(0,0%,88%);
+  transition: transform .2s cubic-bezier(.4,.1,0,1);
+}
+%box-class {
+  display: none;
+  position: relative;
+  padding: 2em;
+  margin-top: 1em;
+  margin-bottom: 2em;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color:   var(--bg-input-color) !important;
+  color: var(--text);
+}
+%box-class-before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  width: 20px;
+  height: 20px;
+  background-color: inherit;
+  border-top: inherit;
+  border-right: inherit;
+  border-top-right-radius: 3px;
+}
+/*Key frame*/
+@keyframes demo-box-fade-in {
+  0% { opacity: 0; transform: translateY(-20px); }
+100% { opacity: 1; transform: translateY(0); }
+}
 /* Demo */
 .demo {
     min-width: 100%;
+
+    &-wrapper {
+      position: relative;
+      max-width: 100%;
+      margin: 0 auto 0 0.5rem;
+      padding: 0 2rem;
+
+      .demo-toggle-button {
+        position: relative;
+        display: block;
+        margin: 0;
+        padding: .5em 1.5em;
+        line-height: 1.5;
+        font: inherit;
+        font-weight: 600;
+        font-size: 1.2em;
+        text-align: left;
+        border: none;
+        color: inherit;
+        background-color: transparent;
+        transition: border-color .12s;
+        outline: none;
+
+        &:before {
+          @extend %demo-toggle-pse;
+          top: 0;
+          transform-origin: bottom center;
+          transform: translateX(.7em) rotate(-30deg) scale(.75);
+          &:focus {
+            background-color: currentColor;
+          }
+        }
+        &:after {
+          @extend %demo-toggle-pse;
+          bottom: 0;
+          transform-origin: top center;
+          transform: translateX(.7em) rotate(30deg) scale(.75);
+          &:focus {
+            background-color: currentColor;
+          }
+        }
+      }
+      .is-open {
+        .demo-toggle-button {
+          &:before, &:after {
+            transform: rotate(0deg);
+          }
+        }
+      }
+      &-meta {
+        margin-top: .2em;
+        font-size: 11px;
+        font-weight: 300;
+        text-transform: uppercase;
+        color: var(--title-color);
+        white-space: nowrap;
+      }
+
+      .content-wrapper {
+        display: flex;
+        max-width: 100%;
+
+        .demo-box {
+          @extend %box-class;
+          -moz-user-select: -moz-text;
+          -khtml-user-select: text;
+          -webkit-user-select: text;
+          -ms-user-select: text;
+           user-select: text;
+
+           &:before {
+            @extend %box-class-before;
+            transform: rotate(-45deg);
+          }
+
+          &>p:first-child {
+            margin-top: 0;
+          }
+
+          h5 {
+            font-size: 1em;
+            margin-bottom: .6em;
+          }
+        }
+
+        .demo-box-display {
+          display: inline-block;
+          width: 55%;
+          margin-right: 5%;
+          @include non-break();
+          animation: demo-box-fade-in .2s cubic-bezier(0, .20, .20, .96);
+        }
+
+        .demo-input-box {
+          @extend %box-class;
+          max-width: 50%;
+
+          &:before {
+            @extend %box-class-before;
+            top: 40%;
+            left: -11px;
+            transform: rotate(-135deg);
+          }
+          .expand{
+            overflow: hidden;
+            border-width:0px;
+            width: 100%;
+            height: 100%;
+            border:none;
+            font: inherit;
+            resize: none;
+            background-color: var(--bg-input-color);
+            color: var(--text);
+          }
+        }
+
+        .demo-input-box-display {
+          display: inline-block;
+          width: 50%;
+          margin-left: 5%;
+          animation: demo-box-fade-in .2s cubic-bezier(0, .20, .20, .96);
+        }
+
+        .demo-controls {
+          display: flex;
+          align-items: center;
+
+          .demo-response {
+            flex: 1;
+            @include non-break();
+          }
+        }
+        .demo-meta-divider {
+          margin: 0 .5em;
+        }
+
+      }
+    }
+    
 }
-  
-  .demo-wrapper {
-    position: relative;
-    max-width: 100%;
-    margin: 0 auto 0 0.5rem;
-    padding: 0 2rem;
-  }
-  .demo-wrapper .content-wrapper{
-    display: flex;
-    max-width: 100%;
-  }
-  
-  
-  /* Toggle Button ----------------------------- */
-  
-  .demo-toggle-button {
-    position: relative;
-    display: block;
-    margin: 0;
-    padding: .5em 1.5em;
-    line-height: 1.5;
-    font: inherit;
-    font-weight: 600;
-    font-size: 1.2em;
-    text-align: left;
-    border: none;
-    color: inherit;
-    background-color: transparent;
-    transition: border-color .12s;
-    outline: none;
-  }
-  
-  .demo-toggle-button:before,
-  .demo-toggle-button:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    width: 2px;
-    height: 50.2%;
-    background-color: hsl(0,0%,88%);
-    transition: transform .2s cubic-bezier(.4,.1,0,1);
-  }
-  .demo-toggle-button:before {
-    top: 0;
-    transform-origin: bottom center;
-    transform: translateX(.7em) rotate(-30deg) scale(.75);
-  }
-  .demo-toggle-button:after {
-    bottom: 0;
-    transform-origin: top center;
-    transform: translateX(.7em) rotate(30deg) scale(.75);
-  }
-  .is-open .demo-toggle-button:before,
-  .is-open .demo-toggle-button:after {
-    transform: rotate(0deg);
-  }
-  .demo-toggle-button:focus:before,
-  .demo-toggle-button:focus:after {
-    background-color: currentColor;
-  }
-  
-  /* Meta info */
-  
-  .demo-meta {
-    margin-top: .2em;
-    font-size: 11px;
-    font-weight: 300;
-    text-transform: uppercase;
-    color: var(--title-color);
-    white-space: nowrap;
-  }
-  .demo-meta-divider {
-    margin: 0 .5em;
-  }
-  
-  
-  /* Demo Box ----------------------------- */
-  
-  .demo-box {
-    display: none;
-    position: relative;
-    padding: 2em;
-    margin-top: 1em;
-    margin-bottom: 2em;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background-color:   var(--bg-input-color) !important;
-    color: var(--text);
-    -moz-user-select: -moz-text;
-    -khtml-user-select: text;
-    -webkit-user-select: text;
-    -ms-user-select: text;
-     user-select: text;
-  }
-  .demo-box:before {
-    content: "";
-    position: absolute;
-    top: -11px;
-    width: 20px;
-    height: 20px;
-    background-color: inherit;
-    border-top: inherit;
-    border-right: inherit;
-    border-top-right-radius: 3px;
-    transform: rotate(-45deg);
-  }
-  
-  .demo-box-display {
-    display: inline-block;
-    width: 55%;
-    margin-right: 5%;
-    word-break: unset;
-    word-wrap: unset;
-    overflow-wrap: unset;
-    -webkit-hyphens: unset;
-    -moz-hyphens: unset;
-    -ms-hyphens: unset;
-    hyphens: unset;
-    animation: demo-box-fade-in .2s cubic-bezier(0, .20, .20, .96);
-  }
-  .demo-input-box {
-    display: none;
-    position: relative;
-    padding: 2em;
-    max-width: 50%;
-    margin-top: 1em;
-    margin-bottom: 2em;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-input-color);
-    color: var(--text);
-  }
-  .demo-input-box:before {
-    content: "";
-    position: absolute;
-    top: 40%;
-    left: -11px;
-    height: 20px;
-    width: 20px;
-    background-color: inherit;
-    border-top: inherit;
-    border-right: inherit;
-    border-top-right-radius: 3px;
-    transform: rotate(-135deg);
-  }
-  .demo-input-box-display {
-    display: inline-block;
-    width: 50%;
-    margin-left: 5%;
-    animation: demo-box-fade-in .2s cubic-bezier(0, .20, .20, .96);
-  }
-  @keyframes demo-box-fade-in {
-      0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes demo-box-fade-out {
-    0% { opacity: 1;}
-    99% { opacity: 0.01;width: 100%; height: 100%;}
-    100% { opacity: 0;width: 0; height: 0;}
-}
-  
-  .demo-box > p:first-child {
-    margin-top: 0;
-  }
-  
-  .demo-box h5 {
-    font-size: 1em;
-    margin-bottom: .6em;
-  }
-  
-  .expand{
-    overflow: hidden;
-    border-width:0px;
-    width: 100%;
-    height: 100%;
-    border:none;
-    font: inherit;
-    resize: none;
-    background-color: var(--bg-input-color);
-    color: var(--text);
-  }
   /* Demo Controls ----------------------------- */
   
-  .demo-controls {
-    display: flex;
-    align-items: center;
-  }
+  
   
   .demo-button {
     align-self: flex-start;
@@ -200,14 +202,20 @@
     padding: .4em 1.2em;
     color: inherit;
     background-color: transparent;
-  }
-  .demo-button:focus {
-    outline: none;
-  }
-  .demo-button:active {
-    border-color: var(--border-color);
-    background-color: var(--color-accent);
-    transition: all 250ms;
+
+    &:focus {
+      outline: none;
+    }
+    &:active {
+      border-color: var(--border-color);
+      background-color: var(--color-accent);
+      transition: all 250ms;
+    }
+    &.smooth-disappear:focus {
+      outline: inherit;
+      border-color: inherit;
+      background-color: inherit;
+    }
   }
   
   .demo-input {
@@ -220,23 +228,12 @@
     margin-right: 0.5rem;
     color: inherit;
     width: 75%;
-    background-color: hsl(0,0%,88%);;
-  }
-  .demo-input:focus {
-    outline: none;
-    border-color: hsl(0,0%,80%);
-    background-color: white;
-  }
-  
-  .demo-response {
-    flex: 1;
-    word-break: unset;
-    word-wrap: unset;
-    overflow-wrap: unset;
-    -webkit-hyphens: unset;
-    -moz-hyphens: unset;
-    -ms-hyphens: unset;
-    hyphens: unset;
+    background-color: hsl(0,0%,88%);
+    :focus {
+      outline: none;
+      border-color: hsl(0,0%,80%);
+      background-color: white;
+    }
   }
   
   .smooth-appear {
@@ -247,49 +244,49 @@
   .disappear {
     opacity: 0;
   }
-  .demo-button.smooth-disappear:focus {
-    outline: inherit;
-    border-color: inherit;
-    background-color: inherit;
-  }
+
   @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .section-wrapper form {
       display: block !important;
     }
-    .demo-wrapper {
-      margin-left: 0;
-      padding-left: 0.75em;
-    }
-    .demo-wrapper .content-wrapper {
-      display: block;
-    }
-
-    .demo-input {
-      width: 100%;
-      margin-bottom: 6px;
-    }
-    .demo-box {
-      padding: 1em;
-      margin-bottom: 1em;
-    }
-    .demo-box-display {
-      width: 100%;
+    .demo {
+      .demo-wrapper {
+        margin-left: 0;
+        padding-left: 0.75em;
+  
+        .content-wrapper {
+          display: block;
+  
+          .demo-box {
+            padding: 1em;
+            margin-bottom: 1em;
+          }
+          .demo-input {
+            width: 100%;
+            margin-bottom: 6px;
+          }
+          .demo-box-display {
+            width: 100%;
+          }
+          .demo-input-box-display {
+            width: 100%;
+          }
+          .demo-input-box {
+            max-width: 100%;
+            margin-left:0 ;
+  
+            &::before {
+              top: -11px;
+              left: 50%;
+              transform: rotate(-45deg);
+            }
+          }
+        }
+      }
     }
     .demo-button {
       margin-bottom: 6px;
     }
-    .demo-input-box-display {
-      width: 100%;
-    }
-    .demo-input-box {
-      max-width: 100%;
-      margin-left:0 ;
-    }
-    .demo-input-box::before {
-      top: -11px;
-      left: 50%;
-      transform: rotate(-45deg);
-  }
   }
   

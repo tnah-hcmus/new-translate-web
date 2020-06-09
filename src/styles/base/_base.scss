@@ -6,6 +6,14 @@
   font-weight: 400;
   src: local('Source Code Pro'), local('SourceCodePro'), url(/public/assets/fonts/SourceCodePro-Regular.ttf) format('truetype');
 }
+
+/*Mixin*/
+@mixin hX ($font-size, $font-weight) {
+  margin-top: 0;
+  line-height: 1.5;
+  font-size: $font-size;
+  font-weight: $font-weight;
+}
 /* Global ---------------------------- */
 
 * {
@@ -22,51 +30,64 @@ html {
   overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
   color: var(--font-color) !important;
   background-color: var(--main-color);
-}
+  body {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    /* Links */
+    a {
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px dashed;
+      outline: none;
+      color: var(--color-link);
 
-body {
-  margin: 0;
-  height: 100%;
-  display: flex;
-}
+      &[target],
+      &[href^="https://"],
+      &[href^="http://"] {
+        border-bottom: 1px solid;
+      }
 
-a {
-  color: var(--color-link);
-}
+      &:hover, &:focus {
+        border-bottom: none;
+      }
+    }
+    /*Button*/
+    button{
+      cursor: default;
+    }
 
-h1,
-h2,
-h3 {
-  margin-top: 0;
-  line-height: 1.5;
-}
+    /*Heading*/
+    h1 {
+      @include hX(1.5em, 600);
+    }
 
-h1 {
-  font-size: 1.5em;
-  font-weight: 600;
-}
+    h2 {
+      @include hX(1.3em, normal);
+    }
 
-h2 {
-  font-size: 1.3em;
-  font-weight: normal;
-}
+    h3 {
+      @include hX(1.12em, 600);
+    }
+    /* Images */
 
-h3 {
-  font-size: 1.12em;
-  font-weight: 600;
-}
+    img {
+      -webkit-user-drag: none; /* disable dragging */
+    }
 
-svg {
-  fill: currentColor;
-}
+    svg {
+      fill: currentColor;
+    }
+    /* Quote */
+    blockquote {
+      margin: 20px 0 30px;
+      padding-left: 20px;
+      border-left: 5px solid  var(--border-color);
+      line-height: 25px;
+    }
 
-blockquote {
-  margin: 20px 0 30px;
-  padding-left: 20px;
-  border-left: 5px solid  var(--border-color);
-  line-height: 25px;
+  }
 }
-
 
 /* Utilities ---------------------------- */
 
@@ -97,6 +118,13 @@ blockquote {
   flex-wrap: wrap;
 }
 
+.shown {
+  display: block !important;
+}
+.hide {
+  display: none !important;
+}
+
 
 /* Content ------------------ */
 
@@ -113,54 +141,13 @@ blockquote {
   margin-bottom: 1px;
 }
 
-body {
-  margin: 0; /* remove default margin */
-}
-
-
-/* enable text selection */
-
-.is-selectable,
-pre,
-code {
-  user-select: text;
-  cursor: auto;
-}
-
-
-/* Buttons and links */
-
-button{
-  cursor: default;
-}
-
-/* Internal links */
-a {
-  cursor: pointer;
-  text-decoration: none;
-  border-bottom: 1px dashed;
-  outline: none;
-}
-
-/* New window (target) + external links */
-a[target],
-a[href^="https://"],
-a[href^="http://"] {
-  border-bottom: 1px solid;
-}
-
-
-a:hover,
-a:focus {
-  border-bottom: none;
-}
 .toggle-dark-mode {
   -webkit-appearance: none;
   outline: 0;
   position: absolute;
   z-index: 2;
   top: 10px;
-  right: 25px;
+  right: 20px;
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -169,26 +156,6 @@ a:focus {
   cursor: pointer;
 }
 
-.toggle-color-mode {
-  -webkit-appearance: none;
-  outline: 0;
-  border: none;
-  position: absolute;
-  z-index: 2;
-  top: 10px;
-  right: 20px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background:  var(--color-accent);
-  cursor: pointer;
-}
-
-/* Images */
-
-img {
-  -webkit-user-drag: none; /* disable dragging */
-}
 
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */

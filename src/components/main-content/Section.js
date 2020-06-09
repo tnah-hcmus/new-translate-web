@@ -314,7 +314,7 @@ class Section extends React.Component {
         />
       </Suspense>
         <InputContext.Provider value = {{addTransComment: this.addTransComment, editTransComment: this.editTransComment}}>
-          <div className = {this.state.info.id ? "title-panel-shown" : "title-panel-hide"}>
+          <div className = {this.state.info.id ? "title-panel shown" : "title-panel hide"}>
           <Suspense fallback = {<div></div>} key = {this.state.info.id + '-title-suspense'}>
             <TitlePreview
                 key = {this.state.info.id + '-title'}
@@ -324,7 +324,7 @@ class Section extends React.Component {
            />
           </Suspense>
           </div>
-          <p id={'loading'+this.props.tab.id} className = "title-wrapper" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
+          <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div className = "panel" id={this.props.tab.id+'panel'}>
           {this.state.comments.length !== 0 && <input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" defaultValue = {''} onChange = {this.searchComment} ></input>}
           {this.state.comments.length === 0 && <p className="widget__message">Hãy thêm link bài viết vào</p>}
