@@ -25,7 +25,7 @@ const NavItem = (props) => {
   <div className = {"nav-item u-category-"+props.category}>
       <h5 className="nav-category">
         {props.category}
-        <button className = "category-delete" onClick = {() => props.deleteCategory(props.category)} disabled = {props.tabs.filter((item) => item.category === props.category).length !== 0}>-</button>
+        {props.category !== 'guide' && <button className = "category-delete" onClick = {() => props.deleteCategory(props.category)} disabled = {props.tabs.filter((item) => item.category === props.category).length !== 0}>-</button>}
       </h5>
 
     <div>
@@ -39,12 +39,15 @@ const NavItem = (props) => {
         key={tabs.id}
         id = {tabs.id}
         describe={tabs.title}
+        category = {tabs.category}
         />
       ))
     }
+    {props.category !== 'guide' && 
     <button className = "add-button" onClick = {newTab}>
         <img src="assets/img/plus.svg" aria-hidden="true"/>
     </button>
+    }
     </div>
   </div>
 );

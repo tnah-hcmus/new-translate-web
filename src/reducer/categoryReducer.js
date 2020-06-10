@@ -6,6 +6,9 @@ import {
 const INITIAL_STATE = [
   {
     name: "blank"
+  },
+  {
+    name: "guide"
   }
 ];
 

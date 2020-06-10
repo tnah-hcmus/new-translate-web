@@ -90,7 +90,10 @@ module.exports = (env) => {
   },
   devServer: {
     contentBase: path.join(__dirname, 'public/dist'),
-    historyApiFallback: true
+    historyApiFallback: true,
+    headers: {
+      'X-Frame-Options': 'sameorigin'
+    }
   }
 }
 };

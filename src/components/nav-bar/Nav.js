@@ -15,13 +15,15 @@ const Nav = (props) => {
           </h1>
         </header>
         {
-          props.category.map((category, index) => (
+          props.category.map((category, index) => {
+            if(category.name !== 'guide') return (
               <NavItem
                 key={index}
                 category={category.name}
               />
-          ))
+          )})
         }
+        <NavItem key='guide' category='guide'/>
         <ThemePanel/>
         <footer className="nav-footer">
           <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage">From La Mia with love</a></button>

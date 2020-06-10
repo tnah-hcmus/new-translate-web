@@ -6,7 +6,45 @@ import {
   UPDATE_TAB
 } from '../actions/tabs/types';
 
-const INITIAL_STATE = [];
+const createID = () => {
+  let guid = 'xxyyx'.replace(/[xy]/g, (c) => {
+    let r = Math.random() * 16 | 0,
+      v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  return guid;
+}
+
+const INITIAL_STATE = [
+  {
+    id: createID(),
+    category: "guide",
+    title : "Quản lý tab dịch",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: 'https://www.youtube.com/embed/Tg1VcwH3gpY'
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Hướng dẫn dịch bài",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: ''
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Quản lý comment",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: ''
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Thay đổi giao diện",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: ''
+  }
+];
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {

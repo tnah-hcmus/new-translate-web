@@ -101,6 +101,28 @@
       margin: 0 auto;
     }
   }
+  .popup {
+    position:absolute;
+    z-index:2;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    opacity:0;
+    visibility:hidden;
+    transition:.3s ease;
+    .show-popup & {
+      opacity:1;
+      visibility: visible;    
+    }
+    &>iframe {
+      position:absolute;
+      top:35%;
+      left:50%;
+      margin-left:-280px;
+  }
+}
 
 /*Confirm Alert Box*/
 .react-confirm-alert{
