@@ -59,13 +59,16 @@ const rootReducer = combineReducers({
 
 //lấy preState từ localStorage nếu có
 const preState = loadState() || {};
+/*
 console.log(preState);
 //Xóa sau 20 ngày
+
 if(preState.category.filter((item) => item.name === 'guide').length === 0) {
   preState.category = [...preState.category, {name:'guide'}];
   preState.tabs = [...preState.tabs, ...INITIAL_STATE];
 }
 console.log(preState);
+*/
 
 //Tạo store + gán listener cho mỗi lần thay đổi store -> ghi vào json
 const store = createStore(rootReducer, preState, applyMiddleware(thunk));

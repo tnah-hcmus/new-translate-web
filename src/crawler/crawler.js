@@ -16,7 +16,8 @@ const getAward = (data) => {
     let result = data.all_awardings.reduce((award, item) => {
         if(item.name === 'Platinum' ||item.name === 'Gold' ||item.name === 'Silver' ) {
             count++;
-            return award = award + `x${item.count} ${item.name.toLowerCase()} - `;
+            let plural = (item.count > 1) ? 's' : '';
+            return award = award + `x${item.count} ${item.name.toLowerCase()}${plural} - `;
         }
         else return award;
     },'');

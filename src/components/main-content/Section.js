@@ -220,6 +220,7 @@ class Section extends React.Component {
           if(deep.trim() !== '') content = content + deep + commentSeparator + endLine;
         }
       }
+      content = content.replace(/\r\n$/,'');
       //Thêm note và credit
       if(this.state.note !== '') content = content + this.state.note + endLine + commentSeparator;
       content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | https://reddit-translate.web.app`;

@@ -16,6 +16,7 @@ const createID = () => {
 }
 
 const INITIAL_STATE = [
+  /*
   {
     id: createID(),
     category: "guide",
@@ -44,6 +45,7 @@ const INITIAL_STATE = [
     iconHref: "assets/img/icons.svg#icon-windows",
     link: ''
   }
+  */
 ];
 
 export default (state = INITIAL_STATE, action) => {
