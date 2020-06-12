@@ -45,6 +45,7 @@ const upvoteParse = (upvotes) => {
 
 //Simplify info trong json -> object cơ bản
 const parseInfo = (postInfo) => {
+    const mediaData = postInfo.media ? postInfo.media.reddit_video : null;
     return {
         "subReddit": postInfo.subreddit_name_prefixed,
         "shortenLink":'https://redd.it/' + postInfo.id,
@@ -53,7 +54,10 @@ const parseInfo = (postInfo) => {
         "awards" : parseContent(getAward(postInfo)),
         "author" : 'u/' + postInfo.author,
         "upvotes" : upvoteParse(parseInt(postInfo.ups)),
-        "id" : postInfo.id
+        "id" : postInfo.id,
+        "fallbackUrl": mediaData ? mediaData.fallback_url.split('?')[0] : '',
+        "url": postInfo.url,
+        "isVideo": postInfo.is_video
     };
 }
 

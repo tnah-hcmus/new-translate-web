@@ -307,6 +307,9 @@ class Section extends React.Component {
           key = {this.props.tab.id + '-header'}
           category = {this.props.tab.category}
           iconHref = {this.props.tab.iconHref}
+          isVideo = {this.state.info.isVideo}
+          url = {this.state.info.url}
+          fallbackUrl = {this.state.info.fallbackUrl}
           previewContent = {this.previewContent}
           savePost = {this.savePost}
           saveNote = {this.saveNote}

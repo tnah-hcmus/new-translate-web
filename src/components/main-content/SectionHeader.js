@@ -8,6 +8,7 @@ import SectionContext from '../context/section-context'
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
+    const [download, setDownload] = useState(false);
     const {tabID, link, title, subReddit, upvotes} = useContext(SectionContext);
     const deletePost = () => {
         confirmAlert({
@@ -23,6 +24,12 @@ const SectionHeader = (props) => {
                 }
             ]
         });
+    }
+    const downloadVideo = () => {
+        if(props.isVideo) {
+            setDownload(true);
+            document.getElementById(tabID + '-download').innerHTML = 'Downloading';
+        }
     }
     useEffect(() => {
         window.addEventListener("beforeunload", (ev) => 
@@ -59,6 +66,16 @@ const SectionHeader = (props) => {
                         <button className="demo-button">Thêm credit</button>
                         </form>
                     </div>
+                    <button className="demo-button" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}}>{props.isVideo ? 'Download Video (beta)' : 'No video found'}</button>
+                    {download && <iframe
+                        src={
+                        "https://down-583a6.web.app/?video=" +
+                        btoa(props.fallbackUrl) +
+                        "&audio=" +
+                        btoa(props.url + '/audio')
+                        }
+                        style = {{ display: "none" }}
+                    />}
                 </div>
                 </div>
                 <Suspense fallback = {<div></div>} key = {tabID + '-note-suspense'}>
