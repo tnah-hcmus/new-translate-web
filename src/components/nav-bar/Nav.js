@@ -11,7 +11,7 @@ const Nav = (props) => {
       <header className="nav-header">
           <h1 className="nav-title">
           {props.title} <strong>{props.focusTitle}</strong>
-          <svg className="nav-header-icon"><use xlinkHref="assets/img/icons.svg#icon-electron"/></svg>
+          <svg className="nav-header-icon"><use xlinkHref="assets/img/logo.svg#main-stroke"/></svg>
           </h1>
         </header>
         {
@@ -28,6 +28,7 @@ const Nav = (props) => {
         <footer className="nav-footer">
           <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage">From La Mia with love</a></button>
           <p>Mọi thông tin đóng góp, report bug xin liên lạc với mình qua FB cá nhân ở trên</p>
+          <p></p>
         </footer>
       </nav>
     </div>

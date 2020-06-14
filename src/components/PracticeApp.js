@@ -28,7 +28,7 @@ const PracticeApp = (props) => {
 
 
 PracticeApp.defaultProps = {
-  title : "Reddit",
+  title : "RVN",
   focusTitle: "Translator",
   iconHref: "assets/img/icons.svg#icon-windows",
 };
