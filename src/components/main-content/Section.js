@@ -179,7 +179,10 @@ class Section extends React.Component {
   //Sửa nội dung comment theo id
   editTransComment = (id, body) => {
     this.setState((preState) => {
-      preState.trans[id].body = body;
+      const transComment = preState.trans;
+      if(transComment[id]) {
+        preState.trans[id].body = body;
+      }
       return {        
         trans: preState.trans
         }
