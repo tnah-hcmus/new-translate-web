@@ -203,7 +203,7 @@ class Section extends React.Component {
 
   //preview content theo format
   previewContent = () => {
-    let commentSeparator = "____________________"+"\r\n";
+    let commentSeparator = "_____________________"+"\r\n";
     let endLine = "\r\n";
     let info = this.state.info;
     let trans = this.state.trans; 

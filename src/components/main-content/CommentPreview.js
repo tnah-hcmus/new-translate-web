@@ -5,12 +5,14 @@ import CommentInput from './CommentInput';
 import {crawlReplies} from '../../crawler/crawler';
 import {addReplies, deleteReplies} from '../../actions/replies/replies_action';
 import SectionContext from '../context/section-context';
+import InputContext from '../context/input-context';
 
 const CommentPreview = (props) => {
   const [isOpen, setOpen] = useState(false);
   const [isShowComment, setShowComment] = useState(false);
   const [replies, setReplies] = useState([]);
   const {link, tabID} = useContext(SectionContext);
+  const {editTransComment} = useContext(InputContext);
   useEffect(() => {
     if(props.raw_replies) {
       if(props.raw_replies[tabID]) {
@@ -36,7 +38,15 @@ const CommentPreview = (props) => {
     props.addReplies(tabID, props.info.id, data);
   }
   const showComment = (event) => {
-    setOpen(isOpen ? false : true);
+    if(isOpen) {
+      editTransComment(props.info.id, '');
+    } 
+    else {
+      editTransComment(props.info.id, document.getElementById(props.info.id + '-trans').value);
+    };
+    
+    setOpen(isOpen ? false : true)
+
   }
   const getReplies = () => {
     crawlReplies(link, props.info.replies, props.info.prefixed, props.parent).then((result) => {
