@@ -10,7 +10,7 @@ const Nav = (props) => {
       <nav className="nav js-nav">
       <header className="nav-header">
           <h1 className="nav-title">
-          {props.title} <strong>{props.focusTitle}</strong>
+          <div style = {{display: "inline-block", marginRight: "10px"}}>{props.title} <strong>{props.focusTitle}</strong></div>
           <svg className="nav-header-icon"><use xlinkHref="assets/img/logo.svg#main-stroke"/></svg>
           </h1>
         </header>

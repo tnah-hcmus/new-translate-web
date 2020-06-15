@@ -103,23 +103,23 @@
     &-header {
       margin-top: 1em;
       position: relative;
-      padding: 2rem;
+      padding: 1rem;
       margin-bottom: 1rem;
       border-bottom: 1px solid var(--border-color);
     }
     &-header-icon {
-      position: absolute;
+      position: relative;
       height: 70px;
       width: 36px;
-      top: 5px;
-      left: 230px;
     }
     &-title {
       text-transform: uppercase;
       font-weight: 300;
       line-height: 1;
       margin: 0;
-      margin-left:20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     &-title strong {
       font-weight: 600;
