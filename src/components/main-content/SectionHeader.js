@@ -37,6 +37,25 @@ const SectionHeader = (props) => {
             ev.preventDefault();
             return ev.returnValue = 'Nhớ kiểm tra xem lưu chưa nhé';
         });
+        window.onmessage = function(e){
+            const button =  document.getElementById(tabID + '-download');
+            if (e.data == 'Worker done') {
+                button.innerHTML = 'Downloaded'
+            }
+            if(e.data == 'Download done') {
+                button.innerHTML = 'Combining'
+            }
+            if(e.data == 'Load worker') {
+                button.innerHTML = 'Loading service worker'
+            }
+            if(e.data == 'Loading') {
+                button.innerHTML = 'Loading'
+            }
+            if(e.data == 'Loaded') {
+                button.innerHTML = 'Downloading'
+            }
+        };
+
     }, []);
     const closeNote = () => {
         setOpenNote(false);
@@ -66,7 +85,7 @@ const SectionHeader = (props) => {
                         <button className="demo-button">Thêm credit</button>
                         </form>
                     </div>
-                    <button className="demo-button" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}}>{props.isVideo ? 'Download Video (beta)' : 'No video found'}</button>
+                    <button className="demo-button" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}} disabled = {download}>{props.isVideo ? 'Download Video (beta)' : 'No video found'}</button>
                     {download && <iframe
                         src={
                         "https://down-583a6.web.app/?video=" +
