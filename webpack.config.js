@@ -16,7 +16,7 @@ module.exports = (env) => {
   },
   plugins: [
     new webpack.HashedModuleIdsPlugin(),
-    new BundleAnalyzerPlugin(),
+    //new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,
       templateContent: ({htmlWebpackPlugin}) => `

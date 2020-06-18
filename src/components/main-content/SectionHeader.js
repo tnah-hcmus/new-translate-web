@@ -28,7 +28,6 @@ const SectionHeader = (props) => {
     const downloadVideo = () => {
         if(props.isVideo) {
             setDownload(true);
-            document.getElementById(tabID + '-download').innerHTML = 'Downloading';
         }
     }
     useEffect(() => {
@@ -38,21 +37,29 @@ const SectionHeader = (props) => {
             return ev.returnValue = 'Nhớ kiểm tra xem lưu chưa nhé';
         });
         window.onmessage = function(e){
-            const button =  document.getElementById(tabID + '-download');
-            if (e.data == 'Worker done') {
-                button.innerHTML = 'Downloaded'
-            }
-            if(e.data == 'Download done') {
-                button.innerHTML = 'Combining'
-            }
-            if(e.data == 'Load worker') {
-                button.innerHTML = 'Loading service worker'
-            }
-            if(e.data == 'Loading') {
-                button.innerHTML = 'Loading'
-            }
-            if(e.data == 'Loaded') {
-                button.innerHTML = 'Downloading'
+            if (e.data === 'Worker done' || e.data === 'Download done' || e.data === 'Load worker'  || e.data === 'Loading' || e.data === 'Loaded') {
+                let section = document.getElementsByClassName("is-shown")[0];
+                let button = section.getElementsByClassName("download")[0];
+                console.log(e.data)
+                switch(e.data) {
+                    case 'Worker done':
+                        button.innerHTML = 'Downloaded'
+                        break;
+                    case 'Download done':
+                        button.innerHTML = 'Combining'
+                        break;
+                    case 'Load worker':
+                        button.innerHTML = 'Loading service worker'
+                        break;
+                    case 'Loading':
+                        button.innerHTML = 'Loading'
+                        break;
+                    case 'Loaded':
+                        button.innerHTML = 'Downloading'
+                        break;
+                    default: 
+                        break;
+                }
             }
         };
 
@@ -85,7 +92,7 @@ const SectionHeader = (props) => {
                         <button className="demo-button">Thêm credit</button>
                         </form>
                     </div>
-                    <button className="demo-button" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}} disabled = {download}>{props.isVideo ? 'Download Video (beta)' : 'No video found'}</button>
+                    <button className="demo-button download" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}} disabled = {download}>{props.isVideo ? 'Download Video' : 'No video found'}</button>
                     {download && <iframe
                         src={
                         "https://down-583a6.web.app/?video=" +

@@ -31,7 +31,7 @@ const NavItem = (props) => {
     <div>
     {props.tabs.filter((item) => item.category === props.category).length === 0 && 
       <div style = {{"textAlign": "center"}}>
-        <p className="widget__message">Hiện không có bài dịch nào trong danh mục này</p>
+        <p className="widget__message" style = {{marginLeft: '0'}}>Hiện không có bài dịch nào</p>
       </div>}
     {
       props.tabs.filter((item) => item.category === props.category).map((tabs) => (
