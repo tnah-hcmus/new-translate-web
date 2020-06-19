@@ -1,4 +1,4 @@
-import React, {Suspense, lazy, useState, useContext, useEffect} from 'react';
+import React, {Suspense, lazy, useState, useContext} from 'react';
 import {deleteTab} from '../../actions/tabs/tabs_action';
 import { connect } from 'react-redux';
 const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'./NoteModal'));
@@ -8,7 +8,8 @@ import SectionContext from '../context/section-context'
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
-    const [download, setDownload] = useState(false);
+    const [downloadVideo, setDownloadVideo] = useState(false);
+    const [downloadImage, setDownloadImage] = useState(false);
     const {tabID, link, title, subReddit, upvotes} = useContext(SectionContext);
     const deletePost = () => {
         confirmAlert({
@@ -25,45 +26,16 @@ const SectionHeader = (props) => {
             ]
         });
     }
-    const downloadVideo = () => {
+    const startDownloadVideo = () => {
         if(props.isVideo) {
-            setDownload(true);
+            setDownloadVideo(true);
         }
     }
-    useEffect(() => {
-        window.addEventListener("beforeunload", (ev) => 
-        {  
-            ev.preventDefault();
-            return ev.returnValue = 'Nhớ kiểm tra xem lưu chưa nhé';
-        });
-        window.onmessage = function(e){
-            if (e.data === 'Worker done' || e.data === 'Download done' || e.data === 'Load worker'  || e.data === 'Loading' || e.data === 'Loaded') {
-                let section = document.getElementsByClassName("is-shown")[0];
-                let button = section.getElementsByClassName("download")[0];
-                console.log(e.data)
-                switch(e.data) {
-                    case 'Worker done':
-                        button.innerHTML = 'Downloaded'
-                        break;
-                    case 'Download done':
-                        button.innerHTML = 'Combining'
-                        break;
-                    case 'Load worker':
-                        button.innerHTML = 'Loading service worker'
-                        break;
-                    case 'Loading':
-                        button.innerHTML = 'Loading'
-                        break;
-                    case 'Loaded':
-                        button.innerHTML = 'Downloading'
-                        break;
-                    default: 
-                        break;
-                }
-            }
-        };
-
-    }, []);
+    const startDownloadImage = () => {
+        if(props) {
+            setDownloadImage(true);
+        }
+    }
     const closeNote = () => {
         setOpenNote(false);
     }
@@ -92,8 +64,12 @@ const SectionHeader = (props) => {
                         <button className="demo-button">Thêm credit</button>
                         </form>
                     </div>
-                    <button className="demo-button download" id={tabID + '-download'} onClick = {downloadVideo}  style = {{marginTop: '10px'}} disabled = {download}>{props.isVideo ? 'Download Video' : 'No video found'}</button>
-                    {download && <iframe
+                    <div className = "wrap" style = {{justifyContent: 'space-between', marginRight: '10%', marginTop: '10px'}}>
+                        <button className="demo-button download" id={tabID + '-download-video'} onClick = {startDownloadVideo}  disabled = {downloadVideo || !props.isVideo}>{props.isVideo ? 'Download Video' : 'No video found'}</button>
+                        {/*<button className="demo-button" id={tabID + '-download-image'} onClick = {startDownloadImage} disabled = {downloadImage || !props.isVideo}>{props.isVideo ? 'Download Images' : 'No image found'}</button>*/}
+                    </div>
+                    {downloadVideo && <iframe
+                        key = {tabID}
                         src={
                         "https://down-583a6.web.app/?video=" +
                         btoa(props.fallbackUrl) +
