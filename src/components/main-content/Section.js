@@ -313,6 +313,7 @@ class Section extends React.Component {
           isVideo = {this.state.info.isVideo}
           url = {this.state.info.url}
           fallbackUrl = {this.state.info.fallbackUrl}
+          isImage = {this.state.info.isImage}
           previewContent = {this.previewContent}
           savePost = {this.savePost}
           saveNote = {this.saveNote}

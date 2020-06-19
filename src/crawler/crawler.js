@@ -57,7 +57,8 @@ const parseInfo = (postInfo) => {
         "id" : postInfo.id,
         "fallbackUrl": mediaData ? mediaData.fallback_url.split('?')[0] : '',
         "url": postInfo.url,
-        "isVideo": postInfo.is_video
+        "isVideo": postInfo.is_video,
+        "isImage": postInfo.post_hint === "image" || postInfo.domain === "imgur.com"
     };
 }
 
