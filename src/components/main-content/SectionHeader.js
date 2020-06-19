@@ -2,11 +2,10 @@ import React, {Suspense, lazy, useState, useContext} from 'react';
 import {deleteTab} from '../../actions/tabs/tabs_action';
 import { connect } from 'react-redux';
 const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'./NoteModal'));
+import downloadImg from '../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import SectionContext from '../context/section-context'
-import axios from 'axios';
-import JSZip from 'jszip';
+import SectionContext from '../context/section-context';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
@@ -33,86 +32,11 @@ const SectionHeader = (props) => {
             setDownloadVideo(true);
         }
     }
-    const saveAs = (data, name) => {
-        const url = window.URL.createObjectURL(new Blob([data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', name); //or any other extension
-        document.body.appendChild(link);
-        link.click();
-    }
+
     const startDownloadImage = () => {
-        const isHost = (url) => {
-            return url.indexOf(".jpg") !== -1 || url.indexOf(".png") !== -1 
-                || url.indexOf(".gif") !== -1 || url.indexOf(".gifv") !== -1;
-        }
         if(props.url) {
             setDownloadImage(true);
-            const button = document.getElementById(tabID + '-download-image');
-            button.innerHTML = 'Downloading';
-            if (isHost(props.url)) {
-                axios.get('https://young-moon-cab4.tnah-work.workers.dev/?' + props.url,
-                {
-                    responseType: 'arraybuffer',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/png'
-                    }
-                })
-                .then((response) => {
-                    saveAs(response.data, 'RVN_helper_' + tabID + '.png');
-                    button.innerHTML = 'Downloaded';
-                })
-                .catch((error) => console.log(error));
-            } 
-            else if (props.url.startsWith("http://imgur.com/a/") || props.url.startsWith("https://imgur.com/a/")) {
-                let albumID = props.url.substring(props.url.lastIndexOf("/") + 1);
-                axios.get("https://api.imgur.com/3/album/" + albumID,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "authorization": "Client-ID 0d6763dedc73059"
-                    }
-                }).then((response) => {
-                    let zip = new JSZip();
-                    let queue = response.data.data.images.map((image) => {
-                        return axios.get('https://young-moon-cab4.tnah-work.workers.dev/?' + image.link,
-                        {
-                            responseType: 'arraybuffer',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then((response) => {
-                            zip.file(image.id + '.png', response.data, { base64: true });
-                        });                        
-                    });
-                    Promise.all(queue).then(() => {
-                        zip.generateAsync({
-                            type: 'uint8array'
-                        }).then((data) => {
-                            saveAs(data, 'RVN-' + albumID + '.zip');
-                            button.innerHTML = 'Downloaded';
-                        })
-                    })
-                })
-            }
-            else if (props.url.startsWith("http://imgur.com/") || props.url.startsWith("https://imgur.com/")) {
-                var imageID = url.substring(url.lastIndexOf("/") + 1);
-                axios.get("https://api.imgur.com/3/image/" + imageID,
-                {
-                    responseType: 'arraybuffer',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/png',
-                        "authorization": "Client-ID 0d6763dedc73059"
-                    }
-                })
-                .then((response) => {
-                    saveAs(response.data, 'RVN_helper_' + tabID + '.png');
-                    button.innerHTML = 'Downloaded';
-                })
-                .catch((error) => console.log(error));
-            }
+            downloadImg(props.url, tabID);            
         }
     }
     const closeNote = () => {
