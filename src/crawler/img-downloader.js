@@ -1,6 +1,19 @@
 import axios from 'axios';
 import JSZip from 'jszip';
 
+const getFileNameWithExtension = (url) => {
+    var regex = /[^/\\&\?]+\.\w{3,4}(?=[\?&].*$|$)/;
+    var m = regex.exec(url);
+    return m[0];
+}
+
+const getFileExtension = (url) => {
+    var fileNameWithExt = getFileNameWithExtension(url);
+
+    return fileNameWithExt
+        .substring(fileNameWithExt.lastIndexOf("."));
+}
+
 const isHost = (url) => {
     return url.indexOf(".jpg") !== -1 || url.indexOf(".png") !== -1 
         || url.indexOf(".gif") !== -1 || url.indexOf(".gifv") !== -1;
@@ -25,7 +38,7 @@ const downloadImg = async (url, id) => {
                 'Accept': 'application/image/*'
             }
         })
-        saveAs(response.data, 'RVN_helper_' + id);
+        saveAs(response.data, 'RVN-' + id +  getFileExtension(url));
         button.innerHTML = 'Downloaded';
     } 
     else if (url.startsWith("http://imgur.com/a/") || url.startsWith("https://imgur.com/a/")) {
@@ -46,7 +59,7 @@ const downloadImg = async (url, id) => {
                     'Content-Type': 'application/json'
                 }
             }).then((response) => {
-                zip.file(image.id + '.png', response.data, { base64: true });
+                zip.file(image.id + getFileExtension(url), response.data, { base64: true });
             });                        
         });
         await Promise.all(queue);
@@ -61,11 +74,10 @@ const downloadImg = async (url, id) => {
             responseType: 'arraybuffer',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/image/*',
                 "authorization": "Client-ID 0d6763dedc73059"
             }
         })
-        saveAs(response.data, 'RVN_helper_' + id);
+        saveAs(response.data, 'RVN-' + id + getFileExtension(url));
         button.innerHTML = 'Downloaded';
     }
 }

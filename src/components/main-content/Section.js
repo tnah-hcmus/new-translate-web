@@ -226,7 +226,7 @@ class Section extends React.Component {
       content = content.replace(/\r\n$/,'');
       //Thêm note và credit
       if(this.state.note !== '') content = content + this.state.note + endLine + commentSeparator;
-      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | https://rvnweb.site`;
+      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | Edited by https://rvnweb.site`;
       this.setState({
         content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });

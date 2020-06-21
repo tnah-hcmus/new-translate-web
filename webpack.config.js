@@ -25,7 +25,7 @@ module.exports = (env) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Reddit Translate App</title>
+        <title>RVN Editor</title>
         ${htmlWebpackPlugin.tags.headTags}
       </head>
       
@@ -35,7 +35,7 @@ module.exports = (env) => {
         <script src="assets/scripts/demo-btns.js"></script>
         <script src="assets/scripts/nav.js"></script>
       </body>
-
+      
       <script src="/__/firebase/7.14.5/firebase-app.js"></script>
       <script src="/__/firebase/7.14.5/firebase-analytics.js"></script>
       <script src="/__/firebase/init.js"></script>
