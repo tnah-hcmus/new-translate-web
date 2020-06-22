@@ -182,6 +182,7 @@ class Section extends React.Component {
       const transComment = preState.trans;
       if(transComment[id]) {
         preState.trans[id].body = body;
+        this.setState({content: ''});
       }
       return {        
         trans: preState.trans
@@ -214,8 +215,9 @@ class Section extends React.Component {
       //tạo content theo format
       let content = info.subReddit + endLine + info.author + ` (${info.upvotes}${info.awards && ' - '}${info.awards}) ` + endLine;
       let first = trans[info.id] || null;
-      if (first)  content = content + first.body + endLine + commentSeparator + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator + endLine;
+      if (first)  content = content + first.body + endLine + commentSeparator
       else {content = content + commentSeparator};
+      content = content + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator + endLine;
       //DFS trans comment
       for(let id in trans) {
         if(trans[id].level === 1) {
@@ -226,7 +228,7 @@ class Section extends React.Component {
       content = content.replace(/\r\n$/,'');
       //Thêm note và credit
       if(this.state.note !== '') content = content + this.state.note + endLine + commentSeparator;
-      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'} | Edited by https://rvnweb.site`;
+      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'}` + endLine + 'Edited by https://rvnweb.site';
       this.setState({
         content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });
@@ -314,6 +316,7 @@ class Section extends React.Component {
           url = {this.state.info.url}
           fallbackUrl = {this.state.info.fallbackUrl}
           isImage = {this.state.info.isImage}
+          credit = {this.state.credit}
           previewContent = {this.previewContent}
           savePost = {this.savePost}
           saveNote = {this.saveNote}

@@ -78,7 +78,7 @@ const SectionHeader = (props) => {
                         </div>
                         <form style = {{ display: 'flex'}} onSubmit={props.handleSubmitCredit}>
                         <input className="demo-input" name="credit" id = {tabID + '-credit'} aria-label="credit" placeholder="Thêm credit" defaultValue = {''}></input>
-                        <button className="demo-button">Thêm credit</button>
+                        <button className="demo-button">{props.credit === '' ? 'Thêm credit' : 'Sửa credit'}</button>
                         </form>
                     </div>
                     <div className = "wrap" style = {{justifyContent: 'space-between', marginRight: '10%', marginTop: '10px'}}>
