@@ -1,5 +1,5 @@
 import { combineReducers, createStore, applyMiddleware} from 'redux';
-import {loadState, saveState} from './localStorage.js';
+import {loadState, saveState, loadStateDB, saveStateDB} from './storage.js';
 import thunk from 'redux-thunk';
 import {throttle} from 'lodash';
 import tabsReducer from '../reducer/tabsReducer';
@@ -56,9 +56,41 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   credit: creditReducer
 });
+let configState;
+const serializedState = localStorage.getItem('reddit-app-712');
+if (serializedState !== null) {
+  const preState = JSON.parse(serializedState);
+  configState = preState;
+  saveStateDB({
+    tabs: preState.tabs,
+    replies: preState.replies    
+  });
+  saveState({
+    category: preState.category,
+    theme: preState.theme,
+    credit: preState.credit
+  });
+  localStorage.removeItem('reddit-app-712');
+  localStorage.setItem('reddit-app-713', JSON.stringify(preState));
+}
+else {
+  configState = loadState() || {};
+}     
 
-//lấy preState từ localStorage nếu có
-const preState = loadState() || {};
+
+//lấy configState từ localStorage nếu có
+//const configState = loadState() || {};
+
+loadStateDB().then((data) => {
+  store.dispatch({
+    type: 'STATE_TAB',
+    payload: data.tabs
+  });
+  store.dispatch({
+    type: 'STATE_REPLIES',
+    payload: data.replies
+  });
+})
 /*
 console.log(preState);
 //Xóa sau 20 ngày
@@ -71,14 +103,18 @@ console.log(preState);
 */
 
 //Tạo store + gán listener cho mỗi lần thay đổi store -> ghi vào json
-const store = createStore(rootReducer, preState, applyMiddleware(thunk));
+const store = createStore(rootReducer, configState, applyMiddleware(thunk));
+
 store.subscribe(throttle(() => {
+  const save = store.getState();
   saveState({
-    category: store.getState().category,
-    tabs: store.getState().tabs,
-    replies: store.getState().replies,
-    theme: store.getState().theme,
-    credit: store.getState().credit
+    category: save.category,
+    theme: save.theme,
+    credit: save.credit
+  });
+  saveStateDB({
+    tabs: save.tabs,
+    replies: save.replies    
   });
 }, 1000));
 

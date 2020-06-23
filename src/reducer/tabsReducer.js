@@ -50,6 +50,11 @@ const INITIAL_STATE = [
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case 'STATE_TAB':
+        if(action.payload) {
+          return [ ...state, ...action.payload];
+        }
+        else return state;
     case ADD_TAB:
         if(state.filter((item) => item.link === action.payload.link).length === 0 || (action.payload.link === '')) {
           return [ ...state, action.payload];

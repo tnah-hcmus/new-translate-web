@@ -9,6 +9,11 @@ const INITIAL_STATE = {};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case 'STATE_REPLIES':
+        if(action.payload) {
+          return { ...state, ...action.payload};
+        }
+        else return state;
     case ADD_REPLIES:
         if(state[action.payload.tabID]) {
             state[action.payload.tabID][action.payload.id] = action.payload.replies;
