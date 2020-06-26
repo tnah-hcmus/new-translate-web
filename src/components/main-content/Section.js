@@ -1,6 +1,7 @@
 import React, {Suspense, lazy} from 'react';
 import { connect } from 'react-redux';
-import {crawler} from '../../crawler/crawler';
+import {crawler, crawlerPopularPost} from '../../crawler/crawler';
+import SuggestPost from '../main-content/SuggestPost';
 import {addCategory} from '../../actions/tabs/category_action'
 import {addTab, deleteTab, updateComments, updateTab} from '../../actions/tabs/tabs_action'
 import {setCredit} from '../../actions/credit/credit_action';
@@ -11,9 +12,11 @@ const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'
 const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'./PreviewModal'));
 import InputContext from '../context/input-context';
 import SectionContext from '../context/section-context';
+import HistoryContext from '../context/history-context';
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
+  static contextType = HistoryContext;
   state = {
     link: '',
     info: {},
@@ -21,12 +24,14 @@ class Section extends React.Component {
     trans: {},
     content: '',
     credit: '',
-    note: ''
+    note: '',
+    suggest: []
   }
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
   componentDidMount(){
+    const present = this.context.state.present;
     //Nếu có credit
     if(this.props.credit !== '') {
       this.setState({credit: this.props.credit});
@@ -58,13 +63,18 @@ class Section extends React.Component {
       // nếu không có nội dung -> không restore -> không hiện loading -> hiện thẳng panel comment}
       document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
       document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
+      crawlerPopularPost().then((data) => {
+        this.setState({suggest: data});
+      })
     };
+    if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
 
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
   handleSubmitLink = (event) => {
     event.preventDefault();
     const link = event.target.elements.link.value.trim() + '/';
+    this.setState({suggest: []})
     let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}");
     if(regex.test(link))
     {
@@ -297,6 +307,10 @@ class Section extends React.Component {
         document.getElementById('button-' + data.id).click();
       }
       else {
+        const button = document.getElementById(this.props.tab.id + '-save');
+        button.innerHTML = 'Saving';
+        setTimeout(() => {button.innerHTML = 'Saved'}, 2000);
+        setTimeout(() => {button.innerHTML = 'Save'}, 2200);
         this.props.updateTab(this.props.tab.id, data); //Nếu không, không tạo tab mới -> cập nhật lại comment, title trên tab cũ
         if(this.props.tab.id !== data.id) this.props.replaceTabID(this.props.tab.id, data.id);
       }
@@ -332,13 +346,14 @@ class Section extends React.Component {
                 author = {this.state.info.author}
                 awards = {this.state.info.awards}
                 content = {this.state.info.text}
+                savePost = {this.savePost}
            />
           </Suspense>
           </div>
           <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div className = "panel" id={this.props.tab.id+'panel'}>
           {this.state.comments.length !== 0 && <input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" defaultValue = {''} onChange = {this.searchComment} ></input>}
-          {this.state.comments.length === 0 && <p className="widget__message">Hãy thêm link bài viết vào</p>}
+          {this.state.comments.length === 0 && <p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>}
               {
                 this.state.comments.map((rootComment, index) => (
                   <CommentPreview
@@ -346,11 +361,23 @@ class Section extends React.Component {
                     info = {rootComment}
                     parent = {[]}
                     tabID = {this.props.tab.id}
+                    savePost = {this.savePost}
                   />
                 ))
               }
           </div>
         </InputContext.Provider>
+        {
+          this.state.suggest.map((post) => (
+            <SuggestPost
+              subReddit = {post.subReddit}
+              awards = {post.awards}
+              shortenLink = {post.shortenLink}
+              upvotes = {post.upvotes}
+              author = {post.author}
+              title = {post.title}
+            />)) 
+        }
         <Suspense fallback = {<div></div>} key = {this.state.info.id + '-modal-suspense'}>
           <PreviewModal
           key = {this.state.info.id + '-modal'}

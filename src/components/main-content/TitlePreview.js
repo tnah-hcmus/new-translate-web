@@ -23,6 +23,7 @@ const TitlePreview = (props) => {
     }
     const handleBlur = (e) => {
         editTransComment(id, e.target.value);
+        props.savePost();
     }
     return (
         <div className="demo">

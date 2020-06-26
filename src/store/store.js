@@ -71,7 +71,6 @@ if (serializedState !== null) {
     credit: preState.credit
   });
   localStorage.removeItem('reddit-app-712');
-  localStorage.setItem('reddit-app-713', JSON.stringify(preState));
 }
 else {
   configState = loadState() || {};

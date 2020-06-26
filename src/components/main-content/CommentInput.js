@@ -13,6 +13,7 @@ const CommentInput = (props) => {
     }
     const handleBlur = (e) => {
         editTransComment(props.name, e.target.value);
+        props.savePost();
     }
     return (
         <div className = {props.active ? "demo-input-box demo-input-box-display": "demo-input-box" }>

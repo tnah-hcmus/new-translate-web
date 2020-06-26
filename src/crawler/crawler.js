@@ -99,5 +99,14 @@ const crawler = async (url) => {
     let allComments = response.data[1].data.children;
     return [parseInfo(postInfo), parseComment(allComments, '')];
 };
-export {crawler, crawlReplies};
+
+
+const crawlerPopularPost = async () => {
+    const response = await axios.get('https://www.reddit.com/.json');
+    let allPost = response.data.data.children.map((post) => {
+        return parseInfo(post.data);
+    });
+    return allPost;
+}
+export {crawler, crawlReplies, crawlerPopularPost};
 

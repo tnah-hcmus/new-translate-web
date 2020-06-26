@@ -1,12 +1,16 @@
 import React, {Suspense, lazy}  from 'react';
+import HistoryContext from './context/history-context';
+import useHistory from '../hook/active';
 const Nav = lazy(() => import(/* webpackChunkName: "Nav" */'./nav-bar/Nav'));
 const ContentBoard = lazy(() => import(/* webpackChunkName: "Content" */'./main-content/ContentBoard'));
 const ThemeButton = lazy(() => import(/* webpackChunkName: "ThemeButton" */'./ThemeButton'));
 const ToggleNav = lazy(() => import(/* webpackChunkName: "ToggleNav" */'./nav-bar/ToggleNav'));
 
 const PracticeApp = (props) => {
+  const [state, { reset, pop, push }] = useHistory();
     return (
       <>
+      <HistoryContext.Provider value = {{state: state, reset: reset, push: push, pop: pop }}>
         <Suspense fallback={<div></div>}>
          <ThemeButton/>
         </Suspense>
@@ -22,6 +26,7 @@ const PracticeApp = (props) => {
         <Suspense fallback={<div></div>}>
           <ContentBoard/>
         </Suspense>
+      </HistoryContext.Provider>
       </>
     );
 }

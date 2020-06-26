@@ -97,6 +97,7 @@ const CommentPreview = (props) => {
           level = {(props.info.prefixed.match(/>/g) || []).length + 1} 
           description = {` (${props.info.upvotes}${props.info.awards && ' - '}${props.info.awards})`}
           prefixed = {props.info.prefixed}
+          savePost = {props.savePost}
           />
         </div>
         <div className = {!isShowComment ? 'no-display' : ''}>

@@ -27,20 +27,6 @@ const SectionHeader = (props) => {
             ]
         });
     }
-    useEffect(() => {
-        confirmAlert({
-            title: 'Thông báo nhỏ',
-            message: 'Tool sẽ chính thức kết thúc open beta và chuyển về tên miền chính thức rvnweb.site vào ngày 24/06/2020, domain reddit-translate.web.app sẽ ngưng hoạt động. Các bạn nhớ lưu bài và sẵn sàng chuyển nhà nhé :>',
-            buttons: [
-                {
-                label: 'Lưu ngay!',
-                },
-                {
-                label: 'Mình biết rồi.'
-                }
-            ]
-          });
-    }, [])
     const startDownloadVideo = () => {
         if(props.isVideo) {
             setDownloadVideo(true);
