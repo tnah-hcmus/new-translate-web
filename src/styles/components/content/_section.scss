@@ -87,6 +87,10 @@
         font-weight: 100;
         text-decoration: none;
         margin-bottom: 10px;
+        border-bottom: none;
+        &:hover {
+          color: var(--font-color);
+        }
       }
       margin-bottom: 0.5em;
       border-bottom: 2px solid var(--border-color);

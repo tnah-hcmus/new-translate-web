@@ -78,12 +78,14 @@ class Section extends React.Component {
     let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}");
     if(regex.test(link))
     {
-      crawler(link.replace(/\?[^?]+$/,'')).then((result) => {
+      crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
         this.setState({
           link: link.replace(/\?[^?]+$/,''),
           info: result[0],
           comments: result[1]
         })
+        await this.sleep(1000);
+        this.savePost();
       })
     }
     else {
@@ -303,7 +305,7 @@ class Section extends React.Component {
         this.props.deleteTab(this.props.tab.id, this.props.tab.category);
         this.props.replaceTabID(this.props.tab.id, data.id);
         this.props.addTab(data);
-        await this.sleep(500);
+        await this.sleep(1000);
         document.getElementById('button-' + data.id).click();
       }
       else {
@@ -347,6 +349,10 @@ class Section extends React.Component {
                 awards = {this.state.info.awards}
                 content = {this.state.info.text}
                 savePost = {this.savePost}
+                isVideo = {this.state.info.isVideo}
+                url = {this.state.info.url}
+                fallbackUrl = {this.state.info.fallbackUrl}
+                isImage = {this.state.info.isImage}
            />
           </Suspense>
           </div>

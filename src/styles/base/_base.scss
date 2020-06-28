@@ -42,11 +42,6 @@ html {
       outline: none;
       color: var(--color-link);
 
-      &[target],
-      &[href^="https://"],
-      &[href^="http://"] {
-        border-bottom: 1px solid;
-      }
 
       &:hover, &:focus {
         border-bottom: none;

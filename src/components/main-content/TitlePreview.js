@@ -26,8 +26,8 @@ const TitlePreview = (props) => {
         props.savePost();
     }
     return (
-        <div className="demo">
-          <div className="demo-wrapper">
+        <div className="demo" style = {{display: "flex", flexDirection: "column"}}>
+          <div className="demo-wrapper"  style = {{margin: "0"}}>
           <div className = "title-wrapper">
             <p>{subReddit}</p>
             {props.author}
@@ -49,6 +49,14 @@ const TitlePreview = (props) => {
             </div>
           </div>
         </div>
+        {props.isImage && <img src = {props.url} style = {{margin: "0 auto"}}></img>}
+        {props.isVideo && 
+        <video id= {id + "-video"} className = "video" controls muted>
+            <audio id= {id + "-audio"} className = "audio" controls>
+                <source src={props.url + '/audio'} type="audio/mpeg"/>
+            </audio>
+            <source src= {props.fallbackUrl} type="video/mp4"/>
+        </video>}
        </div>
     )
 }
