@@ -35,5 +35,5 @@ export const loadStateDB = async () => {
   return await localDB.getItem('reddit-app-712');
 };
 export const saveStateDB = (state) => {
-  localDB.setItem('reddit-app-712', state);
+  if(state.tabs.length !== 0)  localDB.setItem('reddit-app-712', state);
 };

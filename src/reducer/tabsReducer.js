@@ -14,8 +14,19 @@ const createID = () => {
   });
   return guid;
 }
-
-const INITIAL_STATE = [
+const INITIAL_STATE = [];
+const BASE_STATE = [
+  {
+    id: createID(),
+    category: "blank",
+    title : "Tab này chưa có bài dịch nào",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: '',
+    note: '',
+    credit: '',
+    trans: null,
+    info: null 
+  },
   /*
   {
     id: createID(),
@@ -75,11 +86,13 @@ export default (state = INITIAL_STATE, action) => {
             return item;
           });
     case REMOVE_TAB:
-        return state.filter((item) => {
+        const result = state.filter((item) => {
         return item.id !== action.payload.id || item.category !== action.payload.category;
-      })
+        });
+        if(result.length > 0) return result;
+        else return BASE_STATE;
     case REMOVE_ALL_TABS:
-      return INITIAL_STATE;
+      return BASE_STATE;
     default:
       return state;
   }

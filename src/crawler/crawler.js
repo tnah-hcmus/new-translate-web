@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 //Format ký tự đặc biệt
 const parseContent = (data) => {
     let parser = new DOMParser;
@@ -58,7 +57,8 @@ const parseInfo = (postInfo) => {
         "fallbackUrl": mediaData ? mediaData.fallback_url.split('?')[0] : '',
         "url": postInfo.url,
         "isVideo": postInfo.is_video,
-        "isImage": postInfo.post_hint === "image" || postInfo.domain === "imgur.com"
+        "isImage": postInfo.post_hint === "image" || postInfo.domain === "imgur.com",
+        "link": 'https://www.reddit.com'+ postInfo.permalink
     };
 }
 
@@ -76,7 +76,7 @@ const parseComment = (comments, prefixed) => {
                     "parent": item.data.parent_id.slice(3,item.data.parent_id.length),
                     "prefixed": prefixed,
                     "content": item.data.body,
-                    "replies": (item.data.replies !== "") ? '/'+item.data.id : "none"
+                    "replies": (item.data.replies !== "") ? '/'+item.data.id : "none",
                 }
             }
         });
@@ -94,7 +94,12 @@ const crawlReplies = async (url, idComment, prefixed, parent) => {
 
 //Hàm thu thập thông tin của 1 post trả về comment (root) và info của post đó
 const crawler = async (url) => {
-    const response = await axios.get(url.replace(/(\/+)$/,'') + '.json');
+    url = url.replace(/(\/+)$/,'');
+    let regex = new RegExp("(?!www)redd.it\/[^\s]{2,}");
+    if(regex.test(url)) {
+        url = url.replace(/redd.it/, 'www.reddit.com');        
+    }
+    const response = await axios.get(url + '.json');
     let postInfo = response.data[0].data.children[0].data;
     let allComments = response.data[1].data.children;
     return [parseInfo(postInfo), parseComment(allComments, '')];

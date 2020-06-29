@@ -23,6 +23,7 @@ const ThemeButton = (props) => {
         root.style.setProperty('--bg-input-color', '#3d4247')
         root.style.setProperty('--nav-hover', 'hsla(0,0%,22%,.9)')
         root.style.setProperty('--overlay', 'rgba(64, 61, 61, 0.75)')
+        root.style.setProperty('--alert-overlay', 'rgba(0, 0, 0, 0.9)')
         if(props.color === '') {
             root.style.setProperty('--color-accent', '#7b8ed8')
             root.style.setProperty('--em-font-color', '#7b8ed8')
@@ -41,6 +42,7 @@ const ThemeButton = (props) => {
         root.style.setProperty('--bg-input-color', 'hsl(0,0%,96%)')
         root.style.setProperty('--nav-hover', 'hsla(0,0%,0%,.1)')
         root.style.setProperty('--overlay', 'rgba(255, 255, 255, 0.75)')
+        root.style.setProperty('--alert-overlay', 'rgba(255, 255, 255, 0.9)')
         if(props.color === '') {
             root.style.setProperty('--color-accent', 'hsl(222, 53%, 50%)')
             root.style.setProperty('--em-font-color', 'hsl(222, 53%, 50%)')

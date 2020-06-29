@@ -56,29 +56,10 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   credit: creditReducer
 });
-let configState;
-const serializedState = localStorage.getItem('reddit-app-712');
-if (serializedState !== null) {
-  const preState = JSON.parse(serializedState);
-  configState = preState;
-  saveStateDB({
-    tabs: preState.tabs,
-    replies: preState.replies    
-  });
-  saveState({
-    category: preState.category,
-    theme: preState.theme,
-    credit: preState.credit
-  });
-  localStorage.removeItem('reddit-app-712');
-}
-else {
-  configState = loadState() || {};
-}     
 
 
 //lấy configState từ localStorage nếu có
-//const configState = loadState() || {};
+const configState = loadState() || {};
 
 loadStateDB().then((data) => {
   store.dispatch({

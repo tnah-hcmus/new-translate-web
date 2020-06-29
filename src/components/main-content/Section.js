@@ -75,12 +75,17 @@ class Section extends React.Component {
     event.preventDefault();
     const link = event.target.elements.link.value.trim() + '/';
     this.setState({suggest: []})
-    let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}");
+    let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|(?!www)redd.it\/[^\s]{2,}")
     if(regex.test(link))
     {
+      let regex2 = new RegExp("(?!www)redd.it\/[^\s]{2,}");
+      let flag = false;
+      if(regex2.test(link)) {
+        flag = true; 
+      }
       crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
         this.setState({
-          link: link.replace(/\?[^?]+$/,''),
+          link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
           info: result[0],
           comments: result[1]
         })
