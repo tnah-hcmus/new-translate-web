@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
-import InputContext from '../context/input-context';
-import SectionContext from '../context/section-context';
+import InputContext from '../../../context/input-context';
+import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
 
 const TitlePreview = (props) => {

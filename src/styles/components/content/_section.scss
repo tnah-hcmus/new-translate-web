@@ -148,7 +148,18 @@
       margin-left:-40%;
   }
 }
-
+.pop-over {
+  font-size: inherit;
+  box-sizing: border-box;
+  width: -moz-max-content;
+  height: -moz-max-content;
+  max-width: 30%;
+  max-height: 100%;
+  background-color: var(--main-color);
+  color: var(--font-color);
+  padding: 0.5em;
+  border: 1px solid var(--color-accent);
+}
 /*Confirm Alert Box*/
 .react-confirm-alert{
   $parent: &;

@@ -1,11 +1,11 @@
 import React, {Suspense, lazy, useState, useContext, useEffect} from 'react';
-import {deleteTab} from '../../actions/tabs/tabs_action';
+import {deleteTab} from '../../../actions/tabs/tabs_action';
 import { connect } from 'react-redux';
-const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'./NoteModal'));
-import downloadImg from '../../crawler/img-downloader';
+const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'../modal/NoteModal'));
+import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import SectionContext from '../context/section-context';
+import SectionContext from '../../../context/section-context';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import HistoryContext from '../context/history-context';
+import HistoryContext from '../../context/history-context';
 
 //Component tương ứng với 1 tab thuộc category, nhận vào id và tên của tab (title của bài dịch)
 const NavButton = (props) => {

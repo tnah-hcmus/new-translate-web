@@ -2,10 +2,10 @@ import React, {useState, useEffect, useContext} from 'react';
 import { connect } from 'react-redux';
 import CommentPanel from './CommentPanel';
 import CommentInput from './CommentInput';
-import {crawlReplies} from '../../crawler/crawler';
-import {addReplies, deleteReplies} from '../../actions/replies/replies_action';
-import SectionContext from '../context/section-context';
-import InputContext from '../context/input-context';
+import {crawlReplies} from '../../../crawler/crawler';
+import {addReplies, deleteReplies} from '../../../actions/replies/replies_action';
+import SectionContext from '../../../context/section-context';
+import InputContext from '../../../context/input-context';
 
 const CommentPreview = (props) => {
   const [isOpen, setOpen] = useState(false);

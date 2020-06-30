@@ -1,12 +1,25 @@
-import React, {Suspense, lazy, useEffect} from 'react';
-const Section = lazy(() => import(/* webpackChunkName: "Section" */'./Section.js'));
+import React, {Suspense, lazy, useEffect, useRef, useState} from 'react';
+const Section = lazy(() => import(/* webpackChunkName: "Section" */'./section/Section.js'));
 const GuidePanel = lazy(() => import(/* webpackChunkName: "Guide" */'./GuidePanel.js'));
 import { connect } from 'react-redux';
+import translate from './trans-button/translate';
 
 //Main-content div, nhận vào danh sách tất cả các tab hiện có -> render thành section, props: tabs (get from Store)
 
 const ContentBoard = (props) => {
+  const getSelectionText = () => {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return text;
+  }
   useEffect(() => {
+    document.onmouseup = function() {
+      if(document.getElementById("popover")) translate(getSelectionText()).then((result) => document.getElementById("popover").innerHTML = result.resultText); 
+    };
     window.onmessage = (e) => {
         if (e.data === 'Worker done' || e.data === 'Download done' || e.data === 'Load worker'  || e.data === 'Loading' || e.data === 'Loaded') {
             let section = document.getElementsByClassName("is-shown")[0];
@@ -34,6 +47,7 @@ const ContentBoard = (props) => {
     };
   }, []);
   return (
+  <>
     <main className="content js-content">
       {props.tabs.length === 0 && <p className="widget__message"></p>}
       {
@@ -58,6 +72,7 @@ const ContentBoard = (props) => {
         })
       }
     </main>
+  </>
   )
 }
 

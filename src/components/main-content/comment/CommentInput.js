@@ -1,9 +1,10 @@
 import React, {useContext} from 'react';
-import InputContext from '../context/input-context';
+import InputContext from '../../../context/input-context';
 
 
 const CommentInput = (props) => {
     const {addTransComment, editTransComment} = useContext(InputContext);
+
     const handleKeyDown = (e) => {
         e.target.style.height = '100%';
         e.target.style.height = `${e.target.scrollHeight}px`;

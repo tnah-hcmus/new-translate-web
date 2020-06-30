@@ -1,18 +1,18 @@
 import React, {Suspense, lazy} from 'react';
 import { connect } from 'react-redux';
-import {crawler, crawlerPopularPost} from '../../crawler/crawler';
-import SuggestPost from '../main-content/SuggestPost';
-import {addCategory} from '../../actions/tabs/category_action'
-import {addTab, deleteTab, updateComments, updateTab} from '../../actions/tabs/tabs_action'
-import {setCredit} from '../../actions/credit/credit_action';
-import {replaceTabID} from '../../actions/replies/replies_action';
-import CommentPreview from '../main-content/CommentPreview'
+import {crawler, crawlerPopularPost} from '../../../crawler/crawler';
+import SuggestPost from './SuggestPost';
+import {addCategory} from '../../../actions/tabs/category_action'
+import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tabs/tabs_action'
+import {setCredit} from '../../../actions/credit/credit_action';
+import {replaceTabID} from '../../../actions/replies/replies_action';
+import CommentPreview from '../comment/CommentPreview'
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
-const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'./PreviewModal'));
-import InputContext from '../context/input-context';
-import SectionContext from '../context/section-context';
-import HistoryContext from '../context/history-context';
+const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'../modal/PreviewModal'));
+import InputContext from '../../../context/input-context';
+import SectionContext from '../../../context/section-context';
+import HistoryContext from '../../../context/history-context';
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
@@ -25,7 +25,9 @@ class Section extends React.Component {
     content: '',
     credit: '',
     note: '',
-    suggest: []
+    suggest: [],
+    popover: false,
+    transText: 'Đang dịch'
   }
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
@@ -69,7 +71,6 @@ class Section extends React.Component {
     };
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
-
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
   handleSubmitLink = (event) => {
     event.preventDefault();
@@ -397,7 +398,7 @@ class Section extends React.Component {
           clear = {this.clearPreview}
           />  
         </Suspense>        
-    </SectionContext.Provider>
+      </SectionContext.Provider>
       </section>
     )
   }
