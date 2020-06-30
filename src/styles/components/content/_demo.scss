@@ -198,8 +198,8 @@
     font: inherit;
     font-size: 1.2em;
     padding: .4em 1.2em;
-    color: inherit;
-    background-color: transparent;
+    color: var(--main-color);
+    background-color: var(--color-accent) !important;
 
     &:focus {
       outline: none;

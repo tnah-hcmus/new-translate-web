@@ -33,9 +33,10 @@ const PracticeApp = (props) => {
           <Popover 
         selectionRef={ref} 
         isOpen={popover}
-        onTextSelect={async () => { if(document.getElementById("popover")) document.getElementById("popover").style.opacity = 1; }}
+        onTextSelect={() => { if(document.getElementById("popover")) document.getElementById("popover").style.opacity = 1; }}
         onTextUnselect={() => { if(document.getElementById("popover")) document.getElementById("popover").style.opacity = 0; }}
-        placementStrategy={placeRightBelow}>
+        placementStrategy={placeRightBelow}
+        style = {{position: "absolute"}}>
         <div className = "pop-over" id = "popover">
           Đang dịch
         </div>

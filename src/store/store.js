@@ -59,31 +59,34 @@ const rootReducer = combineReducers({
 
 
 //lấy configState từ localStorage nếu có
-const configState = loadState() || {};
+let configState = loadState() || {};
 
-loadStateDB().then((data) => {
-  store.dispatch({
-    type: 'STATE_TAB',
-    payload: data.tabs
-  });
-  store.dispatch({
-    type: 'STATE_REPLIES',
-    payload: data.replies
-  });
-})
-/*
-console.log(preState);
+
 //Xóa sau 20 ngày
-
-if(preState.category.filter((item) => item.name === 'guide').length === 0) {
-  preState.category = [...preState.category, {name:'guide'}];
-  preState.tabs = [...preState.tabs, ...INITIAL_STATE];
+if(!(Object.keys(configState).length === 0 && configState.constructor === Object)) {
+  if(configState.category.filter((item) => item.name === 'guide').length === 0) {
+    configState.category = [...configState.category, {name:'guide'}];
+    configState.tabs = [...INITIAL_STATE];
+  }
+  console.log(configState);
 }
-console.log(preState);
-*/
+
 
 //Tạo store + gán listener cho mỗi lần thay đổi store -> ghi vào json
 const store = createStore(rootReducer, configState, applyMiddleware(thunk));
+//Pull data from IndexedDB
+loadStateDB().then((data) => {
+  if(data) {
+    store.dispatch({
+      type: 'STATE_TAB',
+      payload: data.tabs.filter((tab) => tab.category !== "guide")
+    });
+    store.dispatch({
+      type: 'STATE_REPLIES',
+      payload: data.replies
+    });
+  }
+})
 
 store.subscribe(throttle(() => {
   const save = store.getState();

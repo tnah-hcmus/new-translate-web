@@ -23,7 +23,7 @@ const Nav = (props) => {
               />
           )})
         }
-        {/*<NavItem key='guide' category='guide'/>*/}
+        {<NavItem key='guide' category='guide'/>}
         <ThemePanel/>
         <footer className="nav-footer">
           <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage">From La Mia with love</a></button>

@@ -7,9 +7,9 @@ const INITIAL_STATE = [
   {
     name: "blank"
   },
-  /*{
+  {
     name: "guide"
-  }*/
+  }
 ];
 
 export default (state = INITIAL_STATE, action) => {

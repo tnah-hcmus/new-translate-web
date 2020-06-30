@@ -14,20 +14,7 @@ const createID = () => {
   });
   return guid;
 }
-const INITIAL_STATE = [];
-const BASE_STATE = [
-  {
-    id: createID(),
-    category: "blank",
-    title : "Tab này chưa có bài dịch nào",
-    iconHref: "assets/img/icons.svg#icon-windows",
-    link: '',
-    note: '',
-    credit: '',
-    trans: null,
-    info: null 
-  },
-  /*
+const INITIAL_STATE = [
   {
     id: createID(),
     category: "guide",
@@ -56,7 +43,20 @@ const BASE_STATE = [
     iconHref: "assets/img/icons.svg#icon-windows",
     link: ''
   }
-  */
+  ];
+const BASE_STATE = [
+  {
+    id: createID(),
+    category: "blank",
+    title : "Tab này chưa có bài dịch nào",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: '',
+    note: '',
+    credit: '',
+    trans: null,
+    info: null 
+  },
+  
 ];
 
 export default (state = INITIAL_STATE, action) => {

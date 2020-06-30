@@ -18,7 +18,14 @@ const ContentBoard = (props) => {
   }
   useEffect(() => {
     document.onmouseup = function() {
-      if(document.getElementById("popover")) translate(getSelectionText()).then((result) => document.getElementById("popover").innerHTML = result.resultText); 
+      const sourceText = getSelectionText();
+      const popover = document.getElementById("popover");
+      if (sourceText === "") {
+        if(popover) popover.style.opacity = 0;
+      }
+      else {
+        if(popover) translate(sourceText).then((result) => popover.innerHTML = result.resultText);
+      }
     };
     window.onmessage = (e) => {
         if (e.data === 'Worker done' || e.data === 'Download done' || e.data === 'Load worker'  || e.data === 'Loading' || e.data === 'Loaded') {
