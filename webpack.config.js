@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = (env) => {
   return {
@@ -16,6 +17,7 @@ module.exports = (env) => {
   },
   plugins: [
     new webpack.HashedModuleIdsPlugin(),
+    new Dotenv(),
     //new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,

@@ -5,7 +5,6 @@ import HistoryContext from '../../context/history-context';
 const NavButton = (props) => {
     const showPopup = (id, e) => {
         const active = document.getElementsByClassName('show-popup');
-        console.log(active);
         if(active.length) {active[0].classList.toggle('show-popup')};
         const parent = document.getElementById(id).parentElement;
         parent.classList.add('show-popup');

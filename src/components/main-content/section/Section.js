@@ -33,6 +33,13 @@ class Section extends React.Component {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
   componentDidMount(){
+    const serializedState = localStorage.getItem('rvn-uuid');
+    let uuid;
+    if (serializedState === null) {
+      location.reload();
+    }
+    else uuid = JSON.parse(serializedState);
+    console.log(uuid);
     const present = this.context.state.present;
     //Nếu có credit
     if(this.props.credit !== '') {
@@ -405,7 +412,7 @@ class Section extends React.Component {
 }
 function mapStateToProps(state) {
   return { 
-    credit: state.credit
+    credit: state.credit,
   };
 }
 const mapDispatchToProps = {

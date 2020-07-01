@@ -17,6 +17,14 @@ const createID = () => {
   });
   return guid;
 }
+const _createUUID = () => {
+  let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  let r = Math.random() * 16 | 0,
+  v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  return guid;
+}
 
 const INITIAL_STATE = [
   {
@@ -54,7 +62,7 @@ const rootReducer = combineReducers({
   tabs: tabsReducer,
   replies: repliesReducer,
   theme: themeReducer,
-  credit: creditReducer
+  credit: creditReducer,
 });
 
 
@@ -68,8 +76,13 @@ if(!(Object.keys(configState).length === 0 && configState.constructor === Object
     configState.category = [...configState.category, {name:'guide'}];
     configState.tabs = [...INITIAL_STATE];
   }
-  console.log(configState);
 }
+
+const serializedState = localStorage.getItem('rvn-uuid');
+if (serializedState === null) {
+  localStorage.setItem('rvn-uuid', JSON.stringify(_createUUID()));
+}
+
 
 
 //Tạo store + gán listener cho mỗi lần thay đổi store -> ghi vào json

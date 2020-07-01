@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "firebase": "^7.14.6",
+    "dotenv-webpack": "^1.8.0",
+    "firebase": "^7.15.5",
     "fs": "^0.0.1-security",
     "jszip": "^3.5.0",
     "localforage": "^1.7.4",

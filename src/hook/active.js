@@ -34,8 +34,10 @@ const reducer = (state = initialState, action) => {
         return state;
       }
       if (present) {
+        let newHistory = [...history, present]
+        if(newHistory.length > 5) newHistory = newHistory.slice(0,4);
         return {
-            history: [...history, present],
+            history: newHistory,
             present: newPresent,
           };
       }
