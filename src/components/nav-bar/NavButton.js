@@ -3,9 +3,19 @@ import HistoryContext from '../../context/history-context';
 
 //Component tương ứng với 1 tab thuộc category, nhận vào id và tên của tab (title của bài dịch)
 const NavButton = (props) => {
+    const stopAllYouTubeVideos = () => { 
+        const iframes = document.querySelectorAll('iframe');
+        Array.prototype.forEach.call(iframes, iframe => { 
+          iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', 
+        func: 'pauseVideo' }), '*');
+       });
+    }
     const showPopup = (id, e) => {
         const active = document.getElementsByClassName('show-popup');
-        if(active.length) {active[0].classList.toggle('show-popup')};
+        if(active.length) {
+            stopAllYouTubeVideos();
+            active[0].classList.toggle('show-popup');
+        };
         const parent = document.getElementById(id).parentElement;
         parent.classList.add('show-popup');
     }

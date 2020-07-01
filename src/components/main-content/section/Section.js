@@ -81,9 +81,11 @@ class Section extends React.Component {
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
   handleSubmitLink = (event) => {
     event.preventDefault();
-    const link = event.target.elements.link.value.trim() + '/';
+    let link = event.target.elements.link.value.trim() + '/';
     this.setState({suggest: []})
-    let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|(?!www)redd.it\/[^\s]{2,}")
+    let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|(?!www)redd.it\/[^\s]{2,}");
+    let wwwRegex = new RegExp("https?:\/\/reddit\.[^\s]{2,}");
+    if(wwwRegex.test(link)) link = link.replace(/reddit/, 'www.reddit');
     if(regex.test(link))
     {
       let regex2 = new RegExp("(?!www)redd.it\/[^\s]{2,}");

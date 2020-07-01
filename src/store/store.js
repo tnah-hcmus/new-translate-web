@@ -94,6 +94,9 @@ loadStateDB().then((data) => {
       type: 'STATE_TAB',
       payload: data.tabs.filter((tab) => tab.category !== "guide")
     });
+    if(Object.keys(data.replies).length !== data.tabs.filter((tab) => (tab.category !== "guide" && tab.category !== "blank")).length) {
+      data.replies = {};
+    }
     store.dispatch({
       type: 'STATE_REPLIES',
       payload: data.replies
@@ -109,8 +112,8 @@ store.subscribe(throttle(() => {
     credit: save.credit
   });
   saveStateDB({
-    tabs: save.tabs,
-    replies: save.replies    
+    tabs: save.tabs.filter((tab) => tab.category !== "guide"),
+    replies: save.replies
   });
 }, 1000));
 

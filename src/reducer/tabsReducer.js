@@ -20,28 +20,28 @@ const INITIAL_STATE = [
     category: "guide",
     title : "Quản lý tab dịch",
     iconHref: "assets/img/icons.svg#icon-windows",
-    link: 'https://www.youtube.com/embed/Tg1VcwH3gpY'
+    link: 'https://www.youtube.com/embed/nuOvZai5Rqw?enablejsapi=1'
   },
   {
     id: createID(),
     category: "guide",
     title : "Hướng dẫn dịch bài",
     iconHref: "assets/img/icons.svg#icon-windows",
-    link: ''
+    link: 'https://www.youtube.com/embed/_Elq-h9ecFE?enablejsapi=1'
   },
   {
     id: createID(),
     category: "guide",
     title : "Quản lý comment",
     iconHref: "assets/img/icons.svg#icon-windows",
-    link: ''
+    link: 'https://www.youtube.com/embed/JKWiIAYWRw0?enablejsapi=1'
   },
   {
     id: createID(),
     category: "guide",
     title : "Thay đổi giao diện",
     iconHref: "assets/img/icons.svg#icon-windows",
-    link: ''
+    link: 'https://www.youtube.com/embed/bwryPI_W_bI?enablejsapi=1'
   }
   ];
 const BASE_STATE = [
@@ -56,7 +56,34 @@ const BASE_STATE = [
     trans: null,
     info: null 
   },
-  
+  {
+    id: createID(),
+    category: "guide",
+    title : "Quản lý tab dịch",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: 'https://www.youtube.com/embed/nuOvZai5Rqw?enablejsapi=1'
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Hướng dẫn dịch bài",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: 'https://www.youtube.com/embed/_Elq-h9ecFE?enablejsapi=1'
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Quản lý comment",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: 'https://www.youtube.com/embed/JKWiIAYWRw0?enablejsapi=1'
+  },
+  {
+    id: createID(),
+    category: "guide",
+    title : "Thay đổi giao diện",
+    iconHref: "assets/img/icons.svg#icon-windows",
+    link: 'https://www.youtube.com/embed/bwryPI_W_bI?enablejsapi=1'
+  }
 ];
 
 export default (state = INITIAL_STATE, action) => {
@@ -89,7 +116,7 @@ export default (state = INITIAL_STATE, action) => {
         const result = state.filter((item) => {
         return item.id !== action.payload.id || item.category !== action.payload.category;
         });
-        if(result.length > 0) return result;
+        if(result.length > 4) return result;
         else return BASE_STATE;
     case REMOVE_ALL_TABS:
       return BASE_STATE;

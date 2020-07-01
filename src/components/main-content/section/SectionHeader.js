@@ -1,5 +1,6 @@
 import React, {Suspense, lazy, useState, useContext, useEffect} from 'react';
 import {deleteTab} from '../../../actions/tabs/tabs_action';
+import {deleteAllReplies} from '../../../actions/replies/replies_action';
 import { connect } from 'react-redux';
 const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'../modal/NoteModal'));
 import downloadImg from '../../../crawler/img-downloader';
@@ -19,7 +20,7 @@ const SectionHeader = (props) => {
             buttons: [
                 {
                 label: 'Xoá',
-                onClick: () =>  props.deleteTab(tabID, props.category)
+                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID);}
                 },
                 {
                 label: 'Mình nhầm'
@@ -96,6 +97,6 @@ const SectionHeader = (props) => {
         )
 }
 const mapDispatchToProps = {
-    deleteTab
+    deleteTab, deleteAllReplies
   }
 export default connect(null, mapDispatchToProps)(SectionHeader);

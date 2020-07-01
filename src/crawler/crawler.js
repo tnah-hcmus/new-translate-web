@@ -96,6 +96,8 @@ const crawlReplies = async (url, idComment, prefixed, parent) => {
 const crawler = async (url) => {
     url = url.replace(/(\/+)$/,'');
     let regex = new RegExp("(?!www)redd.it\/[^\s]{2,}");
+    let wwwRegex = new RegExp("https?:\/\/reddit\.[^\s]{2,}");
+    if(wwwRegex.test(url)) url = url.replace(/reddit/, 'www.reddit');
     if(regex.test(url)) {
         url = url.replace(/redd.it/, 'www.reddit.com');        
     }
