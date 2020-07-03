@@ -12,8 +12,14 @@ const config = {
 
 firebase.initializeApp(config);
 const database = firebase.database();
-const savePost = (id, data) => {
-    database.ref(id).set({data: data});
+const saveToCloud = (id, uuid, data) => {
+    database.ref(id).child(uuid).set(data);
+}
+const getFromCloud = (id) => {
+    database.ref(id).once('value').then((snapshot) => {
+        console.log(snapshot.val());
+    });
+      
 }
  
-export {firebase, savePost, database as default }
+export {firebase, saveToCloud, getFromCloud, database as default }

@@ -70,6 +70,7 @@ const SectionHeader = (props) => {
                     </div>
                     <div className = "wrap" style = {{justifyContent: 'space-between', marginRight: '10%', marginTop: '10px'}}>
                         <button className="demo-button download" id={tabID + '-download-video'} onClick = {startDownloadVideo}  disabled = {downloadVideo || !props.isVideo}>{props.isVideo ? 'Download Video' : 'No video found'}</button>
+                        <button className="demo-button download" id={tabID + '-g-trans'} onClick = {() => {props.setHelper(props.helper ? false : true); props.setGoogleHelper();}}>{props.helper ? 'Translator helper: ON' : 'Translator helper: OFF'}</button>
                         <button className="demo-button" id={tabID + '-download-image'} onClick = {startDownloadImage} disabled = {downloadImage || !props.isImage}>{props.isImage ? 'Download Image' : 'No image found'}</button>
                     </div>
                     {downloadVideo && <iframe

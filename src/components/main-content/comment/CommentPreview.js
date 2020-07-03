@@ -27,6 +27,7 @@ const CommentPreview = (props) => {
             tabID = {tabID}
             raw_replies = {props.raw_replies}
             addReplies = {props.addReplies}
+            savePost = {props.savePost}
           />
         )) ])
       }
@@ -64,6 +65,7 @@ const CommentPreview = (props) => {
           tabID = {tabID}
           raw_replies = {props.raw_replies}
           addReplies = {props.addReplies}
+          savePost = {props.savePost}
         />
       )) ])
     })

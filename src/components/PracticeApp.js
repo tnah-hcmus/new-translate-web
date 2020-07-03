@@ -11,7 +11,13 @@ import placeRightBelow from 'react-text-selection-popover/lib/placeRightBelow';
 const PracticeApp = (props) => {
   const [state, { reset, pop, push }] = useHistory();
   const ref = useRef(null);
-  const [popover] = useState(true)
+  const [popover, setPopover] = useState(false);
+  let uuid;
+  const serializedState = localStorage.getItem('rvn-uuid');
+  if (serializedState === null) {
+      location.reload();
+  }
+  else uuid = JSON.parse(serializedState);
     return (
       <div ref={ref} className = "wrap">
       <HistoryContext.Provider value = {{state: state, reset: reset, push: push, pop: pop }}>
@@ -28,7 +34,10 @@ const PracticeApp = (props) => {
           <ToggleNav/>
         </Suspense>
         <Suspense fallback={<div></div>}>
-          <ContentBoard/>
+          <ContentBoard
+            uuid = {uuid}
+            setPopover = {setPopover}
+          />
         </Suspense>
           <Popover 
         selectionRef={ref} 
@@ -38,7 +47,7 @@ const PracticeApp = (props) => {
         placementStrategy={placeRightBelow}
         style = {{position: "absolute"}}>
         <div className = "pop-over" id = "popover">
-          Đang dịch
+          Sẵn sàng dịch
         </div>
         </Popover>
       </HistoryContext.Provider>

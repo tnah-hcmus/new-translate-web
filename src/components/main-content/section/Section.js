@@ -6,14 +6,16 @@ import {addCategory} from '../../../actions/tabs/category_action'
 import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tabs/tabs_action'
 import {setCredit} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
-import CommentPreview from '../comment/CommentPreview'
+import CommentPreview from '../comment/CommentPreview';
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
 const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'../modal/PreviewModal'));
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import HistoryContext from '../../../context/history-context';
-
+import {saveToCloud, getFromCloud} from '../../../firebase/firebase';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -33,13 +35,6 @@ class Section extends React.Component {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
   componentDidMount(){
-    const serializedState = localStorage.getItem('rvn-uuid');
-    let uuid;
-    if (serializedState === null) {
-      location.reload();
-    }
-    else uuid = JSON.parse(serializedState);
-    console.log(uuid);
     const present = this.context.state.present;
     //Nếu có credit
     if(this.props.credit !== '') {
@@ -88,20 +83,56 @@ class Section extends React.Component {
     if(wwwRegex.test(link)) link = link.replace(/reddit/, 'www.reddit');
     if(regex.test(link))
     {
+      let id;
       let regex2 = new RegExp("(?!www)redd.it\/[^\s]{2,}");
       let flag = false;
       if(regex2.test(link)) {
+        let getIDRegex = new RegExp("redd.it\/([a-zA-z0-9]*)");
+        id = link.match(getIDRegex)[1];
         flag = true; 
       }
-      crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
-        this.setState({
-          link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
-          info: result[0],
-          comments: result[1]
-        })
-        await this.sleep(1000);
-        this.savePost();
-      })
+      let getIDRegex = new RegExp("comments\/([a-zA-z0-9]*)");
+      id = link.match(getIDRegex)[1];
+      getFromCloud(id).then((result) => {
+        if(result) {
+          if(result.hasOwnProperty(this.props.uuid)) {
+            this.props.deleteTab(this.props.tab.id, this.props.tab.category);
+            document.getElementById('button-' + id).click();
+          }
+          else {
+            for(let item in result) {};
+            confirmAlert({
+              title: 'Có người đã dịch bài này rồi :^:',
+              message: 'Bài này đã được dịch bởi: ',
+              buttons: [
+                  {
+                  label: 'Xoá',
+                  onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID);}
+                  },
+                  {
+                  label: 'Mình nhầm'
+                  }
+              ]
+            });
+          }
+        }
+        else {
+          allowSave = true;
+        }
+        if(allowSave) {
+          crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
+            this.setState({
+              link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
+              info: result[0],
+              comments: result[1]
+            })
+            await this.sleep(1000);
+            this.savePost().then(() => {
+              //saveToCloud(result[0].id, this.props.uuid, {timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'một member chăm chỉ nào đó'})
+            });
+          });
+        }
+      });     
     }
     else {
       alert('Link not valid');
@@ -348,6 +379,9 @@ class Section extends React.Component {
           fallbackUrl = {this.state.info.fallbackUrl}
           isImage = {this.state.info.isImage}
           credit = {this.state.credit}
+          helper = {this.props.helper}
+          setGoogleHelper = {this.props.setGoogleHelper}
+          setHelper = {this.props.setHelper}
           previewContent = {this.previewContent}
           savePost = {this.savePost}
           saveNote = {this.saveNote}

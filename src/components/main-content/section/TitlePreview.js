@@ -14,10 +14,6 @@ const TitlePreview = (props) => {
         let decodedString = dom.body.textContent;
         return decodedString;
     }
-    const handleKeyDown = (e) => {
-        e.target.style.height = '100%';
-        e.target.style.height = `${e.target.scrollHeight}px`;
-    }
     const handleFocus = (e) => {
         addTransComment(id, 0);
     }
@@ -45,7 +41,7 @@ const TitlePreview = (props) => {
                 <div className="demo-controls">
                     <span className="demo-response"></span>
                 </div>
-                <textarea name="textarea" id={id + '-trans'} className = "expand" onKeyDown={handleKeyDown} onBlur = {handleBlur} onFocus = {handleFocus}></textarea>
+                <textarea name="textarea" id={id + '-trans'} className = "expand" onBlur = {handleBlur} onFocus = {handleFocus}></textarea>
             </div>
           </div>
         </div>
