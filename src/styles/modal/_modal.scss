@@ -28,6 +28,11 @@
   -moz-hyphens: unset;
   -ms-hyphens: unset;
   hyphens: unset;
+  -moz-user-select: -moz-text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+   user-select: text;
 
   .expand{
     overflow: hidden;
@@ -117,6 +122,25 @@
     }
   }
   
+}
+@media only screen and (max-width: 768px) {
+  .ReactModal__Content {
+    margin-left: 0px !important;
+  }
+  .preview-modal {
+    padding: 1.6em;
+    max-width: 83%;
+    .modal-panel {
+      margin-top: 1em;
+    }
+    .modal__title {
+      font-size: 1.4em;
+      margin: 0 !important;
+    }
+    .button {
+      padding: 7px
+    }
+  }
 }
   
   

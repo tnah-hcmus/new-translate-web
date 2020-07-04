@@ -12,6 +12,30 @@ const PreviewModal = (props) => {
             let button = document.getElementById(id + 'copy-button');
             button.innerHTML = 'Copied!';
             button.classList.add('button-click');
+        }, function() {
+            const el = document.createElement('input');
+            el.innerText = props.content;
+            const oldContentEditable = el.contentEditable,
+            oldReadOnly = el.readOnly,
+            range = document.createRange();
+
+            el.contentEditable = true;
+            el.readOnly = true;
+            range.selectNodeContents(el);
+
+            var s = window.getSelection();
+            s.removeAllRanges();
+            s.addRange(range);
+
+            el.setSelectionRange(0, 999999); // A big number, to cover anything that could be inside the element.
+
+            el.contentEditable = oldContentEditable;
+            el.readOnly = oldReadOnly;
+
+            document.execCommand('copy');
+            let button = document.getElementById(id + 'copy-button');
+            button.innerHTML = 'Copied!';
+            button.classList.add('button-click');
         });
     }
     const closeModal = async () => {

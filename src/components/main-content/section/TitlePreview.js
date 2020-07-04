@@ -2,10 +2,11 @@ import React, {useContext} from 'react';
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
+import database from '../../../firebase/firebase';
 
 const TitlePreview = (props) => {
     const {addTransComment, editTransComment} = useContext(InputContext);
-    const {id, title, subReddit, upvotes} = useContext(SectionContext);
+    const {id, title, subReddit, upvotes, uuid, savePost, credit} = useContext(SectionContext);
     const parseContent = () => {
         let parser = new DOMParser;
         let dom = parser.parseFromString(
@@ -19,7 +20,9 @@ const TitlePreview = (props) => {
     }
     const handleBlur = (e) => {
         editTransComment(id, e.target.value);
-        props.savePost();
+        savePost().then(() => {
+            database.ref(id).child(uuid).set({timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+          });;
     }
     return (
         <div className="demo" style = {{display: "flex", flexDirection: "column"}}>

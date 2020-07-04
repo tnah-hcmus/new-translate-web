@@ -7,12 +7,13 @@ import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import SectionContext from '../../../context/section-context';
+import database from '../../../firebase/firebase';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
     const [downloadVideo, setDownloadVideo] = useState(false);
     const [downloadImage, setDownloadImage] = useState(false);
-    const {tabID, link, title, subReddit, upvotes} = useContext(SectionContext);
+    const {tabID, link, title, subReddit, upvotes, id, uuid, savePost, credit} = useContext(SectionContext);
     const deletePost = () => {
         confirmAlert({
             title: 'Bạn chắc chứ ?',
@@ -20,7 +21,7 @@ const SectionHeader = (props) => {
             buttons: [
                 {
                 label: 'Xoá',
-                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID);}
+                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); database.ref(`${id}/${uuid}`).remove();}
                 },
                 {
                 label: 'Mình nhầm'
@@ -43,6 +44,11 @@ const SectionHeader = (props) => {
     const closeNote = () => {
         setOpenNote(false);
     }
+    const save = () => {
+        savePost().then(() => {
+            database.ref(id).child(uuid).set({timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+          });
+    }
         return (
             <header className="section-header">
                 <div className="section-wrapper">
@@ -60,7 +66,7 @@ const SectionHeader = (props) => {
                         <div style = {{marginBottom: '5px'}}>
                         <button className="demo-button" id={tabID + '-preview'} onClick = {props.previewContent}>Preview</button>
                         <button className="demo-button" id={tabID + '-note'} onClick = {() => setOpenNote(true)}>Note</button>
-                        <button className="demo-button" id={tabID + '-save'} onClick = {props.savePost}>Save</button>
+                        <button className="demo-button" id={tabID + '-save'} onClick = {save}>Save</button>
                         <button className="demo-button" id={tabID + '-delete'} onClick = {deletePost}>Delete</button>
                         </div>
                         <form style = {{ display: 'flex'}} onSubmit={props.handleSubmitCredit}>

@@ -171,17 +171,27 @@
     align-items: center !important;
     background: var(--main-color) !important;
     color: var(--font-color) !important;
+
+    li {
+      margin: 5px 0;
+      font-style: italic;
+      margin-left: 10px;
+      text-align: left;
+    }
   
     #{$parent}-button-group {
-      margin-left: 15%;
+      justify-content: space-between !important;
+      width: 80%;
+      margin: 0 auto;
+      margin-top: 20px;
     
       button{
         font: inherit !important;
-        margin-right: 20% !important;
         font-weight: bold !important;
         border: none !important;
         color: #fff !important;
         background-color: var(--color-accent) !important;
+        margin: 0;
       }  
     }
   }

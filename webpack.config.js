@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 module.exports = (env) => {
   return {
@@ -17,7 +18,12 @@ module.exports = (env) => {
   },
   plugins: [
     new webpack.HashedModuleIdsPlugin(),
+    new webpack.ContextReplacementPlugin(
+      /moment[\/\\]locale$/,
+      /vi/
+    ),
     new Dotenv(),
+    new LodashModuleReplacementPlugin,
     //new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,

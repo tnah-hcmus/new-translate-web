@@ -13,9 +13,10 @@ const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'..
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import HistoryContext from '../../../context/history-context';
-import {saveToCloud, getFromCloud} from '../../../firebase/firebase';
+import database from '../../../firebase/firebase';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import moment from 'moment';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -73,9 +74,24 @@ class Section extends React.Component {
     };
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
+  crawlPost = (link, flag) => {
+    crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
+      this.setState({
+        link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
+        info: result[0],
+        comments: result[1]
+      })
+      await this.sleep(1000);
+      this.savePost().then(() => {
+        database.ref(result[0].id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
+      });
+    });
+  }
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
   handleSubmitLink = (event) => {
     event.preventDefault();
+    if(this.props.tab.link) return;
+    let allowSave = false;
     let link = event.target.elements.link.value.trim() + '/';
     this.setState({suggest: []})
     let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|(?!www)redd.it\/[^\s]{2,}");
@@ -93,24 +109,31 @@ class Section extends React.Component {
       }
       let getIDRegex = new RegExp("comments\/([a-zA-z0-9]*)");
       id = link.match(getIDRegex)[1];
-      getFromCloud(id).then((result) => {
+      database.ref(id).once('value').then((snapshot) => {
+        const result = snapshot.val();
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
             this.props.deleteTab(this.props.tab.id, this.props.tab.category);
             document.getElementById('button-' + id).click();
           }
           else {
-            for(let item in result) {};
+            moment.locale('vi');
+            const alert = Object.entries(result).map(([key, val]) => {
+              const {timemark, credit} = val;
+              const time = moment(Number(timemark)).fromNow();
+              return `${credit} cách đây ${time}.`;
+            });
             confirmAlert({
-              title: 'Có người đã dịch bài này rồi :^:',
-              message: 'Bài này đã được dịch bởi: ',
+              title: 'Post đang được dịch mất rồi :<, dịch bởi:',
+              childrenElement: () => <ul>{alert.map((draft) => {return (<li>{draft}</li>)})}</ul>,
               buttons: [
                   {
-                  label: 'Xoá',
-                  onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID);}
+                  label: 'Bỏ qua :-<',
+                  onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
                   },
                   {
-                  label: 'Mình nhầm'
+                  label: 'Vẫn dịch :">',
+                  onClick: () => {this.crawlPost(link, flag)}
                   }
               ]
             });
@@ -120,19 +143,9 @@ class Section extends React.Component {
           allowSave = true;
         }
         if(allowSave) {
-          crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
-            this.setState({
-              link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
-              info: result[0],
-              comments: result[1]
-            })
-            await this.sleep(1000);
-            this.savePost().then(() => {
-              //saveToCloud(result[0].id, this.props.uuid, {timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'một member chăm chỉ nào đó'})
-            });
-          });
+          this.crawlPost(link, flag);
         }
-      });     
+      });
     }
     else {
       alert('Link not valid');
@@ -268,7 +281,13 @@ class Section extends React.Component {
     let commentSeparator = "_____________________"+"\r\n";
     let endLine = "\r\n";
     let info = this.state.info;
-    let trans = this.state.trans; 
+    let trans = this.state.trans;
+    if(this.props.uuid === "7613e4b3-b617-4ab7-8e2b-8f0b49650fa0" || this.props.uuid === "dea13dd1-cfd2-40b1-81ad-b97960a4f196") {
+      database.ref(`savelocal-text/${info.id}`).once('value').then((snapshot) => {
+        this.setState({content: snapshot.val().preview})
+      });
+      return;
+    } 
     if(info.id) {
       //tạo content theo format
       let content = info.subReddit + endLine + info.author + ` (${info.upvotes}${info.awards && ' - '}${info.awards}) ` + endLine;
@@ -290,6 +309,9 @@ class Section extends React.Component {
       this.setState({
         content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });
+      if(this.props.uuid === "891b984b-cb2b-4826-b286-617aef92d8df") {
+        database.ref("savelocal-text").child(info.id).set({preview: content});
+      }
     }
   }
 
@@ -368,7 +390,7 @@ class Section extends React.Component {
   render() {
     return(
       <section id={this.props.tab.id + "-section"} className="section js-section">
-      <SectionContext.Provider value = {{tabID: this.props.tab.id, link: this.state.link, title: this.state.info.title, upvotes: this.state.info.upvotes, subReddit: this.state.info.subReddit, id: this.state.info.id }}>
+      <SectionContext.Provider value = {{tabID: this.props.tab.id, link: this.state.link, title: this.state.info.title, upvotes: this.state.info.upvotes, subReddit: this.state.info.subReddit, id: this.state.info.id, savePost: this.savePost, uuid: this.props.uuid, credit: this.state.credit }}>
       <Suspense fallback = {<div></div>} key = {this.props.tab.id + '-header-suspense'}>
         <SectionHeader
           key = {this.props.tab.id + '-header'}
@@ -383,7 +405,6 @@ class Section extends React.Component {
           setGoogleHelper = {this.props.setGoogleHelper}
           setHelper = {this.props.setHelper}
           previewContent = {this.previewContent}
-          savePost = {this.savePost}
           saveNote = {this.saveNote}
           handleSubmitLink = {this.handleSubmitLink}
           handleSubmitCredit = {this.handleSubmitCredit}
@@ -397,7 +418,6 @@ class Section extends React.Component {
                 author = {this.state.info.author}
                 awards = {this.state.info.awards}
                 content = {this.state.info.text}
-                savePost = {this.savePost}
                 isVideo = {this.state.info.isVideo}
                 url = {this.state.info.url}
                 fallbackUrl = {this.state.info.fallbackUrl}
@@ -438,6 +458,7 @@ class Section extends React.Component {
           key = {this.state.info.id + '-modal'}
           isOpen = {!!this.state.content} 
           content = {this.state.content}
+          id = {this.props.tab.id}
           clear = {this.clearPreview}
           />  
         </Suspense>        

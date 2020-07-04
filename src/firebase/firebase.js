@@ -1,4 +1,5 @@
-import * as firebase from 'firebase';
+import {firebase} from '@firebase/app';
+import '@firebase/database';
 
 
 const config = {
@@ -12,14 +13,5 @@ const config = {
 
 firebase.initializeApp(config);
 const database = firebase.database();
-const saveToCloud = (id, uuid, data) => {
-    database.ref(id).child(uuid).set(data);
-}
-const getFromCloud = (id) => {
-    database.ref(id).once('value').then((snapshot) => {
-        console.log(snapshot.val());
-    });
-      
-}
  
-export {firebase, saveToCloud, getFromCloud, database as default }
+export default database;
