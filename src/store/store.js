@@ -1,12 +1,13 @@
-import { combineReducers, createStore, applyMiddleware} from 'redux';
-import {loadState, saveState, loadStateDB, saveStateDB} from './storage.js';
+import { combineReducers, createStore, applyMiddleware, compose} from 'redux';
+import {loadState, loadStateDB} from './storage.js';
 import thunk from 'redux-thunk';
-import {throttle} from 'lodash';
 import tabsReducer from '../reducer/tabsReducer';
 import categoryReducer from '../reducer/categoryReducer';
 import repliesReducer from '../reducer/repliesReducer.js';
 import themeReducer from '../reducer/themeReducer.js';
 import creditReducer from '../reducer/creditReducer.js';
+import { persistStore, persistReducer } from 'redux-persist';
+import localForage from 'localforage';
 
 //Xóa sau 20 ngày
 const createID = () => {
@@ -64,13 +65,22 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   credit: creditReducer,
 });
+const localDB = localForage.createInstance({
+  name: "RVN-data"
+});
 
+const persistConfig = {
+  key: 'root',
+  storage: localDB,
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+//Xóa sau 20 ngày
 
 //lấy configState từ localStorage nếu có
 let configState = loadState() || {};
 
-
-//Xóa sau 20 ngày
 if(!(Object.keys(configState).length === 0 && configState.constructor === Object)) {
   if(configState.category.filter((item) => item.name === 'guide').length === 0) {
     configState.category = [...configState.category, {name:'guide'}];
@@ -86,7 +96,7 @@ if (serializedState === null) {
 
 
 //Tạo store + gán listener cho mỗi lần thay đổi store -> ghi vào json
-const store = createStore(rootReducer, configState, applyMiddleware(thunk));
+const store = createStore(persistedReducer, configState, applyMiddleware(thunk));
 //Pull data from IndexedDB
 loadStateDB().then((data) => {
   if(data) {
@@ -104,18 +114,7 @@ loadStateDB().then((data) => {
   }
 })
 
-store.subscribe(throttle(() => {
-  const save = store.getState();
-  saveState({
-    category: save.category,
-    theme: save.theme,
-    credit: save.credit
-  });
-  saveStateDB({
-    tabs: save.tabs.filter((tab) => tab.category !== "guide"),
-    replies: save.replies
-  });
-}, 1000));
+let persistor = persistStore(store);
 
 
-export default store;
+export {store , persistor};

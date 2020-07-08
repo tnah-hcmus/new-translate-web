@@ -7,7 +7,7 @@ localforage.config({
   storeName   : 'content', // Should be alphanumeric, with underscores.
   description : 'Store translated comment and replies info'
 });
-var localDB = localforage.createInstance({
+const localDB = localforage.createInstance({
   name: "RVN"
 });
 //load state từ json
@@ -17,23 +17,14 @@ export const loadState = () => {
       if (serializedState === null) {
         return undefined;
       }
+      localStorage.removeItem('rvn-setting');
       return JSON.parse(serializedState);
     } catch (err) {
       return undefined;
     }    
   };
-  //ghi state vào json
-export const saveState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('rvn-setting', serializedState);
-  } catch {
-    // ignore write errors
-  }
-};
 export const loadStateDB = async () => {
-  return await localDB.getItem('reddit-app-712');
-};
-export const saveStateDB = (state) => {
-  if(state.tabs.length !== 0 )  localDB.setItem('reddit-app-712', state);
+  const result =  await localDB.getItem('reddit-app-712');
+  localDB.removeItem('reddit-app-712');
+  return result;
 };
