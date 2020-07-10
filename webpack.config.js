@@ -45,7 +45,6 @@ module.exports = (env) => {
       </body>
       
       <script src="/__/firebase/7.14.5/firebase-app.js"></script>
-      <script src="/__/firebase/7.14.5/firebase-analytics.js"></script>
       <script src="/__/firebase/init.js"></script>
       </html>
       
