@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
@@ -7,6 +7,7 @@ import database from '../../../firebase/firebase';
 const TitlePreview = (props) => {
     const {addTransComment, editTransComment} = useContext(InputContext);
     const {id, title, subReddit, upvotes, uuid, savePost, credit} = useContext(SectionContext);
+    const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
     const parseContent = () => {
         let parser = new DOMParser;
         let dom = parser.parseFromString(
@@ -14,6 +15,9 @@ const TitlePreview = (props) => {
             'text/html');
         let decodedString = dom.body.textContent;
         return decodedString;
+    }
+    const handleChange = (e) => {
+        setValue(e.target.value);
     }
     const handleFocus = (e) => {
         addTransComment(id, 0);
@@ -44,7 +48,7 @@ const TitlePreview = (props) => {
                 <div className="demo-controls">
                     <span className="demo-response"></span>
                 </div>
-                <textarea name="textarea" id={id + '-trans'} className = "expand" onBlur = {handleBlur} onFocus = {handleFocus}></textarea>
+                <textarea name="textarea" id={id + '-trans'} className = "expand" onBlur = {handleBlur} onFocus = {handleFocus} value = {value} onChange = {handleChange}></textarea>
             </div>
           </div>
         </div>

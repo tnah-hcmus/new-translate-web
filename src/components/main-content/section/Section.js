@@ -54,14 +54,12 @@ class Section extends React.Component {
         this.setState({
           comments: result[1]
         });
-        //restore lại những comment đã được trans và nội dung trans
-        this.restoreTrans().then(() =>{
-                  //sau khi restore thành công comment -> restore credit
         document.getElementById(this.props.tab.id + '-credit').value = this.props.credit;
-          //Kết thúc restore, hiển thị lại panel -> show comment
+        setTimeout(() => {
+          this.afterRestore();
           document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
           document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
-        });
+        },1000);
       })
     }
     else{
@@ -320,34 +318,14 @@ class Section extends React.Component {
     this.setState({content: ''});
   }
 
-  //Hàm khôi phục lại những comment đã dịch trước đó và nội dung đã dịch tương ứng
-  restoreTrans = async() => {
-    //Nội dung đã được dịch tương ứng lưu ở this.state.trans (ở đây không lưu trữ kèm bất kỳ gì khác ngoài commentID - nội dung - tác giả - children: (tất cả các subcomment đã được dịch của comment hiện tại))
-    let level = 1;
-    let flag = 1;
+  //Hàm showSearch
+  afterRestore = () => {
     let authorSeparator = " || ";
     let showInput = ''; //nội dung để chèn vào thẻ input nhằm ẩn các comment chưa được dịch, chỉ hiện những comment được dịch sau khi restore
     const trans = this.state.trans;
-    //Duyệt đến khi không còn phần tử nào chưa được lấy ra (flag = 0), duyệt từ level = 1 -> level n để mở các comment từ từ, nếu mở không tuần tự -> null selected
-    while(flag !== 0) {
-      //flag được set = 0 mỗi đầu vòng lặp, flag sẽ được tăng giá trị nếu vẫn còn phần tử thuộc trans phù hợp 
-      flag = 0;
-      for(let id in trans) {
-        if(trans[id].level === 0) {
-            document.getElementById(id + "-trans").value = trans[id].body;
-          };
-        // nếu đúng level cần mở hiện tại -> click vào nút comment tương ứng để expand, sau đó truyền nội dung đã được dịch vào comment đó
-        if(trans[id].level === level) {
-            if(trans[id].author) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
-            document.getElementById(id + "-trans").value = trans[id].body;
-            if(trans[id].body !== '') document.getElementById(id + '-span').click(); //hiển thị comment
-            document.getElementById(id + "-demo-toggle").click(); //expand comment
-            flag = 1;
-          };
-        }
-        level++; // tăng level lên mức tiếp theo khi tất cả các comment ở level hiện tại đã đc expand
+    for(let id in trans) {
+      if(trans[id].author && trans[id].level > 0) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
     }
-
     //Chèn nội dung vào thanh search, ẩn các comment chưa được dịch 
     let input = document.getElementById(this.props.tab.id + '-search')
     input.value =  showInput.replace(/\ \|\|\ $/,'');
@@ -422,6 +400,7 @@ class Section extends React.Component {
                 url = {this.state.info.url}
                 fallbackUrl = {this.state.info.fallbackUrl}
                 isImage = {this.state.info.isImage}
+                trans = {this.state.trans}
            />
           </Suspense>
           </div>
@@ -436,6 +415,7 @@ class Section extends React.Component {
                     info = {rootComment}
                     parent = {[]}
                     tabID = {this.props.tab.id}
+                    trans = {this.state.trans}
                     savePost = {this.savePost}
                   />
                 ))
