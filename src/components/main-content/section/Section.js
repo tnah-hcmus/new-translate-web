@@ -54,11 +54,11 @@ class Section extends React.Component {
         this.setState({
           comments: result[1]
         });
-        document.getElementById(this.props.tab.id + '-credit').value = this.props.credit;
         setTimeout(() => {
           this.afterRestore();
           document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
           document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
+          document.getElementById(this.props.tab.id + '-credit').value = this.props.credit;
         },1000);
       })
     }
