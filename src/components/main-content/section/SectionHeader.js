@@ -14,6 +14,10 @@ const SectionHeader = (props) => {
     const [downloadVideo, setDownloadVideo] = useState(false);
     const [downloadImage, setDownloadImage] = useState(false);
     const {tabID, link, title, subReddit, upvotes, id, uuid, savePost, credit} = useContext(SectionContext);
+    const [value, setValue] = useState(credit !== '' ? credit : '');
+    const handleChange = (e) => {
+        setValue(e.target.value);
+    }
     const deletePost = () => {
         confirmAlert({
             title: 'Bạn chắc chứ ?',
@@ -70,7 +74,7 @@ const SectionHeader = (props) => {
                         <button className="demo-button" id={tabID + '-delete'} onClick = {deletePost}>Delete</button>
                         </div>
                         <form style = {{ display: 'flex'}} onSubmit={props.handleSubmitCredit}>
-                        <input className="demo-input" name="credit" id = {tabID + '-credit'} aria-label="credit" placeholder="Thêm credit" defaultValue = {''}></input>
+                        <input className="demo-input" name="credit" id = {tabID + '-credit'} aria-label="credit" placeholder="Thêm credit" value = {value} onChange = {handleChange}></input>
                         <button className="demo-button">{props.credit === '' ? 'Thêm credit' : 'Sửa credit'}</button>
                         </form>
                     </div>

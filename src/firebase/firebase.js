@@ -10,7 +10,7 @@ const config = {
     projectId: "rvn-50280",
     storageBucket: "rvn-50280.firebaseio.com/",
     messagingSenderId: "181911814506",
-    appId: "2:637908496727:web:a4284b4c99e329d5",
+    appId: "1:181911814506:web:4cb5ce604bee25b475a513",
     measurementId: "G-18YLLL9XTR"
 
 }

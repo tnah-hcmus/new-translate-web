@@ -30,7 +30,8 @@ class Section extends React.Component {
     note: '',
     suggest: [],
     popover: false,
-    transText: 'Đang dịch'
+    transText: 'Đang dịch',
+    search: ''
   }
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
@@ -54,12 +55,9 @@ class Section extends React.Component {
         this.setState({
           comments: result[1]
         });
-        setTimeout(() => {
-          this.afterRestore();
-          document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
-          document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
-          document.getElementById(this.props.tab.id + '-credit').value = this.props.credit;
-        },1000);
+        this.afterRestore();
+        document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
+        document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
       })
     }
     else{
@@ -165,13 +163,9 @@ class Section extends React.Component {
     this.setState({note: note});
   }
   //Tìm kiếm comment
-  searchComment = (e,inp) => {
+  searchComment = (inp) => {
     //Kiểm tra xem trigger từ onKeyDown hay được gọi -> lấy data
-    let input;
-    if(e) {
-      input = inp ? inp : e.target.value
-    }
-    else input = inp || '';
+    let input = inp || '';
     //Lấy ra tất cả các div comments
     let panel = document.getElementById(this.props.tab.id+'panel');
     let wrap = panel.getElementsByClassName('demo');
@@ -210,7 +204,10 @@ class Section extends React.Component {
       } 
     }
   }
-
+  handleSearch = (e) => {
+    this.setState({search: e.target.value});
+    this.searchComment(e.target.value);
+  }
   //Hàm lưu trữ nội dung đã trans lại -> lưu vào mảng this.state.trans, comment được lưu trữ tạo thành cấu trúc cầu
   // 1 comments được dịch quan trọng gồm: id, level (độ sâu) ; children (tất cả các con, không quan trọng level) ; nội dung
   addTransComment = (id, level, prefixed, parent, author, info, children) => {
@@ -327,9 +324,8 @@ class Section extends React.Component {
       if(trans[id].author && trans[id].level > 0) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
     }
     //Chèn nội dung vào thanh search, ẩn các comment chưa được dịch 
-    let input = document.getElementById(this.props.tab.id + '-search')
-    input.value =  showInput.replace(/\ \|\|\ $/,'');
-    this.searchComment(event, showInput.replace(/\ \|\|\ $/,''));
+    this.setState({search: showInput.replace(/\ \|\|\ $/,'')});
+    this.searchComment(showInput.replace(/\ \|\|\ $/,''));
   }
 
   //Lưu thông tin về post và nội dung các comment đã được dịch lại -> tabInfo -> lưu vào store
@@ -406,7 +402,7 @@ class Section extends React.Component {
           </div>
           <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div className = "panel" id={this.props.tab.id+'panel'}>
-          {this.state.comments.length !== 0 && <input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" defaultValue = {''} onChange = {this.searchComment} ></input>}
+          {this.state.comments.length !== 0 && <input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" onChange = {this.handleSearch} value = {this.state.search} ></input>}
           {this.state.comments.length === 0 && <p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>}
               {
                 this.state.comments.map((rootComment, index) => (

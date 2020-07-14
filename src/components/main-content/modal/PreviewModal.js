@@ -1,15 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import Modal from 'react-modal';
 
 const PreviewModal = (props) => {
     const [isClose, setClose] = useState(false);
     const sleep = (time) => {
         return new Promise((resolve) => setTimeout(resolve, time))
-      }
+    }
+    const copyRef = useRef(null)
     const copyToClipBoard = (event) => {
-        let id = props.id
+        let id = props.id;
+        let button = copyRef.current;
         navigator.clipboard.writeText(props.content).then(function() {
-            let button = document.getElementById(id + 'copy-button');
             button.innerHTML = 'Copied!';
             button.classList.add('button-click');
         }, function() {
@@ -33,7 +34,6 @@ const PreviewModal = (props) => {
             el.readOnly = oldReadOnly;
 
             document.execCommand('copy');
-            let button = document.getElementById(id + 'copy-button');
             button.innerHTML = 'Copied!';
             button.classList.add('button-click');
         });
@@ -58,7 +58,7 @@ const PreviewModal = (props) => {
         <div className="modal-panel">
             <h3 className="modal__title">Preview your post</h3>
             <div>
-                <button className="button" onClick= {copyToClipBoard} id = {props.id + 'copy-button'}>Copy</button>
+                <button className="button" onClick= {copyToClipBoard} id = {props.id + 'copy-button'} ref = {copyRef}>Copy</button>
             </div>
         </div>
         <p>{props.content}</p>
