@@ -17,6 +17,8 @@ import database from '../../../firebase/firebase';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import moment from 'moment';
+import PermissionModal from '../modal/PermissionModal';
+import blackList from '../../../list/blackList'
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -31,7 +33,8 @@ class Section extends React.Component {
     suggest: [],
     popover: false,
     transText: 'Đang dịch',
-    search: ''
+    search: '',
+    alert: false
   }
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
@@ -78,9 +81,26 @@ class Section extends React.Component {
         comments: result[1]
       })
       await this.sleep(1000);
-      this.savePost().then(() => {
-        database.ref(result[0].id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
-      });
+      if(blackList.includes(result[0].author)) {
+        confirmAlert({
+          title: 'Author này không cho phép dịch post trong group bạn nhé :<',
+          buttons: [
+              {
+              label: 'Bỏ qua :-<',
+              onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+              },
+              {
+              label: 'Vẫn bỏ qua :">',
+              onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+              }
+          ]
+        });
+      }
+      else {
+        this.savePost().then(() => {
+          database.ref(result[0].id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
+        });
+      }
     });
   }
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
@@ -357,6 +377,7 @@ class Section extends React.Component {
         setTimeout(() => {button.innerHTML = 'Save'}, 2200);
         this.props.updateTab(this.props.tab.id, data); //Nếu không, không tạo tab mới -> cập nhật lại comment, title trên tab cũ
         if(this.props.tab.id !== data.id) this.props.replaceTabID(this.props.tab.id, data.id);
+        document.getElementById('button-' + data.id).click();
       }
     }
   }
@@ -437,7 +458,8 @@ class Section extends React.Component {
           id = {this.props.tab.id}
           clear = {this.clearPreview}
           />  
-        </Suspense>        
+        </Suspense>
+        {(this.props.tab.category === "blank") && <PermissionModal isOpen = {this.state.alert} close = {() => this.setState({alert: false})}/>}        
       </SectionContext.Provider>
       </section>
     )

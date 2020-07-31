@@ -3,7 +3,6 @@ const Section = lazy(() => import(/* webpackChunkName: "Section" */'./section/Se
 const GuidePanel = lazy(() => import(/* webpackChunkName: "Guide" */'./GuidePanel.js'));
 import { connect } from 'react-redux';
 import translate from './trans-button/translate';
-import { flatMap } from 'lodash';
 
 //Main-content div, nhận vào danh sách tất cả các tab hiện có -> render thành section, props: tabs (get from Store)
 
