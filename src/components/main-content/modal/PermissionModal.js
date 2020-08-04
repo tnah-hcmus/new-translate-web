@@ -1,6 +1,5 @@
 import React, {useState, useRef} from 'react';
 import Modal from 'react-modal';
-
 const PermissionModal = (props) => {
     const copyRef = useRef(null)
     const copyToClipBoard = (event) => {
@@ -41,7 +40,7 @@ const PermissionModal = (props) => {
         ariaHideApp={false}
         contentLabel="Permission"
         closeTimeoutMS={200}
-        className="preview-modal"
+        className="preview-modal prevent-modal"
         >
         <a className = "close" onClick = {props.close}></a>
         <div className="modal-panel">
@@ -52,11 +51,11 @@ const PermissionModal = (props) => {
         </div>
         <h3>Bạn đã có permission chưa ? Nếu chưa có hãy xin permission theo mẫu ở dưới nhé!</h3>
         <p>{props.content}</p>
-        <button>Cập nhật permission</button>
+        <button><a href = "https://docs.google.com/spreadsheets/d/1qlccnLkRCkflo2lJjjZnN0cdKSpUvBQ05XL164I2DGw/htmlview" target = "_blank">Cập nhật permission</a></button>
         </Modal>
         )
 }
 PermissionModal.defaultProps = {
-    content: "some stuff text here"
+    content: "Dear ___," + "\r\n" + "I've been reading your stories on nosleep and am really fascinated by them. Now I'm planning to make a Vietnamese translation for some of you stories. I DO NOT make the translation for any kind of profit, of course, I just want to translate and post them on a private group by a non-profit fanpage RVN on Facebook for Vietnamese people who are interested in nosleep stories. I will include the link to the original post as well." + "\r\n" + "I am looking forward to your permission soon. Thank you." + "\r\n" + "Your sincerely," + "\r\n" + "___",
   };
 export default PermissionModal;

@@ -12,11 +12,15 @@ const INITIAL_STATE =  {
   export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
       case SET_MODE:
-        state.mode = action.payload;
-        return state;
+        return {
+          mode: action.payload,
+          color: state.color
+        }
       case SET_COLOR:
-        state.color = action.payload;
-        return state;
+        return {
+          mode: state.mode,
+          color: action.payload
+        }
       case RESET_THEME:
         return INITIAL_STATE;
       default:

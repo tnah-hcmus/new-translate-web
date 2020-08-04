@@ -1,5 +1,7 @@
 const blackList = [
     "___test@author@RVN___",
-    //"u/LastReaperX",
+    "u/EaPAtbp",
+    "u/Zithero",
+    "u/fainting--goat",
 ]
 export default blackList;

@@ -52,7 +52,7 @@
     border-radius: 10px;
     padding: 15px;
     color: var(--color-accent);
-    background-color: #ffffff;
+    background-color: #ffffff !important;
     text-decoration: none;
     vertical-align: middle;
     -webkit-tap-highlight-color: transparent;
@@ -68,6 +68,35 @@
     border: none;
     color: #ffffff;
     background-color: var(--color-accent);
+  }
+}
+
+.prevent-modal {
+  border: 5px solid #F55757 !important;
+  color: #F55757 !important;
+  max-width: 60% !important;
+  h3 {
+    max-width: 80%;
+    word-break: keep-all;
+  }
+  button {
+    margin:0 auto;
+    border: 2px solid;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 1.2em;
+    padding: .4em 1.2em;
+    color: #ffffff;
+    background-color: #F55757 !important;
+  }
+  .button {
+    border: 2px solid #F55757 !important;
+    color:  #F55757 !important;
+  }
+  .button-click {
+    border: none;
+    color: #ffffff !important;
+    background-color: #F55757 !important;
   }
 }
 

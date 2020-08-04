@@ -19,6 +19,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import moment from 'moment';
 import PermissionModal from '../modal/PermissionModal';
 import blackList from '../../../list/blackList'
+import warningList from '../../../list/graySubList'
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -73,6 +74,28 @@ class Section extends React.Component {
     };
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
+  checkAuthor = (info) => {
+    if(blackList.includes(info.author)) {
+      confirmAlert({
+        title: 'Author này không cho phép dịch post trong group bạn nhé :<',
+        buttons: [
+            {
+            label: 'Bỏ qua :-<',
+            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+            },
+            {
+            label: 'Vẫn bỏ qua :">',
+            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+            }
+        ]
+      });
+    }
+    else {
+      this.savePost().then(() => {
+        database.ref(info.id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
+      });
+    }
+  }
   crawlPost = (link, flag) => {
     crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
       this.setState({
@@ -81,26 +104,13 @@ class Section extends React.Component {
         comments: result[1]
       })
       await this.sleep(1000);
-      if(blackList.includes(result[0].author)) {
-        confirmAlert({
-          title: 'Author này không cho phép dịch post trong group bạn nhé :<',
-          buttons: [
-              {
-              label: 'Bỏ qua :-<',
-              onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
-              },
-              {
-              label: 'Vẫn bỏ qua :">',
-              onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
-              }
-          ]
-        });
+      if(warningList.includes(result[0].subReddit)) {
+        this.setState({alert: true});
       }
       else {
-        this.savePost().then(() => {
-          database.ref(result[0].id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
-        });
+        this.checkAuthor(result[0]);
       }
+      
     });
   }
   //Nhận link bài post từ reddit -> crawl comment và data về hiển thị
@@ -459,7 +469,7 @@ class Section extends React.Component {
           clear = {this.clearPreview}
           />  
         </Suspense>
-        {(this.props.tab.category === "blank") && <PermissionModal isOpen = {this.state.alert} close = {() => this.setState({alert: false})}/>}        
+        {(this.props.tab.category === "blank") && <PermissionModal isOpen = {this.state.alert} close = {() => {this.setState({alert: false}); this.checkAuthor(this.state.info)}}/>}        
       </SectionContext.Provider>
       </section>
     )
