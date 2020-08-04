@@ -1,8 +1,3 @@
-import {firebase} from '@firebase/app';
-import '@firebase/database';
-import '@firebase/analytics';
-
-
 const config = {
     apiKey: process.env.FIREBASE_KEY,
     authDomain: "rvn-50280.firebaseapp.com",
@@ -14,9 +9,35 @@ const config = {
     measurementId: "G-18YLLL9XTR"
 
 }
+class FireBaseWorker {
+    constructor() {
+      this.worker = new Worker("../worker/worker.js");
+      this.worker.addEventListener("message", event => {
+        if (event.data.cmd === "data") {
+            this.listeners["readData"](event.data.data);
+        }
+      });
+    }
+    listeners = {};
+  
+    initializeApp(config) {
+      this.worker.postMessage({ cmd: "initializeApp", data: config });
+    }
+  
+    saveDraft(id,uuid,info) {
+      this.worker.postMessage({cmd: "saveDraft", data: {id, uuid, info}});
+    }
 
-firebase.initializeApp(config);
-firebase.analytics();
-const database = firebase.database();
+    readData(id, callback) {
+      this.worker.postMessage({cmd: "getData", data: {id}});
+      this.listeners["readData"] = callback;
+    }
+  
+    registerListener(name, callback) {
+      this.listeners[name] = callback;
+    }
+}
+const firebase = new FireBaseWorker();
+firebase.initializeApp();
  
-export default database;
+export default firebase;

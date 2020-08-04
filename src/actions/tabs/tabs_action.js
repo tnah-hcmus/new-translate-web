@@ -1,5 +1,4 @@
 import { ADD_TAB, REMOVE_TAB, UPDATE_TAB,  REMOVE_ALL_TABS, UPDATE_COMMENTS } from "./types";
-//import database from '../../firebase/firebase'
 const createID = () => {
   let guid = 'xxyyx'.replace(/[xy]/g, (c) => {
     let r = Math.random() * 16 | 0,
