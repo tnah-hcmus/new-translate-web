@@ -15,4 +15,4 @@ NotFound.defaultProps = {
   subtitle: "Quay lại trang chủ"
 };
 
-export default NotFound;
+export default React.memo(NotFound);

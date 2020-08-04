@@ -7,6 +7,7 @@ import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tab
 import {setCredit} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
 import CommentPreview from '../comment/CommentPreview';
+import {isEqual} from 'lodash';
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
 const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'../modal/PreviewModal'));

@@ -8,7 +8,7 @@ const Nav = (props) => {
   return (
     <div className = "toggleNav nav-show" id = "nav">
       <nav className="nav js-nav">
-      <header className="nav-header">
+        <header className="nav-header">
           <h1 className="nav-title">
           <div style = {{display: "inline-block", marginRight: "10px"}}>{props.title} <strong>{props.focusTitle}</strong></div>
           <svg className="nav-header-icon"><use xlinkHref="assets/img/logo.svg#main-stroke"/></svg>
@@ -23,12 +23,11 @@ const Nav = (props) => {
               />
           )})
         }
-        {<NavItem key='guide' category='guide'/>}
+        {<NavItem key='guide' category='guide'/> /*Move guide section to last section*/}
         <ThemePanel/>
         <footer className="nav-footer">
-          <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage">From La Mia with love</a></button>
+          <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage" target = "_blank">From La Mia with love</a></button>
           <p>Mọi thông tin đóng góp, report bug xin liên lạc với mình qua FB cá nhân ở trên</p>
-          <p></p>
         </footer>
       </nav>
     </div>
@@ -40,4 +39,4 @@ function mapStateToProps(state) {
     category: state.category
   };
 }
-export default connect(mapStateToProps, null)(Nav);
+export default connect(mapStateToProps, null)(React.memo(Nav));

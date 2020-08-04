@@ -10,49 +10,53 @@ import placeRightBelow from 'react-text-selection-popover/lib/placeRightBelow';
 
 const PracticeApp = (props) => {
   const [state, { reset, pop, push }] = useHistory();
-  const ref = useRef(null);
   const [popover, setPopover] = useState(false);
+  const selectionRef = useRef(null); //ref for highlight functional
+  const popoverRef = useRef(null)
+  //Cover uuid for each user
   let uuid;
   const serializedState = localStorage.getItem('rvn-uuid');
   if (serializedState === null) {
       location.reload();
   }
   else uuid = JSON.parse(serializedState);
-    return (
-      <div ref={ref} className = "wrap">
-      <HistoryContext.Provider value = {{state: state, reset: reset, push: push, pop: pop }}>
-        <Suspense fallback={<div></div>}>
-         <ThemeButton/>
+
+  return (
+    <div ref={selectionRef} className = "wrap">
+    <HistoryContext.Provider value = {{state: state, reset: reset, push: push, pop: pop }}>
+      <Suspense fallback={<div></div>}>
+       <ThemeButton/>
+      </Suspense>
+      <Suspense fallback={<div></div>}>
+        <Nav
+          title = {props.title}
+          focusTitle = {props.focusTitle}
+        />
+      </Suspense>
+      <Suspense fallback={<div></div>}>
+        <ToggleNav/>
         </Suspense>
-        <Suspense fallback={<div></div>}>
-          <Nav
-            title = {props.title}
-            focusTitle = {props.focusTitle}
-          />
-        </Suspense>
-        <Suspense fallback={<div></div>}>
-          <ToggleNav/>
-        </Suspense>
-        <Suspense fallback={<div></div>}>
-          <ContentBoard
-            uuid = {uuid}
-            setPopover = {setPopover}
-          />
-        </Suspense>
-          <Popover 
-        selectionRef={ref} 
-        isOpen={popover}
-        onTextSelect={() => { if(document.getElementById("popover")) document.getElementById("popover").style.opacity = 1; }}
-        onTextUnselect={() => { if(document.getElementById("popover")) document.getElementById("popover").style.opacity = 0; }}
-        placementStrategy={placeRightBelow}
-        style = {{position: "absolute"}}>
-        <div className = "pop-over" id = "popover">
+      <Suspense fallback={<div></div>}>
+        <ContentBoard
+          uuid = {uuid}
+          setPopover = {setPopover}
+          popoverRef = {popoverRef}
+        />
+      </Suspense>
+      <Popover 
+      selectionRef={selectionRef} 
+      isOpen={popover}
+      onTextSelect={() => { if(popoverRef.current) popoverRef.current.style.opacity = 1} }
+      onTextUnselect={() => {  if(popoverRef.current) {popoverRef.current.style.opacity = 0; popoverRef.current.innerHTML = "Sẵn sàng dịch"}}}
+      placementStrategy={placeRightBelow}
+      style = {{position: "absolute"}}>
+        <div className = "pop-over" id = "popover" ref = {popoverRef}>
           Sẵn sàng dịch
         </div>
-        </Popover>
-      </HistoryContext.Provider>
-      </div>
-    );
+      </Popover>
+    </HistoryContext.Provider>
+    </div>
+  );
 }
 
 
@@ -63,5 +67,5 @@ PracticeApp.defaultProps = {
 };
 
 
-export default PracticeApp;
+export default React.memo(PracticeApp);
 

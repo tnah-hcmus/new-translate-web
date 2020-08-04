@@ -24,7 +24,7 @@ module.exports = (env) => {
     ),
     new Dotenv(),
     new LodashModuleReplacementPlugin,
-    //new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,
       templateContent: ({htmlWebpackPlugin}) => `

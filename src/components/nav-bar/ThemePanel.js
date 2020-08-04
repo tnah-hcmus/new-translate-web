@@ -61,4 +61,4 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
     setColor, resetTheme
 }
-export default connect(mapStateToProps, mapDispatchToProps)(ThemePanel);
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(ThemePanel));

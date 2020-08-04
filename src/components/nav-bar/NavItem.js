@@ -22,32 +22,31 @@ const NavItem = (props) => {
     props.addTab(blank);
   }
   return (
-  <div className = {"nav-item u-category-"+props.category}>
-      <h5 className="nav-category">
-        {props.category}
-        {props.category !== 'guide' && <button className = "category-delete" onClick = {() => props.deleteCategory(props.category)} disabled = {props.tabs.filter((item) => item.category === props.category).length !== 0}>-</button>}
-      </h5>
-
+  <div className = {"nav-item u-category-" + props.category}>
+    <h5 className="nav-category">
+      {props.category}
+      {props.category !== 'guide' && <button className = "category-delete" onClick = {() => props.deleteCategory(props.category)} disabled = {props.tabs.filter((item) => item.category === props.category).length !== 0}>-</button>}
+    </h5>
     <div>
-    {props.tabs.filter((item) => item.category === props.category).length === 0 && 
-      <div style = {{"textAlign": "center"}}>
-        <p className="widget__message" style = {{marginLeft: '0'}}>Hiện không có bài dịch nào</p>
-      </div>}
-    {
-      props.tabs.filter((item) => item.category === props.category).map((tabs) => (
-        <NavButton
-        key={tabs.id}
-        id = {tabs.id}
-        describe={tabs.title}
-        category = {tabs.category}
-        />
-      ))
-    }
-    {props.category !== 'guide' && 
-    <button className = "add-button" onClick = {newTab}>
-        <img src="assets/img/plus.svg" aria-hidden="true"/>
-    </button>
-    }
+      {props.tabs.filter((item) => item.category === props.category).length === 0 && 
+        <div style = {{"textAlign": "center"}}>
+          <p className="widget__message" style = {{marginLeft: '0'}}>Hiện không có bài dịch nào</p>
+        </div>}
+      {
+        props.tabs.filter((item) => item.category === props.category).map((tabs) => (
+          <NavButton
+          key={tabs.id}
+          id = {tabs.id}
+          describe={tabs.title}
+          category = {tabs.category}
+          />
+        ))
+      }
+      {props.category !== 'guide' && 
+      <button className = "add-button" onClick = {newTab}>
+          <img src="assets/img/plus.svg" aria-hidden="true"/>
+      </button>
+      }
     </div>
   </div>
 );
@@ -61,4 +60,4 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addTab, deleteCategory
 }
-export default connect(mapStateToProps, mapDispatchToProps)(NavItem);
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(NavItem));
