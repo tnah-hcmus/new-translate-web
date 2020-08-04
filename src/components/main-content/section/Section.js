@@ -75,7 +75,7 @@ class Section extends React.Component {
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
   checkAuthor = (info) => {
-    if(blackList.includes(info.author)) {
+    if(blackList.includes(info.author.toLowerCase())) {
       confirmAlert({
         title: 'Author này không cho phép dịch post trong group bạn nhé :<',
         buttons: [
@@ -104,7 +104,7 @@ class Section extends React.Component {
         comments: result[1]
       })
       await this.sleep(1000);
-      if(warningList.includes(result[0].subReddit)) {
+      if(warningList.includes(result[0].subReddit.toLowerCase())) {
         this.setState({alert: true});
       }
       else {

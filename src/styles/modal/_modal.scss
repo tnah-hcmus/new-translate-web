@@ -170,6 +170,16 @@
       padding: 7px
     }
   }
+  .prevent-modal {
+    max-width: 90% !important;
+    .button {
+      font-size: 15px;
+      width: 100%;
+    }
+    .modal__title {
+      margin-bottom: 10px !important;
+    }
+  }
 }
   
   
