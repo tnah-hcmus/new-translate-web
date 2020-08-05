@@ -471,7 +471,7 @@ class Section extends React.Component {
           clear = {this.clearPreview}
           />  
         </Suspense>
-        {(this.props.tab.category === "blank") && <PermissionModal isOpen = {this.state.alert} close = {() => {this.setState({alert: false}); this.checkAuthor(this.state.info)}}/>}        
+        {(this.props.tab.category === "blank") && <PermissionModal author = {this.state.info.author} isOpen = {this.state.alert} close = {() => {this.setState({alert: false}); this.checkAuthor(this.state.info)}}/>}        
       </SectionContext.Provider>
       </section>
     )
