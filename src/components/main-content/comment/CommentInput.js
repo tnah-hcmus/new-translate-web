@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context'
-import database from '../../../firebase/firebase';
+import firebase from '../../../firebase/firebase';
 
 
 const CommentInput = (props) => {
@@ -24,7 +24,7 @@ const CommentInput = (props) => {
     const handleBlur = (e) => {
         editTransComment(props.name, e.target.value);
         props.savePost().then(() => {
-            database.ref(id).child(uuid).set({timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+            firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
         });
     }
     return (

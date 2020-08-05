@@ -7,14 +7,18 @@ import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import SectionContext from '../../../context/section-context';
-import database from '../../../firebase/firebase';
+import firebase from '../../../firebase/firebase';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
     const [downloadVideo, setDownloadVideo] = useState(false);
     const [downloadImage, setDownloadImage] = useState(false);
-    const {tabID, link, title, subReddit, upvotes, id, uuid, savePost, credit} = useContext(SectionContext);
-    const [value, setValue] = useState(credit !== '' ? credit : '');
+    const {tabID, link, title, subReddit, upvotes, id, uuid, savePost} = useContext(SectionContext);
+    const [value, setValue] = useState("");
+    useEffect(() => {
+        if(props.credit !== '') setValue(props.credit);
+    }, [props.credit]);
+
     const handleChange = (e) => {
         setValue(e.target.value);
     }
@@ -25,7 +29,7 @@ const SectionHeader = (props) => {
             buttons: [
                 {
                 label: 'Xoá',
-                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); database.ref(`${id}/${uuid}`).remove();}
+                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); firebase.deleteDraft(id, uuid);}
                 },
                 {
                 label: 'Mình nhầm'
@@ -50,7 +54,7 @@ const SectionHeader = (props) => {
     }
     const save = () => {
         savePost().then(() => {
-            database.ref(id).child(uuid).set({timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+            firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
           });
     }
         return (

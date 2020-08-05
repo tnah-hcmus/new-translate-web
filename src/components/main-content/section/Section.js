@@ -7,20 +7,20 @@ import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tab
 import {setCredit} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
 import CommentPreview from '../comment/CommentPreview';
-import {isEqual} from 'lodash';
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
 const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'../modal/PreviewModal'));
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import HistoryContext from '../../../context/history-context';
-import database from '../../../firebase/firebase';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import {isEqual} from 'lodash';
 import moment from 'moment';
 import PermissionModal from '../modal/PermissionModal';
 import blackList from '../../../list/blackList'
 import warningList from '../../../list/graySubList'
+import firebase from '../../../firebase/firebase';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -75,6 +75,16 @@ class Section extends React.Component {
     };
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
+  componentDidUpdate() {
+    if(this.props.credit !== this.state.credit) {
+      this.setState({credit: this.props.credit});
+      firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
+    }
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    if(isEqual(nextProps, this.props) && isEqual(nextState, this.state)) return false;
+    else return true;
+  }
   checkAuthor = (info) => {
     if(blackList.includes(info.author.toLowerCase())) {
       confirmAlert({
@@ -93,7 +103,7 @@ class Section extends React.Component {
     }
     else {
       this.savePost().then(() => {
-        database.ref(info.id).child(this.props.uuid).set({timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'});
+        firebase.saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
       });
     }
   }
@@ -136,8 +146,7 @@ class Section extends React.Component {
       }
       let getIDRegex = new RegExp("comments\/([a-zA-z0-9]*)");
       id = link.match(getIDRegex)[1];
-      database.ref(id).once('value').then((snapshot) => {
-        const result = snapshot.val();
+      firebase.readData(id, (result) => {
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
             this.props.deleteTab(this.props.tab.id, this.props.tab.category);
@@ -186,6 +195,7 @@ class Section extends React.Component {
     const credit = event.target.elements.credit.value.trim();
     this.props.setCredit(credit);
     this.setState({credit: credit});
+    firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
   }
 
   //Lưu note
@@ -308,12 +318,6 @@ class Section extends React.Component {
     let endLine = "\r\n";
     let info = this.state.info;
     let trans = this.state.trans;
-    if(this.props.uuid === "7613e4b3-b617-4ab7-8e2b-8f0b49650fa0" || this.props.uuid === "dea13dd1-cfd2-40b1-81ad-b97960a4f196") {
-      database.ref(`savelocal-text/${info.id}`).once('value').then((snapshot) => {
-        this.setState({content: snapshot.val().preview})
-      });
-      return;
-    } 
     if(info.id) {
       //tạo content theo format
       let content = info.subReddit + endLine + info.author + ` (${info.upvotes}${info.awards && ' - '}${info.awards}) ` + endLine;
@@ -335,9 +339,6 @@ class Section extends React.Component {
       this.setState({
         content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });
-      if(this.props.uuid === "891b984b-cb2b-4826-b286-617aef92d8df") {
-        database.ref("savelocal-text").child(info.id).set({preview: content});
-      }
     }
   }
 

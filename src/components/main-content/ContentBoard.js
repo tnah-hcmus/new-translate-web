@@ -1,4 +1,4 @@
-import React, {Suspense, lazy, useEffect, useState} from 'react';
+import React, {Suspense, lazy, useEffect, useState, useContext} from 'react';
 const Section = lazy(() => import(/* webpackChunkName: "Section" */'./section/Section.js'));
 const GuidePanel = lazy(() => import(/* webpackChunkName: "Guide" */'./GuidePanel.js'));
 import { connect } from 'react-redux';

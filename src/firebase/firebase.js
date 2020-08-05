@@ -1,3 +1,4 @@
+import Worker from 'worker-loader!../worker/worker';
 const config = {
     apiKey: process.env.FIREBASE_KEY,
     authDomain: "rvn-50280.firebaseapp.com",
@@ -11,7 +12,7 @@ const config = {
 }
 class FireBaseWorker {
     constructor() {
-      this.worker = new Worker("../worker/worker.js");
+      this.worker = new Worker();
       this.worker.addEventListener("message", event => {
         if (event.data.cmd === "data") {
             this.listeners["readData"](event.data.data);
@@ -28,9 +29,14 @@ class FireBaseWorker {
       this.worker.postMessage({cmd: "saveDraft", data: {id, uuid, info}});
     }
 
+    deleteDraft(id, uuid) {
+      this.worker.postMessage({cmd: "deleteDraft", data: {id, uuid}});
+    }
+
     readData(id, callback) {
       this.worker.postMessage({cmd: "getData", data: {id}});
       this.listeners["readData"] = callback;
+      console.log(this.listeners);
     }
   
     registerListener(name, callback) {
@@ -38,6 +44,6 @@ class FireBaseWorker {
     }
 }
 const firebase = new FireBaseWorker();
-firebase.initializeApp();
+firebase.initializeApp(config);
  
 export default firebase;

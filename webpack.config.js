@@ -24,7 +24,7 @@ module.exports = (env) => {
     ),
     new Dotenv(),
     new LodashModuleReplacementPlugin,
-    new BundleAnalyzerPlugin(),
+    //new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       inject: false,
       templateContent: ({htmlWebpackPlugin}) => `
@@ -70,7 +70,11 @@ module.exports = (env) => {
           test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
           include: [path.join(__dirname, "src/assets")],
           loader: "file-loader?name=assets/[name].[ext]"
-        }
+        },
+        {
+          test: /\.worker\.js$/,
+          use: { loader: 'worker-loader' },
+        },
       ]
   },
   optimization: {
@@ -78,7 +82,6 @@ module.exports = (env) => {
     splitChunks: {
       chunks: 'all',
       maxInitialRequests: Infinity,
-      minSize: 51200,
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
