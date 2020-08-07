@@ -1,19 +1,18 @@
 if( 'function' === typeof importScripts) {
   importScripts('https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js');
   importScripts('https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js');
-  importScripts('https://www.gstatic.com/firebasejs/7.17.1/firebase-analytics.js');
   
   let app = null;
   let database = null
-  // Listen to commands from the main thread and process them here
-  // in the worker. Magic 💫
+
   self.addEventListener(
     "message",
     event => {
       switch (event.data.cmd) {
         case "initializeApp":
-          app = firebase.initializeApp(event.data.data);
-          //firebase.analytics();
+          if (!firebase.apps.length) {
+            app = firebase.initializeApp(event.data.data);            
+          }          
           database = firebase.database();
           break;
         case "saveDraft": {
@@ -28,9 +27,10 @@ if( 'function' === typeof importScripts) {
         }
         case "getData": {
           const {id} = event.data.data;
+          const name = event.data.listener;
           database.ref(id).once('value').then((snapshot) => {
               const data = snapshot.val();
-              self.postMessage({cmd: "data", data: data});
+              self.postMessage({cmd: "data", listener: name, data: data});
           })
           break;
         }

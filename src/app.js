@@ -1,3 +1,4 @@
+import './wdyr';
 import ReactDOM from 'react-dom';
 import routes from './router/routes';
 import './styles/styles.scss';

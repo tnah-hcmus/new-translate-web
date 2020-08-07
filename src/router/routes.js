@@ -6,7 +6,6 @@ import NotFound from '../components/404';
 import {store, persistor} from '../store/store';
 import { PersistGate } from 'redux-persist/integration/react'
 
-
 export default (
 <Provider store={store}>
   <PersistGate loading={null} persistor={persistor}>

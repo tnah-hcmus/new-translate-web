@@ -14,8 +14,12 @@ class FireBaseWorker {
     constructor() {
       this.worker = new Worker();
       this.worker.addEventListener("message", event => {
-        if (event.data.cmd === "data") {
-            this.listeners["readData"](event.data.data);
+        switch (event.data.cmd) {
+          case "data":
+            this.listeners[event.data.listener](event.data.data);
+            break;
+          default:
+            break
         }
       });
     }
@@ -34,9 +38,8 @@ class FireBaseWorker {
     }
 
     readData(id, callback) {
-      this.worker.postMessage({cmd: "getData", data: {id}});
-      this.listeners["readData"] = callback;
-      console.log(this.listeners);
+      this.worker.postMessage({cmd: "getData", listener: "readData", data: {id}});
+      this.registerListener("readData", callback);
     }
   
     registerListener(name, callback) {
