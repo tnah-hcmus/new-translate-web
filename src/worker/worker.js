@@ -3,7 +3,7 @@ if( 'function' === typeof importScripts) {
   importScripts('https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js');
   
   let app = null;
-  let database = null
+  let database = null;
 
   self.addEventListener(
     "message",
