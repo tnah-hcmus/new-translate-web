@@ -5,6 +5,7 @@ import categoryReducer from '../reducer/categoryReducer';
 import repliesReducer from '../reducer/repliesReducer.js';
 import themeReducer from '../reducer/themeReducer.js';
 import creditReducer from '../reducer/creditReducer.js';
+import authReducer from '../reducer/authReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import localForage from 'localforage';
 
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   replies: repliesReducer,
   theme: themeReducer,
   credit: creditReducer,
+  auth: authReducer,
 });
 const localDB = localForage.createInstance({
   name: "RVN-data"

@@ -1,38 +1,79 @@
 import { ADD_TAB, REMOVE_TAB, UPDATE_TAB,  REMOVE_ALL_TABS, UPDATE_COMMENTS } from "./types";
-const createID = () => {
-  let guid = 'xxyyx'.replace(/[xy]/g, (c) => {
-    let r = Math.random() * 16 | 0,
-      v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-  return guid;
-}
+import database from '../../firebase/firebase';
+//Delete all tab
 export const deleteAll = () => ({
     type: REMOVE_ALL_TABS
-  });
+});
+export const deleteAllWCloud = () => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/tabs`;
+    return database.deleteData({path},() => {
+      dispatch(deleteAll());
+    })
+  }
+}
 
+//Delete a tab
 export const deleteTab = (id, category) => ({
     type: REMOVE_TAB, 
     payload: {id: id, category: category}
   });
-export const addTab = (tab) => {
-  tab.id = tab.id || createID();
-  return (dispatch) => {
-    dispatch({
-      type: ADD_TAB,
-      payload: tab
-  });
+export const deleteTabWCloud = (id, category) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/tabs/${id}`;
+    return database.deleteData({path},() => {
+      dispatch(deleteTab(id, category));
+    })
   }
 }
+
+//Add a tab
+export const addTab = (tab) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/tabs`;
+    return database.pushData({path, data: tab}, (ref) => {
+      tab.id = ref.key;
+      dispatch({
+        type: ADD_TAB,
+        payload: tab
+      });
+    })
+  }
+}
+
+//Update a tab
 export const updateTab = (id, newInfo) => {
   return {
       type: UPDATE_TAB,
       payload: {id: id, info: newInfo}
   };
 }
+export const updateTabWCloud = (id, newInfo) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/tabs/${id}`;
+    return database.updateData({path, data: newInfo},() => {
+      dispatch(updateTab(id, newInfo));
+    })
+  }
+}
+
+//Update trans in a tab
 export const updateComments = (id,trans) => {
   return {
       type: UPDATE_COMMENTS,
       payload: {id: id,trans: trans}
   };
+}
+export const updateCommentsWCloud = (id, trans) => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/tabs/${id}/trans`;
+    return database.updateData({path, data: trans},() => {
+      dispatch(updateComments(id, trans));
+    })
+  }
 }

@@ -15,22 +15,44 @@ if( 'function' === typeof importScripts) {
           }          
           database = firebase.database();
           break;
-        case "saveDraft": {
-          const { id, uuid, info } = event.data.data;        
-          database.ref(id).child(uuid).set(info);
-          break;
-        }
-        case "deleteDraft": {
-          const {id, uuid} = event.data.data;
-          database.ref(`${id}/${uuid}`).remove();
-          break;
-        }
-        case "getData": {
-          const {id} = event.data.data;
+        case "setData": {
+          const {path, data} = event.data.data;
           const name = event.data.listener;
-          database.ref(id).once('value').then((snapshot) => {
+          database.ref(path).set(data).then(() => {
+            self.postMessage({cmd: "invoke", listener: name});
+          });
+          break;
+        }
+        case "pushData": {
+          const {path, data} = event.data.data;
+          const name = event.data.listener;
+          database.ref(path).push(data).then((ref) => {
+            self.postMessage({cmd: "data", listener: name, data: ref});
+          });
+          break;
+        }
+        case "readData": {
+          const {path} = event.data.data;
+          const name = event.data.listener;
+          database.ref(path).once('value').then((snapshot) => {
               const data = snapshot.val();
               self.postMessage({cmd: "data", listener: name, data: data});
+          })
+          break;
+        }
+        case "updateData": {
+          const {path, data} = event.data.data;
+          const name = event.data.listener;
+          database.ref(path).update(data).then(() => {
+              self.postMessage({cmd: "invoke", listener: name});
+          })
+          break;
+        }
+        case "deleteData": {
+          const {path} = event.data.data;
+          const name = event.data.listener;
+          database.ref(path).remove().then(() => {
+              self.postMessage({cmd: "invoke", listener: name});
           })
           break;
         }

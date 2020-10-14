@@ -43,13 +43,6 @@ module.exports = (env) => {
         <script src="assets/scripts/demo-btns.js"></script>
         <script src="assets/scripts/nav.js"></script>
       </body>
-      
-      <script src="/__/firebase/7.17.1/firebase-app.js"></script>
-      <script src="/__/firebase/7.17.1/firebase-analytics.js"></script>
-      <script src="/__/firebase/init.js"></script>
-      <script>
-        firebase.analytics();
-      </script>
       </html>
       
       `

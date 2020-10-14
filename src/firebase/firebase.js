@@ -1,4 +1,8 @@
 import Worker from 'worker-loader!../worker/worker';
+import {firebase} from '@firebase/app';
+import '@firebase/auth';
+import '@firebase/analytics';
+
 const config = {
     apiKey: process.env.FIREBASE_KEY,
     authDomain: "rvn-50280.firebaseapp.com",
@@ -10,6 +14,18 @@ const config = {
     measurementId: "G-18YLLL9XTR"
 
 }
+firebase.initializeApp(config);
+firebase.analytics();
+const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+
+const _createID = () => {
+  let guid = 'xxyxyx'.replace(/[xy]/g, (c) => {
+  let r = Math.random() * 16 | 0,
+  v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  return guid;
+}
 class FireBaseWorker {
     constructor() {
       this.worker = new Worker();
@@ -18,6 +34,8 @@ class FireBaseWorker {
           case "data":
             this.listeners[event.data.listener](event.data.data);
             break;
+          case "invoke":
+            this.listeners[event.data.listener]();
           default:
             break
         }
@@ -28,25 +46,42 @@ class FireBaseWorker {
     initializeApp(config) {
       this.worker.postMessage({ cmd: "initializeApp", data: config });
     }
-  
-    saveDraft(id,uuid,info) {
-      this.worker.postMessage({cmd: "saveDraft", data: {id, uuid, info}});
+
+    pushData(data, callback) {
+      const name = _createID();
+      this.worker.postMessage({cmd: "pushData", listener: name, data});
+      this.registerListener(name, callback);
     }
 
-    deleteDraft(id, uuid) {
-      this.worker.postMessage({cmd: "deleteDraft", data: {id, uuid}});
+    setData(data, callback) {
+      const name = _createID();
+      this.worker.postMessage({cmd: "setData", listener: name, data});
+      this.registerListener(name, callback);
     }
 
-    readData(id, callback) {
-      this.worker.postMessage({cmd: "getData", listener: "readData", data: {id}});
-      this.registerListener("readData", callback);
+    readData(data, callback) {
+      const name = _createID();
+      this.worker.postMessage({cmd: "readData", listener: name, data});
+      this.registerListener(name, callback);
     }
-  
+    
+    updateData(data, callback) {
+      const name = _createID();
+      this.worker.postMessage({cmd: "updateData", listener: name, data});
+      this.registerListener(name, callback);
+    }
+
+    deleteData(data, callback) {
+      const name = _createID();
+      this.worker.postMessage({cmd: "deleteData", listener: name, data});
+      this.registerListener(name, callback);
+    }
+
     registerListener(name, callback) {
       this.listeners[name] = callback;
     }
 }
-const firebase = new FireBaseWorker();
-firebase.initializeApp(config);
+const database = new FireBaseWorker();
+database.initializeApp(config);
  
-export default firebase;
+export {database as default , firebase, googleAuthProvider};

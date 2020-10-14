@@ -8,9 +8,13 @@
     "server": "webpack-dev-server"
   },
   "dependencies": {
+    "@firebase/analytics": "^0.6.0",
+    "@firebase/app": "^0.6.11",
+    "@firebase/auth": "^0.14.9",
     "axios": "^0.19.2",
     "dotenv-webpack": "^1.8.0",
     "fs": "^0.0.1-security",
+    "history": "^5.0.0",
     "jszip": "^3.5.0",
     "localforage": "^1.7.4",
     "lodash": "^4.17.19",

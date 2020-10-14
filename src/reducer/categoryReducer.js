@@ -5,9 +5,11 @@ import {
 
 const INITIAL_STATE = [
   {
+    id: 'sureNotRep',
     name: "blank"
   },
   {
+    id: 'notRep',
     name: "guide"
   }
 ];
