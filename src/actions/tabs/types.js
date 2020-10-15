@@ -1,4 +1,5 @@
 export const ADD_TAB = 'add_tab';
+export const SET_TAB = 'set_tab';
 export const EDIT_TAB = 'edit_tab';
 export const REMOVE_TAB = 'remove_tab';
 export const REMOVE_ALL_TABS = 'remove_all_tabs';

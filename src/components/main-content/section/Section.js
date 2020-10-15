@@ -4,7 +4,7 @@ import {crawler, crawlerPopularPost} from '../../../crawler/crawler';
 import SuggestPost from './SuggestPost';
 import {addCategory} from '../../../actions/tabs/category_action'
 import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tabs/tabs_action'
-import {setCredit} from '../../../actions/credit/credit_action';
+import {setCreditWCloud} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
 import CommentPreview from '../comment/CommentPreview';
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
@@ -78,7 +78,7 @@ class Section extends React.Component {
   componentDidUpdate() {
     if(this.props.credit !== this.state.credit) {
       this.setState({credit: this.props.credit});
-      firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
+      //firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -103,7 +103,7 @@ class Section extends React.Component {
     }
     else {
       this.savePost().then(() => {
-        firebase.saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
+        //firebase.saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
       });
     }
   }
@@ -193,9 +193,9 @@ class Section extends React.Component {
   handleSubmitCredit = (event) => {
     event.preventDefault();
     const credit = event.target.elements.credit.value.trim();
-    this.props.setCredit(credit);
+    this.props.setCreditWCloud(credit);
     this.setState({credit: credit});
-    firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+    //firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
   }
 
   //Lưu note
@@ -483,6 +483,6 @@ function mapStateToProps(state) {
   };
 }
 const mapDispatchToProps = {
-  addTab, deleteTab, updateTab, addCategory, updateComments, replaceTabID, setCredit
+  addTab, deleteTab, updateTab, addCategory, updateComments, replaceTabID, setCreditWCloud
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Section);

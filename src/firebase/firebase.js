@@ -33,9 +33,11 @@ class FireBaseWorker {
         switch (event.data.cmd) {
           case "data":
             this.listeners[event.data.listener](event.data.data);
+            delete this.listeners[event.data.listener];
             break;
           case "invoke":
             this.listeners[event.data.listener]();
+            delete this.listeners[event.data.listener];
           default:
             break
         }
@@ -47,34 +49,35 @@ class FireBaseWorker {
       this.worker.postMessage({ cmd: "initializeApp", data: config });
     }
 
-    pushData(data, callback) {
+    pushData(data) {
       const name = _createID();
       this.worker.postMessage({cmd: "pushData", listener: name, data});
-      this.registerListener(name, callback);
+      return new Promise(resolve => this.registerListener(name, resolve));
     }
 
-    setData(data, callback) {
+    setData(data) {
       const name = _createID();
       this.worker.postMessage({cmd: "setData", listener: name, data});
-      this.registerListener(name, callback);
+      return new Promise(resolve => this.registerListener(name, resolve));
     }
 
-    readData(data, callback) {
+    readData(data) {
       const name = _createID();
       this.worker.postMessage({cmd: "readData", listener: name, data});
-      this.registerListener(name, callback);
+      return new Promise(resolve => this.registerListener(name, resolve));
+      
     }
     
-    updateData(data, callback) {
+    updateData(data) {
       const name = _createID();
       this.worker.postMessage({cmd: "updateData", listener: name, data});
-      this.registerListener(name, callback);
+      return new Promise(resolve => this.registerListener(name, resolve));
     }
 
-    deleteData(data, callback) {
+    deleteData(data) {
       const name = _createID();
       this.worker.postMessage({cmd: "deleteData", listener: name, data});
-      this.registerListener(name, callback);
+      return new Promise(resolve => this.registerListener(name, resolve));
     }
 
     registerListener(name, callback) {

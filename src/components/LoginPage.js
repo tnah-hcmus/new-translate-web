@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { startLogin } from '../actions/auth/auth';
+import { startLoginGoogle } from '../actions/auth/auth';
 
-export const LoginPage = ({ startLogin }) => {
+export const LoginPage = ({ google }) => {
     console.log("not hello")
     return (
   <div>
-    <button onClick={startLogin}>Login</button>
+    <button onClick={google}>Login</button>
   </div>
 );}
 
 const mapDispatchToProps = (dispatch) => ({
-  startLogin: () => dispatch(startLogin())
+  google: () => dispatch(startLoginGoogle())
 });
 
 export default connect(undefined, mapDispatchToProps)(LoginPage);

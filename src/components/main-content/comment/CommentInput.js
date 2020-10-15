@@ -24,7 +24,7 @@ const CommentInput = (props) => {
     const handleBlur = (e) => {
         editTransComment(props.name, e.target.value);
         props.savePost().then(() => {
-            firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+            //firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
         });
     }
     return (

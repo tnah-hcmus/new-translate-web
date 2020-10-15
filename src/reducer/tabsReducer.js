@@ -1,9 +1,10 @@
 import {
   ADD_TAB,
+  SET_TAB,
   REMOVE_TAB,
   REMOVE_ALL_TABS,
   UPDATE_COMMENTS,
-  UPDATE_TAB
+  UPDATE_TAB,
 } from '../actions/tabs/types';
 
 const createID = () => {
@@ -98,6 +99,8 @@ export default (state = INITIAL_STATE, action) => {
           return [ ...state, action.payload];
         } 
         else return state;
+    case SET_TAB:
+        return action.payload.tabs;
     case UPDATE_COMMENTS:
           return state.map((item) => {
             if(item.id === action.payload.id){

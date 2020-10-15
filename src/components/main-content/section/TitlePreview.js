@@ -25,7 +25,7 @@ const TitlePreview = (props) => {
     const handleBlur = (e) => {
         editTransComment(id, e.target.value);
         savePost().then(() => {
-            firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'})
+            //firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'})
           });
     }
     return (
