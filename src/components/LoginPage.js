@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { startLoginGoogle } from '../actions/auth/auth';
 
 export const LoginPage = ({ google }) => {
-    console.log("not hello")
     return (
   <div>
     <button onClick={google}>Login</button>

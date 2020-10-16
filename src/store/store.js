@@ -34,6 +34,7 @@ const localDB = localForage.createInstance({
 const persistConfig = {
   key: 'root',
   whitelist: ['auth', 'theme', 'replies', 'category'],
+  blacklist: ['tabs', 'credit'],
   storage: localDB,
 }
 

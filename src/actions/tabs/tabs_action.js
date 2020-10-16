@@ -23,7 +23,6 @@ export const deleteTabWCloud = (id, category) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs/${id}`;
-    console.log(id);
     return database.deleteData({path}).then(() => {
       dispatch(deleteTab(id, category));
     })
@@ -67,7 +66,6 @@ export const updateTabWCloud = (id, newInfo) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs/${id}`;
-    console.log(newInfo);
     return database.setData({path, data: newInfo}).then(() => {
       dispatch(updateTab(id, newInfo));
     })
@@ -102,7 +100,6 @@ export const startSetTabs = () => {
     const path = `users/${uid}/tabs`;
     return database.readData({path}).then((snapshot) => {
       let tabs = [];
-      console.log(snapshot);
       if(snapshot) {
         tabs = Object.keys(snapshot).map((key) => snapshot[key].id ? snapshot[key] : Object.assign(snapshot[key], {id: key}))
       }

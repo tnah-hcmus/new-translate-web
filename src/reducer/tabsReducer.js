@@ -95,12 +95,14 @@ export default (state = INITIAL_STATE, action) => {
         }
         else return state;
     case ADD_TAB:
+        console.log("add")
         if(state.filter((item) => item.link === action.payload.link).length === 0 || (action.payload.link === '')) {
+          console.log([ ...state, action.payload]);
           return [ ...state, action.payload];
         } 
         else return state;
     case SET_TAB:
-        return [ ...state, ...action.payload.tabs];
+        return [...BASE_STATE,...action.payload.tabs];
     case UPDATE_COMMENTS:
           return state.map((item) => {
             if(item.id === action.payload.id){

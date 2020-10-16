@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ThemePanel from './ThemePanel';
 import NavItem from './NavItem';
-
+import OutPanel from './LogOut';
 //Component cho navbar, props truyền vào: title, focus title (hiện tên), category/tên sub (get từ Store) -> show category
 const Nav = (props) => {
   return (
@@ -24,6 +24,7 @@ const Nav = (props) => {
           )})
         }
         {<NavItem key='guide' category='guide'/> /*Move guide section to last section*/}
+        <OutPanel/>
         <ThemePanel/>
         <footer className="nav-footer">
           <button type="button" id="button-about" className="nav-footer-button"><a href="https://facebook.com/lcf.star" aria-label="Homepage" target = "_blank">From La Mia with love</a></button>
