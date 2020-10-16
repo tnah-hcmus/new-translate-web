@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {crawler, crawlerPopularPost} from '../../../crawler/crawler';
 import SuggestPost from './SuggestPost';
 import {addCategory} from '../../../actions/tabs/category_action'
-import {addTab, deleteTab, updateComments, updateTab} from '../../../actions/tabs/tabs_action'
+import {addTab, deleteTabWCloud, updateCommentsWCloud, updateTabWCloud} from '../../../actions/tabs/tabs_action'
 import {setCreditWCloud} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
 import CommentPreview from '../comment/CommentPreview';
@@ -20,7 +20,7 @@ import moment from 'moment';
 import PermissionModal from '../modal/PermissionModal';
 import blackList from '../../../list/blackList'
 import warningList from '../../../list/graySubList'
-import firebase from '../../../firebase/firebase';
+import {saveDraft, getDraft} from '../../../actions/draft/draft';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -78,7 +78,7 @@ class Section extends React.Component {
   componentDidUpdate() {
     if(this.props.credit !== this.state.credit) {
       this.setState({credit: this.props.credit});
-      //firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
+      saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -103,7 +103,7 @@ class Section extends React.Component {
     }
     else {
       this.savePost().then(() => {
-        //firebase.saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
+        saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
       });
     }
   }
@@ -146,11 +146,12 @@ class Section extends React.Component {
       }
       let getIDRegex = new RegExp("comments\/([a-zA-z0-9]*)");
       id = link.match(getIDRegex)[1];
-      firebase.readData(id, (result) => {
+      getDraft(id).then((result) => {
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
-            this.props.deleteTab(this.props.tab.id, this.props.tab.category);
-            document.getElementById('button-' + id).click();
+            const button = document.getElementById('button-' + id);
+            if(button) button.click()
+            else allowSave = true;
           }
           else {
             moment.locale('vi');
@@ -195,7 +196,7 @@ class Section extends React.Component {
     const credit = event.target.elements.credit.value.trim();
     this.props.setCreditWCloud(credit);
     this.setState({credit: credit});
-    //firebase.saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+    saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
   }
 
   //Lưu note
@@ -267,15 +268,16 @@ class Section extends React.Component {
       const transComment = preState.trans;
       if(!transComment[id])
       {
-        transComment[id] = {body: '', level: level, prefixed: prefixed, author: author, description: info, children: children || []};
+        transComment[id] = {body: '', level: level, prefixed: prefixed || "", author: author || "", description: info || "", children: children || []};
         return {
           trans: transComment
         }
       }
-      if(transComment[id].prefixed === null)
+      if(transComment[id].prefixed === null || transComment[id].prefixed === "")
       {
-        const children = transComment[id].children;
-        transComment[id] = {body: '', level: level, prefixed: prefixed, children: [...children], author: author, description: info};
+        const children = transComment[id].children || [];
+        transComment[id] = {body: '', level: level, prefixed: prefixed || "", children: [...children], author: author || "", description: info || ""};
+
         return {
           trans: transComment
         }
@@ -300,6 +302,7 @@ class Section extends React.Component {
   //Hàm đệ quy để quét theo thứ tự DFS các comment (đã được cấu trúc dạng cây)
   getTransReplies = (content, comments, array, level) => {
     let endLine = "\r\n";
+    comments.children = comments.children || [];
     if(comments.children.length === 0) {
       if(!(comments.body.trim() === '')) content = content + comments.prefixed + comments.author + comments.description.replace(/points\ points/, 'points').replace(/point\ points/, 'point') + endLine + comments.body + endLine;
       return content;
@@ -371,16 +374,22 @@ class Section extends React.Component {
         link: this.state.link,
         note: this.state.note,
         iconHref: this.props.tab.iconHref,
-        trans: this.state.trans
+        trans: this.state.trans || {}
+      }
+      if(Object.keys(data.trans).length === 0) {
+        data.trans[data.id] = ""
       }
       //nếu thuộc blank category -> chuyển category
+      console.log(this.props.tab.id);
       if(this.props.tab.category === 'blank' || this.props.tab.category !== data.category) {
         this.props.addCategory(this.state.info.subReddit);
         this.props.deleteTab(this.props.tab.id, this.props.tab.category);
         this.props.replaceTabID(this.props.tab.id, data.id);
         this.props.addTab(data);
         await this.sleep(1000);
-        document.getElementById('button-' + data.id).click();
+        const button = document.getElementById('button-' + data.id)
+        if(button) button.click()
+        else setTimeout(() => document.getElementById('button-' + data.id), 1000);
       }
       else {
         const button = document.getElementById(this.props.tab.id + '-save');
@@ -389,7 +398,9 @@ class Section extends React.Component {
         setTimeout(() => {button.innerHTML = 'Save'}, 2200);
         this.props.updateTab(this.props.tab.id, data); //Nếu không, không tạo tab mới -> cập nhật lại comment, title trên tab cũ
         if(this.props.tab.id !== data.id) this.props.replaceTabID(this.props.tab.id, data.id);
-        document.getElementById('button-' + data.id).click();
+        const button2 = document.getElementById('button-' + data.id)
+        if(button2) button2.click()
+        else setTimeout(() => document.getElementById('button-' + data.id), 1000);
       }
     }
   }
@@ -483,6 +494,6 @@ function mapStateToProps(state) {
   };
 }
 const mapDispatchToProps = {
-  addTab, deleteTab, updateTab, addCategory, updateComments, replaceTabID, setCreditWCloud
+  addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory, updateComments: updateCommentsWCloud, replaceTabID, setCreditWCloud
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Section);

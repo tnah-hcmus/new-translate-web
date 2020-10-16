@@ -1,5 +1,5 @@
 import React, {Suspense, lazy, useState, useContext, useEffect} from 'react';
-import {deleteTab} from '../../../actions/tabs/tabs_action';
+import {deleteTabWCloud} from '../../../actions/tabs/tabs_action';
 import {deleteAllReplies} from '../../../actions/replies/replies_action';
 import { connect } from 'react-redux';
 const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'../modal/NoteModal'));
@@ -7,7 +7,7 @@ import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import SectionContext from '../../../context/section-context';
-import firebase from '../../../firebase/firebase';
+import {saveDraft, deleteDraft} from '../../../actions/draft/draft';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
@@ -29,7 +29,7 @@ const SectionHeader = (props) => {
             buttons: [
                 {
                 label: 'Xoá',
-                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); firebase.deleteDraft(id, uuid);}
+                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); deleteDraft(id, uuid);}
                 },
                 {
                 label: 'Mình nhầm'
@@ -54,7 +54,7 @@ const SectionHeader = (props) => {
     }
     const save = () => {
         savePost().then(() => {
-            //firebase.saveDraft(id,uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+            saveDraft(id,uuid,{timemark: Date.now(), value: (value !== '') ? value : 'Một member chăm chỉ nào đó'});
           });
     }
         return (
@@ -112,6 +112,6 @@ const SectionHeader = (props) => {
         )
 }
 const mapDispatchToProps = {
-    deleteTab, deleteAllReplies
+    deleteTab: deleteTabWCloud, deleteAllReplies
   }
 export default connect(null, mapDispatchToProps)(SectionHeader);

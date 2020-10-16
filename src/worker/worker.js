@@ -27,7 +27,7 @@ if( 'function' === typeof importScripts) {
           const {path, data} = event.data.data;
           const name = event.data.listener;
           database.ref(path).push(data).then((ref) => {
-            self.postMessage({cmd: "data", listener: name, data: ref});
+            self.postMessage({cmd: "data", listener: name, data: ref.key});
           });
           break;
         }
@@ -43,6 +43,7 @@ if( 'function' === typeof importScripts) {
         case "updateData": {
           const {path, data} = event.data.data;
           const name = event.data.listener;
+          console.log(data);
           database.ref(path).update(data).then(() => {
               self.postMessage({cmd: "invoke", listener: name});
           })
@@ -50,6 +51,7 @@ if( 'function' === typeof importScripts) {
         }
         case "deleteData": {
           const {path} = event.data.data;
+          console.log(path);
           const name = event.data.listener;
           database.ref(path).remove().then(() => {
               self.postMessage({cmd: "invoke", listener: name});

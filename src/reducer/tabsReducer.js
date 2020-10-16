@@ -100,7 +100,7 @@ export default (state = INITIAL_STATE, action) => {
         } 
         else return state;
     case SET_TAB:
-        return action.payload.tabs;
+        return [ ...state, ...action.payload.tabs];
     case UPDATE_COMMENTS:
           return state.map((item) => {
             if(item.id === action.payload.id){

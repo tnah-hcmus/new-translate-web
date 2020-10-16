@@ -23,6 +23,7 @@ export const deleteTabWCloud = (id, category) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs/${id}`;
+    console.log(id);
     return database.deleteData({path}).then(() => {
       dispatch(deleteTab(id, category));
     })
@@ -33,14 +34,25 @@ export const deleteTabWCloud = (id, category) => {
 export const addTab = (tab) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
-    const path = `users/${uid}/tabs`;
-    return database.pushData({path, data: tab}).then( (ref) => {
-      tab.id = ref.key;
-      dispatch({
-        type: ADD_TAB,
-        payload: tab
-      });
-    })
+    if(tab.id) {
+      const path = `users/${uid}/tabs/${tab.id}`;
+      return database.setData({path, data: tab}).then(() => {
+        dispatch({
+          type: ADD_TAB,
+          payload: tab
+        })
+      })
+    }
+    else {
+      const path = `users/${uid}/tabs`;
+      return database.pushData({path, data: tab}).then((ref) => {
+        tab.id = ref;
+        dispatch({
+          type: ADD_TAB,
+          payload: tab
+        });
+      })
+    }
   }
 }
 
@@ -55,7 +67,8 @@ export const updateTabWCloud = (id, newInfo) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs/${id}`;
-    return database.updateData({path, data: newInfo}).then(() => {
+    console.log(newInfo);
+    return database.setData({path, data: newInfo}).then(() => {
       dispatch(updateTab(id, newInfo));
     })
   }
@@ -88,14 +101,10 @@ export const startSetTabs = () => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs`;
     return database.readData({path}).then((snapshot) => {
-      const tabs = [];
+      let tabs = [];
+      console.log(snapshot);
       if(snapshot) {
-        snapshot.forEach((childSnapshot) => {
-          tabs.push({
-            id: childSnapshot.key,
-            ...childSnapshot.val()
-          });
-        });
+        tabs = Object.keys(snapshot).map((key) => snapshot[key].id ? snapshot[key] : Object.assign(snapshot[key], {id: key}))
       }
       dispatch(setTabs(tabs));
     });
