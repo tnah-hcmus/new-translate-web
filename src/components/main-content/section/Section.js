@@ -2,7 +2,7 @@ import React, {Suspense, lazy} from 'react';
 import { connect } from 'react-redux';
 import {crawler, crawlerPopularPost} from '../../../crawler/crawler';
 import SuggestPost from './SuggestPost';
-import {addCategory} from '../../../actions/tabs/category_action'
+import {addCategoryWCloud} from '../../../actions/tabs/category_action'
 import {addTab, deleteTabWCloud, updateCommentsWCloud, updateTabWCloud} from '../../../actions/tabs/tabs_action'
 import {setCreditWCloud} from '../../../actions/credit/credit_action';
 import {replaceTabID} from '../../../actions/replies/replies_action';
@@ -44,7 +44,7 @@ class Section extends React.Component {
   componentDidMount(){
     const present = this.context.state.present;
     //Nếu có credit
-    if(this.props.credit !== '') {
+    if(this.props.credit && this.props.credit !== '') {
       this.setState({credit: this.props.credit});
     }
     //Nếu trước đó có nội dung -> restore nội dung thông tin
@@ -76,9 +76,9 @@ class Section extends React.Component {
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
   componentDidUpdate() {
-    if(this.props.credit !== this.state.credit) {
+    if(this.props.credit && this.props.credit !== this.state.credit) {
       this.setState({credit: this.props.credit});
-      saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
+      saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit && this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -103,7 +103,7 @@ class Section extends React.Component {
     }
     else {
       this.savePost().then(() => {
-        saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
+        saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit && this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
       });
     }
   }
@@ -196,7 +196,7 @@ class Section extends React.Component {
     const credit = event.target.elements.credit.value.trim();
     this.props.setCreditWCloud(credit);
     this.setState({credit: credit});
-    saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
+    saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (credit && credit !== '') ? credit : 'Một member chăm chỉ nào đó'});
   }
 
   //Lưu note
@@ -494,6 +494,6 @@ function mapStateToProps(state) {
   };
 }
 const mapDispatchToProps = {
-  addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory, updateComments: updateCommentsWCloud, replaceTabID, setCreditWCloud
+  addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory: addCategoryWCloud, updateComments: updateCommentsWCloud, replaceTabID, setCreditWCloud
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Section);

@@ -8,6 +8,7 @@ import {store} from './store/store';
 import { login, logout } from './actions/auth/auth';
 import {startSetCredit} from './actions/credit/credit_action';
 import {startSetTabs} from './actions/tabs/tabs_action';
+import {startSetCategories} from './actions/tabs/category_action';
 
 let hasRendered = false;
 const renderApp = () => {
@@ -25,6 +26,7 @@ firebase.auth().onAuthStateChanged((user) => {
     let initPromise = [];
     initPromise.push(store.dispatch(startSetCredit()));
     initPromise.push(store.dispatch(startSetTabs()));
+    initPromise.push(store.dispatch(startSetCategories()));
     Promise.all(initPromise).then(()=>{
       renderApp();
     })

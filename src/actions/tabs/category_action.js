@@ -1,4 +1,4 @@
-import { ADD_CATEGORY, DELETE_CATEGORY } from "./types";
+import { ADD_CATEGORY, DELETE_CATEGORY, SET_CATEGORIES } from "./types";
 import database from '../../firebase/firebase';
 //Delete a category
 export const deleteCategory  = (category) => {
@@ -12,7 +12,7 @@ export const deleteCategoryWCloud = (category) => {
     const uid = getState().auth.uid;
     const cat = getState().category.filter((item) => item.name === category);
     if(cat.length > 0) {
-      const path = `users/${uid}/category/${cat[0].id}`;
+      const path = `users/${uid}/categories/${cat[0].id}`;
       return database.deleteData({path},() => {
         dispatch(deleteCategory(category));
       }) 
@@ -31,9 +31,27 @@ export const addCategory = (category, id) => ({
 export const addCategoryWCloud = (category) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
-    const path = `users/${uid}/category`;
+    const path = `users/${uid}/categories`;
     return database.pushData({path, data: category},(ref) => {
       dispatch(addCategory(category, ref.key));
     })
   }
 }
+
+export const setCategory = (categories) => ({
+  type: SET_CATEGORIES, 
+  payload: categories
+});
+export const startSetCategories = () => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    const path = `users/${uid}/categories`;
+    return database.readData({path}).then((snapshot) => {
+      let categories = [];
+      if(snapshot) {
+        categories = Object.keys(snapshot).map((key) => ({id: key, name: snapshot[key]}))
+      }
+      dispatch(setCategory(categories));
+    });
+  };
+};

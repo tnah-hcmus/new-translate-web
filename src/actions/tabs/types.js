@@ -7,4 +7,5 @@ export const UPDATE_TAB = 'update_tab';
 export const ADD_CATEGORY = 'add_category'
 export const DELETE_CATEGORY = 'delete_category'
 export const UPDATE_COMMENTS = 'update_comments';
+export const SET_CATEGORIES = 'SET_CATEGORIES';
 

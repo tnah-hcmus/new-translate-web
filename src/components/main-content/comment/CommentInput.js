@@ -7,7 +7,6 @@ import {saveDraft} from '../../../actions/draft/draft';
 const CommentInput = (props) => {
     const {addTransComment, editTransComment} = useContext(InputContext);
     const [value, setValue] = useState('');
-    const {id,uuid,credit} = useContext(SectionContext);
     useEffect(() => {
         if(props.trans[props.name]) {
             setValue(props.trans[props.name].body);

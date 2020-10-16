@@ -1,7 +1,7 @@
 import React from 'react';
 import NavButton from './NavButton';
 import {addTab} from '../../actions/tabs/tabs_action';
-import {deleteCategory} from '../../actions/tabs/category_action'
+import {deleteCategoryWCloud} from '../../actions/tabs/category_action'
 import { connect } from 'react-redux';
 
 //Component đại diện cho 1 category, bên trong gồm có các button con tương ứng với các tab thuộc category, truyền vào category.name, tabs (lấy những tab có category này)
@@ -58,6 +58,6 @@ function mapStateToProps(state) {
   };
 }
 const mapDispatchToProps = {
-  addTab, deleteCategory
+  addTab, deleteCategory: deleteCategoryWCloud
 }
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(NavItem));

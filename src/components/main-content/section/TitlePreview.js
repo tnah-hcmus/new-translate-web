@@ -2,11 +2,10 @@ import React, {useContext, useState} from 'react';
 import InputContext from '../../../context/input-context';
 import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
-import {saveDraft} from '../../../actions/draft/draft';
 
 const TitlePreview = (props) => {
     const {addTransComment, editTransComment} = useContext(InputContext);
-    const {id, title, subReddit, upvotes, uuid, savePost, credit} = useContext(SectionContext);
+    const {id, title, subReddit, upvotes} = useContext(SectionContext);
     const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
     const parseContent = () => {
         let parser = new DOMParser;
