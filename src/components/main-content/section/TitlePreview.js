@@ -4,7 +4,7 @@ import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
 
 const TitlePreview = (props) => {
-    const {addTransComment, editTransComment} = useContext(InputContext);
+    const {addTransComment, editTransComment, changed} = useContext(InputContext);
     const {id, title, subReddit, upvotes} = useContext(SectionContext);
     const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
     const parseContent = () => {
@@ -20,9 +20,11 @@ const TitlePreview = (props) => {
     }
     const handleFocus = (e) => {
         addTransComment(id, 0);
+        changed();
     }
     const handleBlur = (e) => {
         editTransComment(id, e.target.value);
+        changed();
     }
     return (
         <div className="demo" style = {{display: "flex", flexDirection: "column"}}>

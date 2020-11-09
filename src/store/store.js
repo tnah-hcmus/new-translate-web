@@ -9,14 +9,14 @@ import authReducer from '../reducer/authReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import localForage from 'localforage';
 
-const _createUUID = () => {
+/*const _createUUID = () => {
   let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
   let r = Math.random() * 16 | 0,
   v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
   return guid;
-}
+}*/
 
 //map reducer -> store
 const rootReducer = combineReducers({
@@ -39,11 +39,6 @@ const persistConfig = {
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
-
-const serializedState = localStorage.getItem('rvn-uuid');
-if (serializedState === null) {
-  localStorage.setItem('rvn-uuid', JSON.stringify(_createUUID()));
-}
 
 
 

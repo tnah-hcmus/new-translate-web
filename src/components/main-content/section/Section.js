@@ -24,6 +24,7 @@ import {saveDraft, getDraft} from '../../../actions/draft/draft';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
+  changed = false;
   state = {
     link: '',
     info: {},
@@ -61,6 +62,7 @@ class Section extends React.Component {
           comments: result[1]
         });
         this.afterRestore();
+        setInterval(() => this.savePost(), 60000);
         document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
         document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
       })
@@ -84,6 +86,9 @@ class Section extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     if(isEqual(nextProps, this.props) && isEqual(nextState, this.state)) return false;
     else return true;
+  }
+  handleChanged = () => {
+    this.changed = true;
   }
   checkAuthor = (info) => {
     if(blackList.includes(info.author.toLowerCase())) {
@@ -365,6 +370,8 @@ class Section extends React.Component {
 
   //Lưu thông tin về post và nội dung các comment đã được dịch lại -> tabInfo -> lưu vào store
   savePost = async() => {
+    if(!this.changed) return;
+    this.changed = false; 
     if(this.state.link) {
       const data = {
         id: this.state.info.id,
@@ -428,7 +435,7 @@ class Section extends React.Component {
           handleSubmitCredit = {this.handleSubmitCredit}
         />
       </Suspense>
-        <InputContext.Provider value = {{addTransComment: this.addTransComment, editTransComment: this.editTransComment}}>
+        <InputContext.Provider value = {{addTransComment: this.addTransComment, editTransComment: this.editTransComment, changed: this.handleChanged}}>
           <div className = {this.state.info.id ? "title-panel shown" : "title-panel hide"}>
           <Suspense fallback = {<div></div>} key = {this.state.info.id + '-title-suspense'}>
             <TitlePreview
@@ -491,6 +498,7 @@ class Section extends React.Component {
 function mapStateToProps(state) {
   return { 
     credit: state.credit,
+    uuid: state.auth.uid
   };
 }
 const mapDispatchToProps = {

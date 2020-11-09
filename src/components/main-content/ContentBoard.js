@@ -90,7 +90,6 @@ const ContentBoard = (props) => {
               key = {tab.id}
               tab = {tab}
               helper = {helper}
-              uuid = {props.uuid}
               setGoogleHelper = {setGoogleHelper}
               setHelper = {setHelper}
             /> 

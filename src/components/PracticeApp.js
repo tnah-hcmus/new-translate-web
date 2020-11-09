@@ -13,13 +13,6 @@ const PracticeApp = (props) => {
   const [popover, setPopover] = useState(false);
   const selectionRef = useRef(null); //ref for highlight functional
   const popoverRef = useRef(null)
-  //Cover uuid for each user
-  let uuid;
-  const serializedState = localStorage.getItem('rvn-uuid');
-  if (serializedState === null) {
-      location.reload();
-  }
-  else uuid = JSON.parse(serializedState);
 
   return (
     <div ref={selectionRef} className = "wrap">
@@ -38,7 +31,6 @@ const PracticeApp = (props) => {
         </Suspense>
       <Suspense fallback={<div></div>}>
         <ContentBoard
-          uuid = {uuid}
           setPopover = {setPopover}
           popoverRef = {popoverRef}
         />

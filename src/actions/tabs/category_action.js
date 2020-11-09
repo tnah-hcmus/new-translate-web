@@ -13,7 +13,7 @@ export const deleteCategoryWCloud = (category) => {
     const cat = getState().category.filter((item) => item.name === category);
     if(cat.length > 0) {
       const path = `users/${uid}/categories/${cat[0].id}`;
-      return database.deleteData({path},() => {
+      return database.deleteData({path}).then(() => {
         dispatch(deleteCategory(category));
       }) 
     }
@@ -32,9 +32,16 @@ export const addCategoryWCloud = (category) => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/categories`;
-    return database.pushData({path, data: category},(ref) => {
-      dispatch(addCategory(category, ref.key));
-    })
+    const cat = getState().category.filter((item) => item.name === category);
+    if(cat.length===0) {
+      return database.pushData({path, data: category}).then((ref) => {
+        console.log("hello");
+        dispatch(addCategory(category, ref.key));
+      })
+    } else {
+      return;
+    }
+
   }
 }
 

@@ -5,7 +5,7 @@ import {saveDraft} from '../../../actions/draft/draft';
 
 
 const CommentInput = (props) => {
-    const {addTransComment, editTransComment} = useContext(InputContext);
+    const {addTransComment, editTransComment, changed} = useContext(InputContext);
     const [value, setValue] = useState('');
     useEffect(() => {
         if(props.trans[props.name]) {
@@ -19,9 +19,11 @@ const CommentInput = (props) => {
     }
     const handleFocus = (e) => {
         addTransComment(props.name, props.level, props.prefixed, props.parent, props.author, props.description);
+        changed();
     }
     const handleBlur = (e) => {
         editTransComment(props.name, e.target.value);
+        changed();
     }
     return (
         <div className = {props.active ? "demo-input-box demo-input-box-display": "demo-input-box" }>
