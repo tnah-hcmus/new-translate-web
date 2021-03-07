@@ -15,24 +15,17 @@ export default (state = INITIAL_STATE, action) => {
         }
         else return state;
     case ADD_REPLIES:
-        if(state[action.payload.tabID]) {
-            state[action.payload.tabID][action.payload.id] = action.payload.replies;
-        }
-        else {
-            state[action.payload.tabID] = {};
-            state[action.payload.tabID][action.payload.id] = action.payload.replies;
-        }
-        return state;
+        state[action.payload.tabID] = action.payload.replies
+        return {...state};
     case DELETE_REPLIES:
-        delete state[action.payload.tabID][action.payload.id] 
-        return state;
+        delete state[action.payload.tabID];
+        return {...state};
     case DELETE_ALL_REPLIES:
-        delete state[action.payload]
-        return state;
+        return INITIAL_STATE;
     case REPLACE_TABID:
         state[action.payload.newTabID] = state[action.payload.currentTabID];
         delete state[action.payload.currentTabID];
-        return state;
+        return {...state};
     default:
       return state;
   }

@@ -7,10 +7,10 @@ const TitlePreview = (props) => {
     const {addTransComment, editTransComment, changed} = useContext(InputContext);
     const {id, title, subReddit, upvotes} = useContext(SectionContext);
     const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
-    const parseContent = () => {
+    const parseContent = (data) => {
         let parser = new DOMParser;
         let dom = parser.parseFromString(
-            '<!doctype html><body>' + props.content,
+            '<!doctype html><body>' + data,
             'text/html');
         let decodedString = dom.body.textContent;
         return decodedString;
@@ -39,7 +39,7 @@ const TitlePreview = (props) => {
                 <div className="demo-controls">
                     <span className="demo-response"></span>
                 </div>
-                <p><b>{title}</b></p>
+                <p><b>{parseContent(title)}</b></p>
                 {!!props.content && <Markdown source = {parseContent(props.content)}/>}
             </div>
             <div className = "demo-input-box demo-input-box-display">

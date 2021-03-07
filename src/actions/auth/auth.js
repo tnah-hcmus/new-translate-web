@@ -1,4 +1,4 @@
-import { firebase, googleAuthProvider } from '../../firebase/firebase';
+import { firebase, googleAuthProvider, facebookAuthProvider } from '../../firebase/firebase';
 
 export const login = (uid) => ({
   type: 'LOGIN',
@@ -7,14 +7,21 @@ export const login = (uid) => ({
 
 export const startLoginGoogle = () => {
   return () => {
-    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
           .then(function() {
-            // Existing and future Auth states are now persisted in the current
-            // session only. Closing the window would clear any existing state even
-            // if a user forgets to sign out.
-            // ...
-            // New sign-in will be persisted with session persistence.
             return firebase.auth().signInWithRedirect(googleAuthProvider);
+          })
+          .catch(function(error) {
+            console.log(error);
+          }); 
+  };
+};
+
+export const startLoginFacebook = () => {
+  return () => {
+    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+          .then(function() {
+            return firebase.auth().signInWithRedirect(facebookAuthProvider);
           })
           .catch(function(error) {
             console.log(error);

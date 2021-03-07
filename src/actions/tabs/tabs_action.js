@@ -20,6 +20,7 @@ export const deleteTab = (id, category) => ({
     payload: {id: id, category: category}
   });
 export const deleteTabWCloud = (id, category) => {
+  console.log(id, category)
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/tabs/${id}`;

@@ -7,18 +7,18 @@ export const deleteCategory  = (category) => {
     payload:  category
   }
 };
-export const deleteCategoryWCloud = (category) => {
+export const deleteCategoryWCloud = (name) => {
   return (dispatch, getState) => {
-    const uid = getState().auth.uid;
-    const cat = getState().category.filter((item) => item.name === category);
-    if(cat.length > 0) {
-      const path = `users/${uid}/categories/${cat[0].id}`;
+    const state = getState();
+    const {auth, category} = state;
+    const uid = auth.uid;
+    const categories =  category.filter((item) => item.name === name);
+    console.log(category, categories, name)
+    if(categories.length > 0) {
+      const path = `users/${uid}/categories/${categories[0].id}`;
       return database.deleteData({path}).then(() => {
-        dispatch(deleteCategory(category));
-      }) 
-    }
-    else {
-      return dispatch(deleteCategory(category));
+        dispatch(deleteCategory(name));
+      });
     }
   }
 }
@@ -35,7 +35,6 @@ export const addCategoryWCloud = (category) => {
     const cat = getState().category.filter((item) => item.name === category);
     if(cat.length===0) {
       return database.pushData({path, data: category}).then((ref) => {
-        console.log("hello");
         dispatch(addCategory(category, ref.key));
       })
     } else {

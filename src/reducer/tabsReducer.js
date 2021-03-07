@@ -95,9 +95,7 @@ export default (state = INITIAL_STATE, action) => {
         }
         else return state;
     case ADD_TAB:
-        console.log("add")
         if(state.filter((item) => item.link === action.payload.link).length === 0 || (action.payload.link === '')) {
-          console.log([ ...state, action.payload]);
           return [ ...state, action.payload];
         } 
         else return state;
@@ -121,7 +119,7 @@ export default (state = INITIAL_STATE, action) => {
         const result = state.filter((item) => {
         return item.id !== action.payload.id || item.category !== action.payload.category;
         });
-        if(result.length > 4) return result;
+        if(result.length >= 4) return result;
         else return BASE_STATE;
     case REMOVE_ALL_TABS:
       return BASE_STATE;

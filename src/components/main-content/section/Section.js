@@ -5,7 +5,7 @@ import SuggestPost from './SuggestPost';
 import {addCategoryWCloud} from '../../../actions/tabs/category_action'
 import {addTab, deleteTabWCloud, updateCommentsWCloud, updateTabWCloud} from '../../../actions/tabs/tabs_action'
 import {setCreditWCloud} from '../../../actions/credit/credit_action';
-import {replaceTabID} from '../../../actions/replies/replies_action';
+import {replaceTabID, addReplies} from '../../../actions/replies/replies_action';
 import CommentPreview from '../comment/CommentPreview';
 const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./TitlePreview'));
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
@@ -21,6 +21,10 @@ import PermissionModal from '../modal/PermissionModal';
 import blackList from '../../../list/blackList'
 import warningList from '../../../list/graySubList'
 import {saveDraft, getDraft} from '../../../actions/draft/draft';
+import CircularProgressWithLabel from './ProgressBar';
+import {CircularProgress} from '@material-ui/core';
+import IDBWrapper from '../../../idb/index';
+
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.Component {
   static contextType = HistoryContext;
@@ -28,6 +32,8 @@ class Section extends React.Component {
   state = {
     link: '',
     info: {},
+    isCrawling: false,
+    store: null,
     comments: [],
     trans: {},
     content: '',
@@ -37,10 +43,16 @@ class Section extends React.Component {
     popover: false,
     transText: 'Đang dịch',
     search: '',
+    progressBarInfo: null,
     alert: false
   }
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
+  }
+  updateProgressBar = (data) => {
+    this.setState({
+      progressBarInfo: data
+    })
   }
   componentDidMount(){
     const present = this.context.state.present;
@@ -57,15 +69,32 @@ class Section extends React.Component {
         note: this.props.tab.note
       });
       //crawler lại comment (những comment chưa lưu)
-      crawler(this.props.tab.link.replace(/\?[^?]+$/,'')).then((result) => {
-        this.setState({
-          comments: result[1]
-        });
-        this.afterRestore();
-        setInterval(() => this.savePost(), 60000);
-        document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
-        document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
-      })
+      this.setState({
+        isCrawling: true
+      });
+      const idb = new IDBWrapper('reddit-post');
+      this.checkPostCommentExist(this.props.tab.id, idb).then((result) => {
+        if(!result || !this.props.replies[this.props.tab.id]) {
+          crawler(this.props.tab.link.replace(/\?[^?]+$/,''), this.updateProgressBar).then((result) => {
+            this.props.addReplies(this.props.tab.id, result.replies);
+            this.setState({
+              store: result.db[result.data.id],
+              comments: result.replies,
+              isCrawling: false
+            });
+            this.tabReady();
+          })
+        } else {
+          idb.openCollection(this.props.tab.id, "id").then(() => {
+            this.setState({
+              store: idb[this.props.tab.id],
+              comments: this.props.replies[this.props.tab.id],
+              isCrawling: false
+            });
+            this.tabReady();
+          })
+        }
+      });
     }
     else{
       // nếu không có nội dung -> không restore -> không hiện loading -> hiện thẳng panel comment}
@@ -87,6 +116,16 @@ class Section extends React.Component {
     if(isEqual(nextProps, this.props) && isEqual(nextState, this.state)) return false;
     else return true;
   }
+  checkPostCommentExist = async (id, idb) => {
+    const {objectStoreNames} = await idb.getDatabaseInformation();
+    return objectStoreNames.contains(id);
+  }
+  tabReady = () => {
+    this.afterRestore();
+    setInterval(() => this.savePost(), 60000);
+    document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
+    document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
+  }
   handleChanged = () => {
     this.changed = true;
   }
@@ -107,24 +146,30 @@ class Section extends React.Component {
       });
     }
     else {
-      this.savePost().then(() => {
+      this.savePost(true).then(() => {
         saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit && this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
       });
     }
   }
   crawlPost = (link, flag) => {
-    crawler(link.replace(/\?[^?]+$/,'')).then(async (result) => {
+    this.setState({
+      isCrawling: true
+    })
+    crawler(link.replace(/\?[^?]+$/,''), this.updateProgressBar).then(async (result) => {
+      this.props.addReplies(this.props.tab.id, result.replies);
       this.setState({
-        link: flag ? result[0].link : link.replace(/\?[^?]+$/,''),
-        info: result[0],
-        comments: result[1]
+        link: flag ? result.data.link : link.replace(/\?[^?]+$/,''),
+        info: result.data,
+        comments: result.replies,
+        store: result.db[result.data.id],
+        isCrawling: true
       })
       await this.sleep(1000);
-      if(warningList.includes(result[0].subReddit.toLowerCase())) {
+      if(warningList.includes(result.data.subReddit.toLowerCase())) {
         this.setState({alert: true});
       }
       else {
-        this.checkAuthor(result[0]);
+        this.checkAuthor(result.data);
       }
       
     });
@@ -135,6 +180,7 @@ class Section extends React.Component {
     if(this.props.tab.link) return;
     let allowSave = false;
     let link = event.target.elements.link.value.trim() + '/';
+    let linkElement = event.target.elements.link;
     this.setState({suggest: []})
     let regex = new RegExp("https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))reddit\.[^\s]{2,}|www\.reddit\.[^\s]{2,}|(?!www)redd.it\/[^\s]{2,}");
     let wwwRegex = new RegExp("https?:\/\/reddit\.[^\s]{2,}");
@@ -154,6 +200,7 @@ class Section extends React.Component {
       getDraft(id).then((result) => {
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
+            linkElement.value = '';
             const button = document.getElementById('button-' + id);
             if(button) button.click()
             else allowSave = true;
@@ -369,8 +416,8 @@ class Section extends React.Component {
   }
 
   //Lưu thông tin về post và nội dung các comment đã được dịch lại -> tabInfo -> lưu vào store
-  savePost = async() => {
-    if(!this.changed) return;
+  savePost = async(first) => {
+    if(!this.changed && !first) return;
     this.changed = false; 
     if(this.state.link) {
       const data = {
@@ -387,7 +434,6 @@ class Section extends React.Component {
         data.trans[data.id] = ""
       }
       //nếu thuộc blank category -> chuyển category
-      console.log(this.props.tab.id);
       if(this.props.tab.category === 'blank' || this.props.tab.category !== data.category) {
         this.props.addCategory(this.state.info.subReddit);
         this.props.deleteTab(this.props.tab.id, this.props.tab.category);
@@ -453,14 +499,22 @@ class Section extends React.Component {
           </div>
           <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div className = "panel" id={this.props.tab.id+'panel'}>
-          {this.state.comments.length !== 0 && <input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" onChange = {this.handleSearch} value = {this.state.search} ></input>}
-          {this.state.comments.length === 0 && <p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>}
+          {this.state.comments.length !== 0 ? (<input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" onChange = {this.handleSearch} value = {this.state.search} ></input>)
+           : (<div className = "progress">
+                {(!this.state.isCrawling ? 
+                  (<p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>) : 
+                  (this.state.progressBarInfo === null ? <CircularProgress color = "primary"/> : <CircularProgressWithLabel value = {this.state.progressBarInfo}/>)
+                )}
+              </div>)
+          }
               {
                 this.state.comments.map((rootComment, index) => (
                   <CommentPreview
                     key = {rootComment.id}
-                    info = {rootComment}
+                    id = {rootComment.id}
+                    store = {this.state.store}
                     parent = {[]}
+                    replies = {rootComment.replies}
                     tabID = {this.props.tab.id}
                     trans = {this.state.trans}
                     savePost = {this.savePost}
@@ -498,10 +552,11 @@ class Section extends React.Component {
 function mapStateToProps(state) {
   return { 
     credit: state.credit,
-    uuid: state.auth.uid
+    uuid: state.auth.uid,
+    replies: state.replies
   };
 }
 const mapDispatchToProps = {
-  addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory: addCategoryWCloud, updateComments: updateCommentsWCloud, replaceTabID, setCreditWCloud
+  addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory: addCategoryWCloud, updateComments: updateCommentsWCloud, replaceTabID, addReplies, setCreditWCloud
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Section);

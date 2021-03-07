@@ -1,11 +1,11 @@
 import { ADD_REPLIES, DELETE_REPLIES, DELETE_ALL_REPLIES, REPLACE_TABID  } from "./types";
-export const addReplies = (tabID, id, replies) => ({
+export const addReplies = (tabID, replies) => ({
     type: ADD_REPLIES,
-    payload: {tabID, id, replies}
+    payload: {tabID, replies}
   });
-export const deleteReplies = (tabID, id) => ({
+export const deleteReplies = (tabID) => ({
   type: DELETE_REPLIES,
-  payload: {tabID, id}
+  payload: {tabID}
 });
 export const deleteAllReplies = (tabID) => ({
   type: DELETE_ALL_REPLIES,

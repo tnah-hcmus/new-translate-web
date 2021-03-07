@@ -1,7 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
 import InputContext from '../../../context/input-context';
-import SectionContext from '../../../context/section-context'
-import {saveDraft} from '../../../actions/draft/draft';
 
 
 const CommentInput = (props) => {

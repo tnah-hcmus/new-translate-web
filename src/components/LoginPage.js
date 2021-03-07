@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { startLoginGoogle } from '../actions/auth/auth';
+import { startLoginGoogle, startLoginFacebook } from '../actions/auth/auth';
 import {Button, Link, Box, Grid, Typography, Avatar, CssBaseline, Paper} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import LockOutlined from '@material-ui/icons/LockOutlined';
@@ -11,13 +11,15 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(1),
     },
     submit: {
+      backgroundColor: "black",
+      color: "white",
       margin: theme.spacing(3, 0, 2),
     },
     root: {
       height: '100vh',
     },
     image: {
-      backgroundImage: 'url(https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.0-9/103606197_162639061967521_6438208494131350443_o.png?_nc_cat=108&ccb=2&_nc_sid=e3f864&_nc_ohc=9yRyaDXGof4AX9AT37v&_nc_ht=scontent.fsgn5-5.fna&oh=efdf0a8c721f8c21210372bcaf6b68ab&oe=5FCD9D0C)',
+      backgroundImage: 'url(https://i.imgur.com/UHhPcyB.jpg)',
       backgroundRepeat: 'no-repeat',
       backgroundColor:
         theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
@@ -32,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
       margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: "black",
     },
 }));
 
@@ -49,7 +51,7 @@ const Copyright = () => {
     );
 }
 
-const LoginPage = ({ google }) => {
+const LoginPage = ({ google, facebook }) => {
     const classes = useStyles();
     return (
       <Grid container component="main" className={classes.root}>
@@ -70,7 +72,20 @@ const LoginPage = ({ google }) => {
           color="primary"
           className={classes.submit}
         >
-          Log In With Google
+        <Typography component="h6" variant="h6">
+          Login with Google
+        </Typography> 
+        </Button>
+        <Button
+          onClick={facebook}
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+        >
+        <Typography component="h6" variant="h6">
+          Login with Facebook
+        </Typography> 
         </Button>
       <Box mt={5}>
           <Copyright />
@@ -81,6 +96,7 @@ const LoginPage = ({ google }) => {
     );
 }
 const mapDispatchToProps = (dispatch) => ({
-  google: () => dispatch(startLoginGoogle())
+  google: () => dispatch(startLoginGoogle()),
+  facebook: () => dispatch(startLoginFacebook()),
 });
 export default connect(undefined, mapDispatchToProps)(React.memo(LoginPage));

@@ -4,7 +4,7 @@ import Router from './router/routes';
 import './styles/styles.scss';
 import * as serviceWorker from './serviceWorker';
 import LoadingPage from './components/Loading';
-import {firebase} from './firebase/firebase';
+import {firebase, database} from './firebase/firebase';
 import {store} from './store/store';
 import { login, logout } from './actions/auth/auth';
 import {startSetCredit} from './actions/credit/credit_action';
@@ -12,6 +12,12 @@ import {startSetTabs} from './actions/tabs/tabs_action';
 import {startSetCategories} from './actions/tabs/category_action';
 
 let hasRendered = false;
+const getBlockedList = () => {
+  const path = `blocked`;
+  return database.readData({path}).then((snapshot) => {
+    return snapshot ? Object.keys(snapshot).map((key) => snapshot[key]) : [];
+  });
+}
 const renderApp = () => {
   if (!hasRendered) {
     ReactDOM.render(<Router/>, document.getElementById('app'));
@@ -21,16 +27,23 @@ const renderApp = () => {
 
 ReactDOM.render(<LoadingPage/>, document.getElementById('app'));
 
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged(async (user) => {
   if (user) {
-    store.dispatch(login(user.uid));
-    let initPromise = [];
-    initPromise.push(store.dispatch(startSetCredit()));
-    initPromise.push(store.dispatch(startSetTabs()));
-    initPromise.push(store.dispatch(startSetCategories()));
-    Promise.all(initPromise).then(()=>{
+    const blockedList = await getBlockedList();
+    if(blockedList.includes(user.uid)) {
+      store.dispatch(logout());
       renderApp();
-    })
+    } else {
+      store.dispatch(login(user.uid));
+      let initPromise = [
+        store.dispatch(startSetCredit()),
+        store.dispatch(startSetTabs()),
+        store.dispatch(startSetCategories())
+      ];
+      Promise.all(initPromise).then(()=>{
+        renderApp();
+      })
+    }
   } else {
     store.dispatch(logout());
     renderApp();
