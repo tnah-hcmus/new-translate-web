@@ -58,4 +58,4 @@ const PermissionModal = (props) => {
 PermissionModal.defaultProps = {
     content: "Dear xxxx," + "\r\n" + "I've been reading your stories on nosleep and am really fascinated by them. Now I'm planning to make a Vietnamese translation for some of you stories. I DO NOT make the translation for any kind of profit, of course, I just want to translate and post them on a private group by a non-profit fanpage RVN on Facebook for Vietnamese people who are interested in nosleep stories. I will include the link to the original post as well." + "\r\n" + "I am looking forward to your permission soon. Thank you." + "\r\n" + "Your sincerely," + "\r\n" + "___",
   };
-export default PermissionModal;
+export default React.memo(PermissionModal);

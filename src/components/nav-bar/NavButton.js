@@ -30,4 +30,4 @@ const NavButton = (props) => {
     )
 }
 
-export default NavButton;
+export default React.memo(NavButton);

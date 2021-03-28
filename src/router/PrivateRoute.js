@@ -33,4 +33,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(PrivateRoutes);
+export default React.memo(connect(mapStateToProps)(PrivateRoutes));

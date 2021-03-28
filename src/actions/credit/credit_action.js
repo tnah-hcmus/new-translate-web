@@ -11,17 +11,25 @@ export const setCreditWCloud = (credit) => {
     return (dispatch, getState) => {
       const uid = getState().auth.uid;
       const path = `users/${uid}/credit`;
-      return database.setData({path, data: credit}).then(() => {
-        dispatch(setCredit(credit))
-      })
+      return database.setData({path, data: credit})
+            .then(() => {
+              dispatch(setCredit(credit))
+            })
+            .catch((err) => {
+              console.log(err);
+            });
     }
 }
 export const startSetCredit = () => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/credit`;
-    return database.readData({path}).then((credit) => {
-      dispatch(setCredit(credit));
-    });
+    return database.readData({path})
+          .then((credit) => {
+            dispatch(setCredit(credit));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
   };
 };

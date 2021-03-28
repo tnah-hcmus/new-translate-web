@@ -1,11 +1,10 @@
 import React, {useContext, useState} from 'react';
 import InputContext from '../../../context/input-context';
-import SectionContext from '../../../context/section-context';
 import Markdown from 'react-markdown';
 
 const TitlePreview = (props) => {
     const {addTransComment, editTransComment, changed} = useContext(InputContext);
-    const {id, title, subReddit, upvotes} = useContext(SectionContext);
+    const {id, title, subReddit, upvotes} = props
     const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
     const parseContent = (data) => {
         let parser = new DOMParser;
@@ -61,4 +60,4 @@ const TitlePreview = (props) => {
        </div>
     )
 }
-export default TitlePreview ;
+export default React.memo(TitlePreview);

@@ -58,8 +58,12 @@ const downloadImg = async (url, id) => {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }).then((response) => {
+            })
+            .then((response) => {
                 zip.file(image.id + getFileExtension(url), response.data, { base64: true });
+            })
+            .catch((err) => {
+                console.log(err);
             });                        
         });
         await Promise.all(queue);

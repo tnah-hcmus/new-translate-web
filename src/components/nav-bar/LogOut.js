@@ -20,4 +20,4 @@ const mapDispatchToProps = (dispatch) => ({
     logout: () => dispatch(startLogout())
   });
   
-  export default connect(undefined, mapDispatchToProps)(OutPanel);
+  export default React.memo(connect(undefined, mapDispatchToProps)(OutPanel));

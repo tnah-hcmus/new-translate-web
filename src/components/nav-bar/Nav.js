@@ -40,4 +40,4 @@ function mapStateToProps(state) {
     category: state.category
   };
 }
-export default connect(mapStateToProps, null)(React.memo(Nav));
+export default React.memo(connect(mapStateToProps, null)(Nav));

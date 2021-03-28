@@ -6,14 +6,13 @@ const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'../moda
 import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import SectionContext from '../../../context/section-context';
 import {saveDraft, deleteDraft} from '../../../actions/draft/draft';
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
     const [downloadVideo, setDownloadVideo] = useState(false);
     const [downloadImage, setDownloadImage] = useState(false);
-    const {tabID, link, title, subReddit, upvotes, id, uuid, savePost} = useContext(SectionContext);
+    const {tabID, link, title, subReddit, upvotes, id, uuid, savePost} = props;
     const [value, setValue] = useState("");
     useEffect(() => {
         if(props.credit !== '') setValue(props.credit);
@@ -53,8 +52,12 @@ const SectionHeader = (props) => {
         setOpenNote(false);
     }
     const save = () => {
-        savePost().then(() => {
+        savePost()
+        .then(() => {
             saveDraft(id,uuid,{timemark: Date.now(), value: (value !== '') ? value : 'Một member chăm chỉ nào đó'});
+        })
+        .catch((err) => {
+            console.log(err);
           });
     }
         return (
@@ -114,4 +117,4 @@ const SectionHeader = (props) => {
 const mapDispatchToProps = {
     deleteTab: deleteTabWCloud, deleteAllReplies
   }
-export default connect(null, mapDispatchToProps)(SectionHeader);
+export default React.memo(connect(null, mapDispatchToProps)(SectionHeader));

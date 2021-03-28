@@ -44,4 +44,4 @@ const mapDispatchToProps = {
     setMode
 }
 //Wrap by React memo to prevent rerender when new props equal
-export default connect(mapStateToProps, mapDispatchToProps)(React.memo(ThemeButton));
+export default React.memo(connect(mapStateToProps, mapDispatchToProps)(ThemeButton));

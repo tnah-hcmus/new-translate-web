@@ -19,4 +19,4 @@ const CommentPanel = (props) => {
     </div>
     );
 }
-export default CommentPanel ;
+export default React.memo(CommentPanel);

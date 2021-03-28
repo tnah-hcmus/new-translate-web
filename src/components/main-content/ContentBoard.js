@@ -19,7 +19,9 @@ const endSelect = (ref) => {
     if(ref) ref.style.opacity = 0;
   }
   else {
-      if(ref) translate(sourceText).then((result) => ref.innerHTML = result.resultText);
+      if(ref) translate(sourceText)
+              .then((result) => ref.innerHTML = result.resultText)
+              .catch((err) => {console.log(err); ref.innerHTML = 'Có lỗi xảy ra trong quá trình translate'})
   }
 }
 //Function for worker ffmpeg combine and download video feature
@@ -117,4 +119,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, null)(React.memo(ContentBoard));
+export default React.memo(connect(mapStateToProps, null)(ContentBoard));

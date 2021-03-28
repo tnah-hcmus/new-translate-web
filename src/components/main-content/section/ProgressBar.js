@@ -14,6 +14,9 @@ function CircularProgressWithLabel(props) {
         display="flex"
         alignItems="center"
         justifyContent="center"
+        style = {{
+          color: 'currentcolor'
+        }}
       >
         <Typography variant="caption" component="div" color="primary">{`${Math.round(
           props.value,
@@ -23,4 +26,4 @@ function CircularProgressWithLabel(props) {
   );
 }
 
-export default CircularProgressWithLabel;
+export default React.memo(CircularProgressWithLabel);

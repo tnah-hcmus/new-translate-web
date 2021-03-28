@@ -65,4 +65,4 @@ const PreviewModal = (props) => {
         </Modal>
         )
 }
-export default PreviewModal;
+export default React.memo(PreviewModal);

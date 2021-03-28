@@ -1,7 +1,7 @@
 import React, {useState, useEffect ,useRef} from 'react';
 import CommentPanel from './CommentPanel';
 import CommentInput from './CommentInput';
-import LazyLoad from 'react-lazyload'
+import idb from '../../../idb/index';
 
 const CommentPreview = (props) => {
   const hasChild = props.replies && (props.replies.length !== 0);
@@ -11,9 +11,21 @@ const CommentPreview = (props) => {
   const buttonShow = useRef(null);
   const checkBoxShow = useRef(null);
   useEffect(() => {
-    props.store.get(props.id).then((data) => {
-      setInfo(data);
-    });
+    let isComponentExist = true;
+    if(props.tabID.length < 7) {
+      const store = idb[props.tabID];
+      store.get(props.id)
+      .then((data) => {
+        if(isComponentExist) setInfo(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setInfo({
+          author: 'Có lỗi xảy ra trong quá trình tạo comment'
+        });
+      });
+    }
+    return () => isComponentExist = false;
   }, [])
   const showAll = (hasContent) => {
     buttonShow.current.click();
@@ -40,23 +52,21 @@ const CommentPreview = (props) => {
               <div className="demo-meta u-avoid-clicks">{info.awards} {info.awards && <span className="demo-meta-divider">|</span>} Upvote: {info.upvotes}</div>
           </button>
         </div>
-        <div className = {isOpen ? "content-wrapper show": "content-wrapper"}>
-          <CommentPanel name = {props.id} content = {info.content} active = {isOpen} />
-          <CommentInput 
-          name = {props.id} 
-          active = {isOpen}
-          parent = {props.parent}
-          author = {info.author}
-          level = {(info.prefixed.match(/>/g) || []).length + 1} 
-          description = {` (${info.upvotes}${info.awards && ' - '}${info.awards})`}
-          prefixed = {info.prefixed}
-          savePost = {props.savePost}
-          trans = {props.trans}
-          show = {showAll}
-          />
-        </div>
         {
-          
+          isOpen ? (
+            <div className = {"content-wrapper show"}>
+              <CommentPanel name = {props.id} content = {info.content} active = {isOpen} />
+              <CommentInput
+                commentData = {props}
+                active = {isOpen}
+                author = {info.author}
+                level = {(info.prefixed.match(/>/g) || []).length + 1} 
+                description = {` (${info.upvotes}${info.awards && ' - '}${info.awards})`}
+                prefixed = {info.prefixed}
+                show = {showAll}
+              />
+            </div>
+          ) : null
         }
         <div className = {!isShowComment ? 'no-display' : ''}>
           {isShowComment && props.replies.map((rootComment, index) => (
@@ -77,4 +87,8 @@ const CommentPreview = (props) => {
       </div>
     ) : (<p>Loading</p>))
 };
-export default CommentPreview;
+const areEqual = (prevProps, nextProps) => {
+  if(prevProps.parent.length === nextProps.parent.length && prevProps.parent.every((value, index) => value === nextProps.parent[index])) return true;
+  return false;
+}
+export default React.memo(CommentPreview, areEqual);

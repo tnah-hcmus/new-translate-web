@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Worker from 'worker-loader!../worker/fetcher';
-import IDBWrapper from '../idb/index';
+import idb from '../idb/index';
 class PostParser {
   standardlizeUrl = (url) => {
     url = url.trim().replace(/(\/+)$/, "");
@@ -123,8 +123,8 @@ const crawler = async (url, updateCallback) => {
   worker.postMessage({cmd: "crawl", id, data: {url}});
   updateBarCallback = updateCallback;
   const result = await new Promise(resolve => {crawlListeners[id] = resolve; id++;});
-  result.db = new IDBWrapper("reddit-post");
-  await result.db.openCollection(result.data.id, "id");
+  result.db = idb;
+  //await idb.createObjectStore(result.data.id, 'id');
   return result;
 };
 

@@ -60,4 +60,4 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addTab, deleteCategory: deleteCategoryWCloud
 }
-export default connect(mapStateToProps, mapDispatchToProps)(React.memo(NavItem));
+export default React.memo(connect(mapStateToProps, mapDispatchToProps)(NavItem));

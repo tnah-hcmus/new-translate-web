@@ -19,4 +19,4 @@ const Loading = () => {
     </div>
   );
 }
-export default Loading;
+export default React.memo(Loading);

@@ -11,7 +11,6 @@ const TitlePreview = lazy(() => import(/* webpackChunkName: "TitlePreview" */'./
 const SectionHeader = lazy(() => import(/* webpackChunkName: "SectionHeader" */'./SectionHeader'));
 const PreviewModal = lazy(() => import(/* webpackChunkName: "PreviewModal" */'../modal/PreviewModal'));
 import InputContext from '../../../context/input-context';
-import SectionContext from '../../../context/section-context';
 import HistoryContext from '../../../context/history-context';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -23,17 +22,16 @@ import warningList from '../../../list/graySubList'
 import {saveDraft, getDraft} from '../../../actions/draft/draft';
 import CircularProgressWithLabel from './ProgressBar';
 import {CircularProgress} from '@material-ui/core';
-import IDBWrapper from '../../../idb/index';
+import idb from '../../../idb/index';
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
-class Section extends React.Component {
+class Section extends React.PureComponent {
   static contextType = HistoryContext;
   changed = false;
   state = {
     link: '',
     info: {},
     isCrawling: false,
-    store: null,
     comments: [],
     trans: {},
     content: '',
@@ -54,6 +52,20 @@ class Section extends React.Component {
       progressBarInfo: data
     })
   }
+  reCrawl = () => {
+    crawler(this.props.tab.link.replace(/\?[^?]+$/,''), this.updateProgressBar)
+    .then((result) => {
+      this.props.addReplies(this.props.tab.id, result.replies);
+      this.setState({
+        comments: result.replies,
+        isCrawling: false
+      });
+      this.tabReady();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
   componentDidMount(){
     const present = this.context.state.present;
     //Nếu có credit
@@ -72,37 +84,34 @@ class Section extends React.Component {
       this.setState({
         isCrawling: true
       });
-      const idb = new IDBWrapper('reddit-post');
-      this.checkPostCommentExist(this.props.tab.id, idb).then((result) => {
+      this.checkPostCommentExist(this.props.tab.id, idb)
+      .then((result) => {
         if(!result || !this.props.replies[this.props.tab.id]) {
-          crawler(this.props.tab.link.replace(/\?[^?]+$/,''), this.updateProgressBar).then((result) => {
-            this.props.addReplies(this.props.tab.id, result.replies);
-            this.setState({
-              store: result.db[result.data.id],
-              comments: result.replies,
-              isCrawling: false
-            });
-            this.tabReady();
-          })
+            this.reCrawl();
         } else {
-          idb.openCollection(this.props.tab.id, "id").then(() => {
-            this.setState({
-              store: idb[this.props.tab.id],
-              comments: this.props.replies[this.props.tab.id],
-              isCrawling: false
-            });
-            this.tabReady();
-          })
+          this.setState({
+            comments: this.props.replies[this.props.tab.id],
+            isCrawling: false
+          });
+          this.tabReady();
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        this.reCrawl();
       });
     }
     else{
       // nếu không có nội dung -> không restore -> không hiện loading -> hiện thẳng panel comment}
       document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
       document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
-      crawlerPopularPost().then((data) => {
+      crawlerPopularPost()
+      .then((data) => {
         this.setState({suggest: data});
       })
+      .catch((err) => {
+        console.log(err);
+      });
     };
     if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
   }
@@ -111,10 +120,6 @@ class Section extends React.Component {
       this.setState({credit: this.props.credit});
       saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit && this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
     }
-  }
-  shouldComponentUpdate(nextProps, nextState) {
-    if(isEqual(nextProps, this.props) && isEqual(nextState, this.state)) return false;
-    else return true;
   }
   checkPostCommentExist = async (id, idb) => {
     const {objectStoreNames} = await idb.getDatabaseInformation();
@@ -146,8 +151,12 @@ class Section extends React.Component {
       });
     }
     else {
-      this.savePost(true).then(() => {
+      this.savePost(true)
+      .then(() => {
         saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit && this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
+      })
+      .catch((err) => {
+        console.log(err);
       });
     }
   }
@@ -161,7 +170,6 @@ class Section extends React.Component {
         link: flag ? result.data.link : link.replace(/\?[^?]+$/,''),
         info: result.data,
         comments: result.replies,
-        store: result.db[result.data.id],
         isCrawling: true
       })
       await this.sleep(1000);
@@ -197,7 +205,8 @@ class Section extends React.Component {
       }
       let getIDRegex = new RegExp("comments\/([a-zA-z0-9]*)");
       id = link.match(getIDRegex)[1];
-      getDraft(id).then((result) => {
+      getDraft(id)
+      .then((result) => {
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
             linkElement.value = '';
@@ -234,6 +243,9 @@ class Section extends React.Component {
         if(allowSave) {
           this.crawlPost(link, flag);
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
     }
     else {
@@ -457,11 +469,15 @@ class Section extends React.Component {
       }
     }
   }
+  //show alert
+  showAlert = () => {
+    this.setState({alert: false}); 
+    this.checkAuthor(this.state.info)
+  }
   
   render() {
     return(
       <section id={this.props.tab.id + "-section"} className="section js-section">
-      <SectionContext.Provider value = {{tabID: this.props.tab.id, link: this.state.link, title: this.state.info.title, upvotes: this.state.info.upvotes, subReddit: this.state.info.subReddit, id: this.state.info.id, savePost: this.savePost, uuid: this.props.uuid, credit: this.state.credit }}>
       <Suspense fallback = {<div></div>} key = {this.props.tab.id + '-header-suspense'}>
         <SectionHeader
           key = {this.props.tab.id + '-header'}
@@ -479,6 +495,14 @@ class Section extends React.Component {
           saveNote = {this.saveNote}
           handleSubmitLink = {this.handleSubmitLink}
           handleSubmitCredit = {this.handleSubmitCredit}
+          tabID = {this.props.tab.id}
+          link = {this.state.link}
+          title = {this.state.info.title}
+          subReddit = {this.state.info.subReddit}
+          upvotes = {this.state.info.upvotes}
+          id = {this.state.info.id}
+          uuid = {this.props.uuid}
+          savePost = {this.savePost}
         />
       </Suspense>
         <InputContext.Provider value = {{addTransComment: this.addTransComment, editTransComment: this.editTransComment, changed: this.handleChanged}}>
@@ -494,7 +518,11 @@ class Section extends React.Component {
                 fallbackUrl = {this.state.info.fallbackUrl}
                 isImage = {this.state.info.isImage}
                 trans = {this.state.trans}
-           />
+                title = {this.state.info.title}
+                subReddit = {this.state.info.subReddit}
+                upvotes = {this.state.info.upvotes}
+                id = {this.state.info.id}
+            />
           </Suspense>
           </div>
           <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
@@ -512,7 +540,6 @@ class Section extends React.Component {
                   <CommentPreview
                     key = {rootComment.id}
                     id = {rootComment.id}
-                    store = {this.state.store}
                     parent = {[]}
                     replies = {rootComment.replies}
                     tabID = {this.props.tab.id}
@@ -524,8 +551,9 @@ class Section extends React.Component {
           </div>
         </InputContext.Provider>
         {
-          this.state.suggest.map((post) => (
+          this.state.suggest.map((post, i) => (
             <SuggestPost
+              key = {i}
               subReddit = {post.subReddit}
               awards = {post.awards}
               shortenLink = {post.shortenLink}
@@ -543,8 +571,7 @@ class Section extends React.Component {
           clear = {this.clearPreview}
           />  
         </Suspense>
-        {(this.props.tab.category === "blank") && <PermissionModal author = {this.state.info.author} isOpen = {this.state.alert} close = {() => {this.setState({alert: false}); this.checkAuthor(this.state.info)}}/>}        
-      </SectionContext.Provider>
+        {(this.props.tab.category === "blank") && <PermissionModal author = {this.state.info.author} isOpen = {this.state.alert} close = {this.showAlert}/>}        
       </section>
     )
   }
@@ -559,4 +586,4 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addTab, deleteTab: deleteTabWCloud, updateTab: updateTabWCloud, addCategory: addCategoryWCloud, updateComments: updateCommentsWCloud, replaceTabID, addReplies, setCreditWCloud
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Section);
+export default React.memo(connect(mapStateToProps, mapDispatchToProps)(Section));

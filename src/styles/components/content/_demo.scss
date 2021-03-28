@@ -15,7 +15,7 @@
   left: 0;
   width: 2px;
   height: 50.2%;
-  background-color: hsl(0,0%,88%);
+  background-color: hsl(0,0%,22%);
   transition: transform .2s cubic-bezier(.4,.1,0,1);
   &:focus {
     background-color: currentColor;
@@ -82,12 +82,22 @@
           top: 0;
           transform-origin: bottom center;
           transform: translateX(.7em) rotate(-30deg) scale(.75);
+          cursor: pointer;
         }
         &:after {
           @extend %demo-toggle-pse;
           bottom: 0;
           transform-origin: top center;
           transform: translateX(.7em) rotate(30deg) scale(.75);
+          cursor: pointer;
+        }
+        &:disabled::before {
+          cursor: default;
+          background-color:  hsl(0,0%,88%);;
+        }
+        &:disabled::after {
+          cursor: default;
+          background-color:  hsl(0,0%,88%);;
         }
       }
       .is-open {

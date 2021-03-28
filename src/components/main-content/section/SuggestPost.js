@@ -8,4 +8,4 @@ const SuggestPost = (props) => {
             <a href = {props.shortenLink} target = "_blank">{props.title}<span className="u-visible-to-screen-reader">(opens in new window)</span></a>
         </div>)
 }  
-export default SuggestPost;
+export default React.memo(SuggestPost);

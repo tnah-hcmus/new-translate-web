@@ -15,4 +15,4 @@ const ToggleNav = (props) => {
         <button id = "toggle-nav-bar" className = "toggle-nav-bar-show" onClick = {toggleNav}><span>Close</span></button>
     );
 }
-export default ToggleNav;
+export default React.memo(ToggleNav);

@@ -13,12 +13,15 @@ export const deleteCategoryWCloud = (name) => {
     const {auth, category} = state;
     const uid = auth.uid;
     const categories =  category.filter((item) => item.name === name);
-    console.log(category, categories, name)
     if(categories.length > 0) {
       const path = `users/${uid}/categories/${categories[0].id}`;
-      return database.deleteData({path}).then(() => {
-        dispatch(deleteCategory(name));
-      });
+      return database.deleteData({path})
+            .then(() => {
+              dispatch(deleteCategory(name));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
     }
   }
 }
@@ -34,9 +37,13 @@ export const addCategoryWCloud = (category) => {
     const path = `users/${uid}/categories`;
     const cat = getState().category.filter((item) => item.name === category);
     if(cat.length===0) {
-      return database.pushData({path, data: category}).then((ref) => {
-        dispatch(addCategory(category, ref.key));
-      })
+      return database.pushData({path, data: category})
+            .then((ref) => {
+              dispatch(addCategory(category, ref.key));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
     } else {
       return;
     }
@@ -52,12 +59,16 @@ export const startSetCategories = () => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     const path = `users/${uid}/categories`;
-    return database.readData({path}).then((snapshot) => {
-      let categories = [];
-      if(snapshot) {
-        categories = Object.keys(snapshot).map((key) => ({id: key, name: snapshot[key]}))
-      }
-      dispatch(setCategory(categories));
-    });
+    return database.readData({path})
+          .then((snapshot) => {
+            let categories = [];
+            if(snapshot) {
+              categories = Object.keys(snapshot).map((key) => ({id: key, name: snapshot[key]}))
+            }
+            dispatch(setCategory(categories));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
   };
 };

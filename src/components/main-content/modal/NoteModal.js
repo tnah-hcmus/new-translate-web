@@ -25,4 +25,4 @@ const NoteModal = (props) => {
         </Modal>
     )
 }
-export default (NoteModal);
+export default React.memo(NoteModal);

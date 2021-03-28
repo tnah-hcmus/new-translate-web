@@ -7,7 +7,7 @@ export const login = (uid) => ({
 
 export const startLoginGoogle = () => {
   return () => {
-    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
           .then(function() {
             return firebase.auth().signInWithRedirect(googleAuthProvider);
           })
@@ -19,7 +19,7 @@ export const startLoginGoogle = () => {
 
 export const startLoginFacebook = () => {
   return () => {
-    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
           .then(function() {
             return firebase.auth().signInWithRedirect(facebookAuthProvider);
           })

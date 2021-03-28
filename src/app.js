@@ -1,3 +1,4 @@
+//import './wdyr'; 
 import ReactDOM from 'react-dom';
 import React from 'react';
 import Router from './router/routes';
@@ -14,9 +15,14 @@ import {startSetCategories} from './actions/tabs/category_action';
 let hasRendered = false;
 const getBlockedList = () => {
   const path = `blocked`;
-  return database.readData({path}).then((snapshot) => {
-    return snapshot ? Object.keys(snapshot).map((key) => snapshot[key]) : [];
-  });
+  return database.readData({path})
+        .then((snapshot) => {
+          return snapshot ? Object.keys(snapshot).map((key) => snapshot[key]) : [];
+        })
+        .catch((err) => {
+          console.log(err);
+          return [];
+        });
 }
 const renderApp = () => {
   if (!hasRendered) {

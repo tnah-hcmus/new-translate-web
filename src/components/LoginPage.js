@@ -99,4 +99,4 @@ const mapDispatchToProps = (dispatch) => ({
   google: () => dispatch(startLoginGoogle()),
   facebook: () => dispatch(startLoginFacebook()),
 });
-export default connect(undefined, mapDispatchToProps)(React.memo(LoginPage));
+export default React.memo(connect(undefined, mapDispatchToProps)(LoginPage));
