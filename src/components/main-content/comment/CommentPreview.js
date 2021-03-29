@@ -12,7 +12,7 @@ const CommentPreview = (props) => {
   const checkBoxShow = useRef(null);
   useEffect(() => {
     let isComponentExist = true;
-    if(props.tabID.length < 7) {
+    if(!props.isBlank) {
       const store = idb[props.tabID];
       store.get(props.id)
       .then((data) => {
@@ -39,7 +39,7 @@ const CommentPreview = (props) => {
     parent.classList.toggle('is-open');
     setShowComment(isShowComment ? false : true);
   }
-    return (info ? (
+    return (info && !props.isBlank ? (
       <div className="demo" id = {props.id + '-comment-wrap'}>
         <div className="demo-wrapper">
         <div>
@@ -77,6 +77,7 @@ const CommentPreview = (props) => {
                     parent = {[...props.parent, props.id]}
                     replies = {rootComment.replies}
                     tabID = {props.tabID}
+                    isBlank = {props.isBlank}
                     trans = {props.trans}
                     savePost = {props.savePost}
                   />
@@ -85,7 +86,7 @@ const CommentPreview = (props) => {
         </div>
         </div>
       </div>
-    ) : (<p>Loading</p>))
+    ) : null)
 };
 const areEqual = (prevProps, nextProps) => {
   if(prevProps.parent.length === nextProps.parent.length && prevProps.parent.every((value, index) => value === nextProps.parent[index])) return true;

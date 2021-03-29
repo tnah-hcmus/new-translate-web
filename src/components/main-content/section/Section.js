@@ -86,7 +86,7 @@ class Section extends React.PureComponent {
       });
       this.checkPostCommentExist(this.props.tab.id, idb)
       .then((result) => {
-        if(!result || !this.props.replies[this.props.tab.id]) {
+        if(!result || !this.props.replies[this.props.tab.id] || this.props.replies[this.props.tab.id].length == 0) {
             this.reCrawl();
         } else {
           this.setState({
@@ -531,7 +531,7 @@ class Section extends React.PureComponent {
            : (<div className = "progress">
                 {(!this.state.isCrawling ? 
                   (<p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>) : 
-                  (this.state.progressBarInfo === null ? <CircularProgress color = "primary"/> : <CircularProgressWithLabel value = {this.state.progressBarInfo}/>)
+                  (this.state.progressBarInfo === null ? <CircularProgress style = {{color: 'var(--color-accent)'}}/> : <CircularProgressWithLabel value = {this.state.progressBarInfo}/>)
                 )}
               </div>)
           }
@@ -543,6 +543,7 @@ class Section extends React.PureComponent {
                     parent = {[]}
                     replies = {rootComment.replies}
                     tabID = {this.props.tab.id}
+                    isBlank = {this.props.tab.category === "blank"}
                     trans = {this.state.trans}
                     savePost = {this.savePost}
                   />

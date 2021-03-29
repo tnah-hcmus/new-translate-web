@@ -14,7 +14,7 @@ const Loading = () => {
   return (
     <div>
       <Backdrop className={classes.backdrop} open={true}>
-        <CircularProgress color="inherit"/>
+        <CircularProgress style = {{color: 'var(--color-accent)'}}/>
       </Backdrop>
     </div>
   );

@@ -56,7 +56,7 @@ if( 'function' === typeof importScripts) {
               createStoreRequest.onblocked = () => reject('add store request is blocked');
             } else {
               database.close();
-              reject('already exist')
+              resolve('already exist')
             }
           }
           getVersionRequest.onerror = (event) => reject(event.target.error);
@@ -376,6 +376,7 @@ if( 'function' === typeof importScripts) {
       constructor(url, callback) {
         this.helper = new PostParser();
         this.url = this.helper.standardlizeUrl(url);
+        this.isDataExist = false;
         this.callback = callback;
         this.moreChild = [];
         this.db = new IDBWrapper("reddit-post");
@@ -439,8 +440,9 @@ if( 'function' === typeof importScripts) {
         this.id = bodyRoot.id;
         this.root = { data: bodyRoot, replies: [] };
         try {
-          await this.db.createObjectStore(this.id, 'id');
-          this.db[this.id].put(this.id, bodyRoot);
+          const result = await this.db.createObjectStore(this.id, 'id');
+          if(result.includes('exist')) this.isDataExist = true;
+          else this.db[this.id].put(this.id, bodyRoot);
           await this.getCommentsFromJSON(json);
         }
         catch(err) {
@@ -525,7 +527,7 @@ if( 'function' === typeof importScripts) {
             if (data) {
               const newNode = { id: item.data.id, replies: [] };
               parent.replies.push(newNode);
-              this.db[this.id].put(item.data.id, data);
+              if(!this.isDataExist) this.db[this.id].put(item.data.id, data);
               if (
                 typeof item.data.replies !== "undefined" &&
                 item.data.replies !== ""

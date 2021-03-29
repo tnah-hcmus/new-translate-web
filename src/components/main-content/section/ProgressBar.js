@@ -4,7 +4,7 @@ import {CircularProgress, Typography, Box} from '@material-ui/core';
 function CircularProgressWithLabel(props) {
   return (
     <Box position="relative" display="inline-flex" justifyContent = "center">
-      <CircularProgress variant="determinate" {...props} />
+      <CircularProgress variant="determinate" {...props}  style = {{color: 'var(--color-accent)'}} />
       <Box
         top={0}
         left={0}
