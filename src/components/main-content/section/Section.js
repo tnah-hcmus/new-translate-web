@@ -402,7 +402,7 @@ class Section extends React.PureComponent {
       content = content.replace(/\r\n$/,'');
       //Thêm note và credit
       if(this.state.note !== '') content = content + this.state.note + endLine + commentSeparator;
-      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'}` + endLine + 'Edited by https://rvnweb.site';
+      content = content + `Dịch bởi ${this.state.credit || 'một member chăm chỉ dịch bài'}` + endLine + 'Edited by https://translate-rvn.web.app/';
       this.setState({
         content: content.replace(/\r\n\r\n\r\n/g,"\r\n\r\n").replace(/\r\n\r\n_/,"\r\n")
       });
