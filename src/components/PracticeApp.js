@@ -9,7 +9,7 @@ import Popover from 'react-text-selection-popover';
 import placeRightBelow from 'react-text-selection-popover/lib/placeRightBelow'; 
 
 const PracticeApp = (props) => {
-  const [state, { reset, pop, push }] = useHistory();
+  const [state, { reset, push }] = useHistory();
   const [popover, setPopover] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [activeSection, setActiveSection] = useState(null);
@@ -18,7 +18,7 @@ const PracticeApp = (props) => {
 
   return (
     <div ref={selectionRef} className = "wrap">
-      <HistoryContext.Provider value = {{state: state, reset: reset, push: push, pop: pop }}>
+      <HistoryContext.Provider value = {{state: state, reset: reset, push: push }}>
         <ThemeButton/>
         <Nav
           title = {props.title}

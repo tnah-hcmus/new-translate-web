@@ -27,12 +27,9 @@ const reducer = (state = initialState, action) => {
       }
     }
     case PUSH: {
-      const  newPresent  = action.payload;
-      if (newPresent === present) {
-        return state;
-      }
+      const  newPresent = action.payload;
       if (present) {
-        const newHistory = shallowSet(history, action.payload)
+        const newHistory = shallowSet(history, present)
         return {
             history: newHistory,
             present: newPresent,

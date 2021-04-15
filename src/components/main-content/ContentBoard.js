@@ -53,6 +53,7 @@ const messageWorker = (e) => {
 //Main-content div, nhận vào danh sách tất cả các tab hiện có -> render thành section, props: tabs (get from Store)
 const ContentBoard = (props) => {
   const [helper, setHelper] = useState(false);
+  const [listSection, setListSection] = useState(props.tabs);
   const setGoogleHelper = () => {
     if(helper) {
       document.onselectionchange = null;
@@ -80,25 +81,41 @@ const ContentBoard = (props) => {
       document.onselectionchange = null; 
     };
   }, []);
+  useEffect(() => {
+    const list = props.tabs.filter((tab) => {
+      if(tab.category === 'guide') return true;
+      else {
+        if(checkIsView(tab.id, tab.category)) return true;
+      }
+    })
+    setListSection(list);
+  }, [props.listSection, props.activeSection])
+  const checkIsView = (id, category) => {
+    if(props.listSection.size == 0) {
+      if(category == 'blank') return true;
+    } 
+    if(props.listSection.has(id)) return true;
+    if(props.activeSection == id) return true;
+    return false;
+  }
   return (
     <main className="content js-content">
       {props.tabs.length === 0 && <p className="widget__message"></p>}
       {
-        props.tabs.map((tab, index) =>  {
-          if(tab.category !== 'guide') {
-            if(props.listSection.has(tab.id))
+        listSection.map((tab, index) =>  {
+          if(tab.category !== 'guide') 
             return (<Suspense fallback = {<div></div>} key = {index}>
               <Section
                 key = {tab.id}
                 tab = {tab}
                 helper = {helper}
-                activeSection = {props.activeSection}
+                activeSection = {props.activeSection || props.tabs.find(item => item.category == 'blank').id}
                 setActiveSection = {props.setActiveSection}
                 setGoogleHelper = {setGoogleHelper}
                 setHelper = {setHelper}
               /> 
             </Suspense>)
-          } else return (
+          else return (
             <Suspense fallback = {<div></div>} key = {index}>
               <GuidePanel
                 key = {tab.id}

@@ -39,7 +39,7 @@ const NavItem = (props) => {
             id = {tabs.id}
             describe={tabs.title}
             category = {tabs.category}
-            activeSection = {props.activeSection}
+            activeSection = {props.activeSection || props.tabs.find(item => item.category == 'blank').id}
             setActiveSection = {props.setActiveSection}
           />
         ))
