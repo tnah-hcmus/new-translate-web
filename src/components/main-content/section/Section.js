@@ -14,7 +14,6 @@ import InputContext from '../../../context/input-context';
 import HistoryContext from '../../../context/history-context';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import {isEqual} from 'lodash';
 import moment from 'moment';
 import PermissionModal from '../modal/PermissionModal';
 import blackList from '../../../list/blackList'
@@ -27,23 +26,29 @@ import idb from '../../../idb/index';
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.PureComponent {
   static contextType = HistoryContext;
-  changed = false;
-  state = {
-    link: '',
-    info: {},
-    isCrawling: false,
-    comments: [],
-    trans: {},
-    content: '',
-    credit: '',
-    note: '',
-    suggest: [],
-    popover: false,
-    transText: 'Đang dịch',
-    search: '',
-    progressBarInfo: null,
-    alert: false
+  constructor(props) {
+    super(props)
+    this.changed = false;
+    this.state = {
+      saveState: 0,
+      link: this.props.tab.link || '',
+      info: this.props.tab.info || {},
+      isCrawling: false,
+      isReady: false,
+      comments: [],
+      trans: this.props.tab.trans || {},
+      content: '',
+      credit: this.props.credit || '',
+      note: this.props.tab.note || '',
+      suggest: [],
+      popover: false,
+      transText: 'Đang dịch',
+      search: '',
+      progressBarInfo: null,
+      alert: false
+    }
   }
+
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
@@ -67,19 +72,7 @@ class Section extends React.PureComponent {
     });
   }
   componentDidMount(){
-    const present = this.context.state.present;
-    //Nếu có credit
-    if(this.props.credit && this.props.credit !== '') {
-      this.setState({credit: this.props.credit});
-    }
-    //Nếu trước đó có nội dung -> restore nội dung thông tin
     if(this.props.tab.link) {
-        this.setState({
-        link: this.props.tab.link,
-        info: this.props.tab.info,
-        trans: this.props.tab.trans,
-        note: this.props.tab.note
-      });
       //crawler lại comment (những comment chưa lưu)
       this.setState({
         isCrawling: true
@@ -103,8 +96,9 @@ class Section extends React.PureComponent {
     }
     else{
       // nếu không có nội dung -> không restore -> không hiện loading -> hiện thẳng panel comment}
-      document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
-      document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
+      this.setState({
+        isReady: true
+      })
       crawlerPopularPost()
       .then((data) => {
         this.setState({suggest: data});
@@ -113,26 +107,24 @@ class Section extends React.PureComponent {
         console.log(err);
       });
     };
-    if(present === this.props.tab.id) document.getElementById(this.props.tab.id + "-section").classList.add('is-shown');
-  }
-  componentDidUpdate() {
-    if(this.props.credit && this.props.credit !== this.state.credit) {
-      this.setState({credit: this.props.credit});
-      saveDraft(this.state.info.id,this.props.uuid,{timemark: Date.now(), credit: (this.props.credit && this.props.credit !== '') ? this.props.credit : 'Một member chăm chỉ nào đó'});
-    }
   }
   checkPostCommentExist = async (id, idb) => {
     const {objectStoreNames} = await idb.getDatabaseInformation();
     return objectStoreNames.contains(id);
   }
   tabReady = () => {
-    this.afterRestore();
-    setInterval(() => this.savePost(), 60000);
-    document.getElementById('loading'+this.props.tab.id).classList.toggle('hide');
-    document.getElementById(this.props.tab.id + 'panel').classList.toggle('shown');
+    const showInput = this.afterRestore();
+    setTimeout(() => {
+      this.setState({
+        isReady: true
+      });
+      this.searchComment(showInput)
+    }, 3000);
+
   }
   handleChanged = () => {
     this.changed = true;
+    this.clearPreview();
   }
   checkAuthor = (info) => {
     if(blackList.includes(info.author.toLowerCase())) {
@@ -151,13 +143,7 @@ class Section extends React.PureComponent {
       });
     }
     else {
-      this.savePost(true)
-      .then(() => {
-        saveDraft(info.id,this.props.uuid,{timemark: Date.now(), credit: (this.state.credit && this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'})
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      this.savePost(true, {id: info.id})
     }
   }
   crawlPost = (link, flag) => {
@@ -210,9 +196,8 @@ class Section extends React.PureComponent {
         if(result) {
           if(result.hasOwnProperty(this.props.uuid)) {
             linkElement.value = '';
-            const button = document.getElementById('button-' + id);
-            if(button) button.click()
-            else allowSave = true;
+            this.props.setActiveSection(id);
+            allowSave = true;
           }
           else {
             moment.locale('vi');
@@ -264,50 +249,51 @@ class Section extends React.PureComponent {
   }
 
   //Lưu note
-  saveNote = () => {
-    let note = document.getElementById(this.props.tab.id+ '-note-input').value
-    this.setState({note: note});
+  saveNote = (note) => {
+    this.setState({note});
   }
   //Tìm kiếm comment
   searchComment = (inp) => {
     //Kiểm tra xem trigger từ onKeyDown hay được gọi -> lấy data
     let input = inp || '';
     //Lấy ra tất cả các div comments
-    let panel = document.getElementById(this.props.tab.id+'panel');
-    let wrap = panel.getElementsByClassName('demo');
-    if(input === '') {
-      for (let i = 0; i < wrap.length; i++) {
-        wrap[i].style.display = "";
-      }
-      return;
-    }
-    if(input) {
-      //Không phân biệt hoa trường
-      input = input.toUpperCase();
-      //Duyệt tất cả các div, nếu có tên trong input -> show, nếu không -> hide
-      for (let i = 0; i < wrap.length; i++) {
-        let button = wrap[i].getElementsByTagName("button")[0];
-        let txtValue = button.textContent || button.innerText;
-        let flag = false;
-        //Tách các tên trong input phục vụ cho việc so sánh
-        for(let name of input.split(' || ')) {
-          if (txtValue.toUpperCase().indexOf(name) > -1) {
-            flag = true;
-          }
-        }
-        if (!flag) {
-          wrap[i].style.display = "none";
-        }
-        else {
-          //Hiển thị cả comment cha tránh việc bị display none nè, không hiển thị comment anh em
+    let panel = document.getElementById(this.props.tab.id+'-panel');
+    if(panel) {
+      let wrap = panel.getElementsByClassName('demo');
+      if(input === '') {
+        for (let i = 0; i < wrap.length; i++) {
           wrap[i].style.display = "";
-          parent = wrap[i].parentElement;
-          while(!parent.classList.contains('panel')){
-            parent.style.display = '';
-            parent = parent.parentElement;
-          }
         }
-      } 
+        return;
+      }
+      if(input) {
+        //Không phân biệt hoa trường
+        input = input.toUpperCase();
+        //Duyệt tất cả các div, nếu có tên trong input -> show, nếu không -> hide
+        for (let i = 0; i < wrap.length; i++) {
+          let button = wrap[i].getElementsByTagName("button")[0];
+          let txtValue = button.textContent || button.innerText;
+          let flag = false;
+          //Tách các tên trong input phục vụ cho việc so sánh
+          for(let name of input.split(' || ')) {
+            if (txtValue.toUpperCase().indexOf(name) > -1) {
+              flag = true;
+            }
+          }
+          if (!flag) {
+            wrap[i].style.display = "none";
+          }
+          else {
+            //Hiển thị cả comment cha tránh việc bị display none nè, không hiển thị comment anh em
+            wrap[i].style.display = "";
+            parent = wrap[i].parentElement;
+            while(!parent.classList.contains('panel')){
+              parent.style.display = '';
+              parent = parent.parentElement;
+            }
+          }
+        } 
+      }
     }
   }
   handleSearch = (e) => {
@@ -355,7 +341,6 @@ class Section extends React.PureComponent {
       const transComment = preState.trans;
       if(transComment[id]) {
         preState.trans[id].body = body;
-        this.setState({content: ''});
       }
       return {        
         trans: preState.trans
@@ -422,14 +407,24 @@ class Section extends React.PureComponent {
     for(let id in trans) {
       if(trans[id].author && trans[id].level > 0) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
     }
+    showInput = showInput.replace(/\ \|\|\ $/,'')
     //Chèn nội dung vào thanh search, ẩn các comment chưa được dịch 
-    this.setState({search: showInput.replace(/\ \|\|\ $/,'')});
-    this.searchComment(showInput.replace(/\ \|\|\ $/,''));
+    this.setState({search: showInput});
+    return showInput;
   }
 
   //Lưu thông tin về post và nội dung các comment đã được dịch lại -> tabInfo -> lưu vào store
-  savePost = async(first) => {
+  savePost = (first, input) => {
     if(!this.changed && !first) return;
+    const updateState = (status) => {
+      this.setState({
+        saveState: status
+      });
+    }
+    let id = input.id || this.props.tab.id;
+    const uuid = input.uuid || this.props.uuid;
+    const saveData = input.data || {timemark: Date.now(), credit: (this.state.credit && this.state.credit !== '') ? this.state.credit : 'Một member chăm chỉ nào đó'};
+    updateState(1);
     this.changed = false; 
     if(this.state.link) {
       const data = {
@@ -442,6 +437,7 @@ class Section extends React.PureComponent {
         iconHref: this.props.tab.iconHref,
         trans: this.state.trans || {}
       }
+      id = input.id || data.id;
       if(Object.keys(data.trans).length === 0) {
         data.trans[data.id] = ""
       }
@@ -451,23 +447,20 @@ class Section extends React.PureComponent {
         this.props.deleteTab(this.props.tab.id, this.props.tab.category);
         this.props.replaceTabID(this.props.tab.id, data.id);
         this.props.addTab(data);
-        await this.sleep(1000);
-        const button = document.getElementById('button-' + data.id)
-        if(button) button.click()
-        else setTimeout(() => document.getElementById('button-' + data.id), 1000);
+        this.props.setActiveSection(data.id);
       }
       else {
-        const button = document.getElementById(this.props.tab.id + '-save');
-        button.innerHTML = 'Saving';
-        setTimeout(() => {button.innerHTML = 'Saved'}, 2000);
-        setTimeout(() => {button.innerHTML = 'Save'}, 2200);
         this.props.updateTab(this.props.tab.id, data); //Nếu không, không tạo tab mới -> cập nhật lại comment, title trên tab cũ
         if(this.props.tab.id !== data.id) this.props.replaceTabID(this.props.tab.id, data.id);
-        const button2 = document.getElementById('button-' + data.id)
-        if(button2) button2.click()
-        else setTimeout(() => document.getElementById('button-' + data.id), 1000);
+        this.props.setActiveSection(data.id)
       }
     }
+    saveDraft(id, uuid, saveData)
+    .then(() => {
+      updateState(2);
+      setTimeout(() => updateState(0), 2000)
+    })
+    .catch((err) => console.log(err))
   }
   //show alert
   showAlert = () => {
@@ -477,7 +470,7 @@ class Section extends React.PureComponent {
   
   render() {
     return(
-      <section id={this.props.tab.id + "-section"} className="section js-section">
+      <section className= {"section js-section " + (this.props.activeSection === this.props.tab.id ? "is-shown" : "")}>
       <Suspense fallback = {<div></div>} key = {this.props.tab.id + '-header-suspense'}>
         <SectionHeader
           key = {this.props.tab.id + '-header'}
@@ -487,6 +480,7 @@ class Section extends React.PureComponent {
           url = {this.state.info.url}
           fallbackUrl = {this.state.info.fallbackUrl}
           isImage = {this.state.info.isImage}
+          saveState = {this.state.saveState}
           credit = {this.state.credit}
           helper = {this.props.helper}
           setGoogleHelper = {this.props.setGoogleHelper}
@@ -525,8 +519,8 @@ class Section extends React.PureComponent {
             />
           </Suspense>
           </div>
-          <p id={'loading'+this.props.tab.id} className = "restore" style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
-          <div className = "panel" id={this.props.tab.id+'panel'}>
+          <p className = {"restore" + (this.state.isReady ? ' hide' : '')} style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
+          <div id={this.props.tab.id+'-panel'} className = {"panel" + (this.state.isReady ? ' shown' : '')}>
           {this.state.comments.length !== 0 ? (<input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" onChange = {this.handleSearch} value = {this.state.search} ></input>)
            : (<div className = "progress">
                 {(!this.state.isCrawling ? 

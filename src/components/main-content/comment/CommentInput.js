@@ -4,15 +4,8 @@ import InputContext from '../../../context/input-context';
 
 const CommentInput = (props) => {
     const {addTransComment, editTransComment, changed} = useContext(InputContext);
-    const {id: name, parent, trans} = props.commentData;
-    const [value, setValue] = useState('');
-    useEffect(() => {
-        if(trans[name]) {
-            setValue(trans[name].body);
-            if(trans[name].body !== '') props.show(1);
-            else props.show(0);
-        }
-    }, [])
+    const {id: name, parent} = props.commentData;
+    const [value, setValue] = useState(props.preTrans || '');
     const handleChange = (e) => {
         setValue(e.target.value);
     }

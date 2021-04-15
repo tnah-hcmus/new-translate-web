@@ -6,7 +6,13 @@ const NoteModal  = lazy(() => import(/* webpackChunkName: "NoteModal" */'../moda
 import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import {saveDraft, deleteDraft} from '../../../actions/draft/draft';
+import {deleteDraft} from '../../../actions/draft/draft';
+
+const saveStateMap = {
+    0: 'Save',
+    1: 'Saving',
+    2: 'Saved'
+  }
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
@@ -52,13 +58,7 @@ const SectionHeader = (props) => {
         setOpenNote(false);
     }
     const save = () => {
-        savePost()
-        .then(() => {
-            saveDraft(id,uuid,{timemark: Date.now(), value: (value !== '') ? value : 'Một member chăm chỉ nào đó'});
-        })
-        .catch((err) => {
-            console.log(err);
-          });
+        savePost(null, {id, uuid, data: {timemark: Date.now(), value: (value !== '') ? value : 'Một member chăm chỉ nào đó'}})
     }
         return (
             <header className="section-header">
@@ -77,7 +77,7 @@ const SectionHeader = (props) => {
                         <div style = {{marginBottom: '5px'}}>
                         <button className="demo-button" id={tabID + '-preview'} onClick = {props.previewContent}>Preview</button>
                         <button className="demo-button" id={tabID + '-note'} onClick = {() => setOpenNote(true)}>Note</button>
-                        <button className="demo-button" id={tabID + '-save'} onClick = {save}>Save</button>
+                        <button className="demo-button" id={tabID + '-save'} onClick = {save}>{saveStateMap[props.saveState]}</button>
                         <button className="demo-button" id={tabID + '-delete'} onClick = {deletePost}>Delete</button>
                         </div>
                         <form style = {{ display: 'flex'}} onSubmit={props.handleSubmitCredit}>

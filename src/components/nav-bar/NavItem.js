@@ -35,10 +35,12 @@ const NavItem = (props) => {
       {
         props.tabs.filter((item) => item.category === props.category).map((tabs) => (
           <NavButton
-          key={tabs.id}
-          id = {tabs.id}
-          describe={tabs.title}
-          category = {tabs.category}
+            key={tabs.id}
+            id = {tabs.id}
+            describe={tabs.title}
+            category = {tabs.category}
+            activeSection = {props.activeSection}
+            setActiveSection = {props.setActiveSection}
           />
         ))
       }

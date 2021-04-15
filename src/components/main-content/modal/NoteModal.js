@@ -1,15 +1,17 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import Modal from 'react-modal';
 
 const NoteModal = (props) => {
     const save = () => {
-        props.saveNote();
+        const data = textRef.current.value;
+        props.saveNote(data);
         props.close();
     }  
     const handleKeyDown = (e) => {
         e.target.style.height = '100%';
         e.target.style.height = `${e.target.scrollHeight}px`;
     }
+    const textRef = useRef(null);
     return(
         <Modal
         isOpen={props.isOpen}
@@ -20,7 +22,7 @@ const NoteModal = (props) => {
         className="preview-modal"
         >
         <h5 className="modal__title">Gửi gắm vào bài dịch gì đó đi</h5>
-        <textarea name="textarea" id={props.name + '-note-input'} className = "expand" onKeyDown={handleKeyDown} style = {{backgroundColor: '#fff', color: 'black'}} autoFocus></textarea>
+        <textarea name="textarea" id={props.name + '-note-input'} className = "expand" onKeyDown = {handleKeyDown} style = {{backgroundColor: '#fff', color: 'black'}} ref = {textRef} autoFocus></textarea>
         <button className="button" onClick= {save} id = {props.id + 'save-button'}>Save</button>
         </Modal>
     )

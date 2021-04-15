@@ -6,7 +6,7 @@ import OutPanel from './LogOut';
 //Component cho navbar, props truyền vào: title, focus title (hiện tên), category/tên sub (get từ Store) -> show category
 const Nav = (props) => {
   return (
-    <div className = "toggleNav nav-show" id = "nav">
+    <div className = {"toggleNav " + (props.isShow ? "nav-show" : "nav-hide")} id = "nav">
       <nav className="nav js-nav">
         <header className="nav-header">
           <h1 className="nav-title">
@@ -20,6 +20,8 @@ const Nav = (props) => {
               <NavItem
                 key={index}
                 category={category.name}
+                activeSection = {props.activeSection}
+                setActiveSection = {props.setActiveSection}
               />
           )})
         }

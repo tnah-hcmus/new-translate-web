@@ -1,27 +1,25 @@
 
 import { useReducer, useCallback, useEffect} from 'react';
 
-const POP = 'POP';
 const PUSH = 'PUSH';
 const RESET = 'RESET';
-const RESTORE = 'RESTORE'
+const RESTORE = 'RESTORE';
+
+const shallowSet = (x, newItem) => {
+  const y = new Set()
+  for (const item of x) y.add(item);
+  if(newItem) y.add(newItem);
+  return y
+}
 
 const initialState = {
-    history: [],
+    history: new Set(),
     present: null,
   };
 
 const reducer = (state = initialState, action) => {
   const { history, present} = state;
   switch (action.type) {
-    case POP: {
-      const present =   history[history.length - 1];
-      const newPast = history.slice(0, history.length - 1);
-      return {
-        history: newPast,
-        present: present
-      };
-    }
     case RESTORE: {
       return {
         history: action.payload.history,
@@ -34,8 +32,7 @@ const reducer = (state = initialState, action) => {
         return state;
       }
       if (present) {
-        let newHistory = [...history, present]
-        if(newHistory.length > 5) newHistory = newHistory.slice(0,4);
+        const newHistory = shallowSet(history, action.payload)
         return {
             history: newHistory,
             present: newPresent,
@@ -43,7 +40,7 @@ const reducer = (state = initialState, action) => {
       }
       else {
           return {
-            history: [...history],
+            history: shallowSet(history),
             present: newPresent,
           }
       }
@@ -51,9 +48,8 @@ const reducer = (state = initialState, action) => {
     }
     case RESET: {
       const  newPresent  = action.payload;
-
       return {
-        history: [],
+        history: new Set(),
         present: newPresent
       };
     }
@@ -63,18 +59,13 @@ const reducer = (state = initialState, action) => {
 
 const useHistory = () => {
   const preState = JSON.parse(localStorage.getItem('rvn-client-history')) || initialState;
+  preState.history = shallowSet([], preState.present);
   const [state, dispatch] = useReducer(reducer, {
     ...preState
   });
   useEffect(() => {
     localStorage.setItem('rvn-client-history', JSON.stringify(state));
   }, [state]);
-  const canPOP = state.history.length !== 0;
-  const pop = useCallback(() => {
-    if (canPOP) {
-      dispatch({ type: POP });
-    }
-  }, [canPOP]);
   const push = useCallback(
     newPresent => dispatch({ type: PUSH, payload: newPresent })
   ,[]);
@@ -82,7 +73,7 @@ const useHistory = () => {
     newPresent => dispatch({ type: RESET, payload: newPresent })
   ,[]);
 
-  return [state, { reset, pop, push, canPOP }];
+  return [state, { reset, push }];
   
 };
 

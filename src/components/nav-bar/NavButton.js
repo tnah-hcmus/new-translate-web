@@ -21,12 +21,37 @@ const NavButton = (props) => {
         const parent = document.getElementById(id).parentElement;
         parent.classList.add('show-popup');
     }
-    const {state, push } = useContext(HistoryContext);
+    const { push } = useContext(HistoryContext);
+    const handleClick = () => {
+        if(props.category === 'guide') showPopup(props.id);
+        else {
+            push(props.id);
+            props.setActiveSection(props.id)
+        }
+    } 
     return(
-    <>
-        {props.category !== 'guide' && <button type="button" id={'button-' + props.id} data-section={props.id} className={state.present === props.id ? "nav-button is-selected" : "nav-button"} onClick = {() => push(props.id)}>{props.describe}</button>}
-        {props.category === 'guide' && <button type="button" id={'button-' + props.id} onClick = {() => showPopup(props.id)} className="nav-button">{props.describe}</button>}
-    </>
+        <>
+        {
+            props.category !== 'guide' 
+            ? <button 
+                type="button" 
+                id={'button-' + props.id} 
+                data-section={props.id} 
+                className={props.activeSection === props.id ? "nav-button is-selected" : "nav-button"} 
+                onClick = {handleClick}
+            >
+                {props.describe}
+            </button>
+            : <button 
+                type="button" 
+                id={'button-' + props.id} 
+                onClick = {handleClick} 
+                className="nav-button"
+            >
+                {props.describe}
+            </button>
+        }
+        </>
     )
 }
 
