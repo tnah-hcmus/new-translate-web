@@ -2,10 +2,21 @@ import React, {useContext, useState} from 'react';
 import InputContext from '../../../context/input-context';
 import Markdown from 'react-markdown';
 
+let timeoutId = {update: null, save: null};
 const TitlePreview = (props) => {
     const {addTransComment, editTransComment, changed} = useContext(InputContext);
     const {id, title, subReddit, upvotes} = props
     const [value, setValue] = useState(props.trans[id] ? props.trans[id].body : '' );
+    const handleSaving = (e) => {
+        if(timeoutId.update) clearTimeout(timeoutId.update);
+        if(timeoutId.save) clearTimeout(timeoutId.save);
+        timeoutId.update = setTimeout(() => {
+            editTransComment(id, value);
+        }, 500)
+        timeoutId.save = setTimeout(() => {
+            changed(true);
+        }, 1500)
+    }
     const parseContent = (data) => {
         let parser = new DOMParser;
         let dom = parser.parseFromString(
@@ -23,7 +34,7 @@ const TitlePreview = (props) => {
     }
     const handleBlur = (e) => {
         editTransComment(id, e.target.value);
-        changed();
+        changed(true);
     }
     return (
         <div className="demo" style = {{display: "flex", flexDirection: "column"}}>
@@ -45,7 +56,7 @@ const TitlePreview = (props) => {
                 <div className="demo-controls">
                     <span className="demo-response"></span>
                 </div>
-                <textarea name="textarea" id={id + '-trans'} className = "expand" onBlur = {handleBlur} onFocus = {handleFocus} value = {value} onChange = {handleChange}></textarea>
+                <textarea name="textarea" id={id + '-trans'} className = "expand" onBlur = {handleBlur} onFocus = {handleFocus} value = {value} onChange = {handleChange} onKeyPress = {handleSaving}></textarea>
             </div>
           </div>
         </div>

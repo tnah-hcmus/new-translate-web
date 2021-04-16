@@ -12,6 +12,11 @@ import {startSetCredit} from './actions/credit/credit_action';
 import {startSetTabs} from './actions/tabs/tabs_action';
 import {startSetCategories} from './actions/tabs/category_action';
 
+const isResetDB = localStorage.getItem('reset-db');
+if(!isResetDB) {
+  indexedDB.deleteDatabase('reddit-post');
+  localStorage.setItem('reset-db', 'already');
+}
 let hasRendered = false;
 const getBlockedList = () => {
   const path = `blocked`;

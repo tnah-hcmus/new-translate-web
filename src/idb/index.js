@@ -1,3 +1,65 @@
+function nextCasing(key, lowerKey, upperNeedle, lowerNeedle) {
+  var length = Math.min(key.length, lowerNeedle.length); // lowerNeedle is from outer scope
+  var llp = -1; // "llp = least lowerable position"
+
+  // Iterate through the most common first chars for cursor.key and needle.
+  for (var i = 0; i < length; ++i) {
+      var lwrKeyChar = lowerKey[i];
+
+      if (lwrKeyChar !== lowerNeedle[i]) {
+          // The char at position i differs between the found key and needle being
+          // looked for when just doing case insensitive match.
+          // Now check how they differ and how to trace next casing from this:
+          if (key[i] < upperNeedle[i]) {
+              // We could just append the UPPER version of the key we're looking for
+              // since found key is less than that.
+              return key.substr(0, i) + upperNeedle[i] + upperNeedle.substr(i + 1);
+          }
+
+          if (key[i] < lowerNeedle[i]) {
+              // Found key is between lower and upper version. Lets first append a
+              // lowercase char and the rest as uppercase.
+              return key.substr(0, i) + lowerNeedle[i] + upperNeedle.substr(i + 1);
+          }
+
+          if (llp >= 0) {
+              // Found key is beyond this key. Need to rewind to last lowerable
+              // position and return key + 1 lowercase char + uppercase rest.
+              return key.substr(0, llp) + lowerKey[llp] + upperNeedle.substr(llp + 1)
+          }
+
+          // There are no lowerable positions - all chars are already lowercase
+          // (or non-lowerable chars such as space, periods etc)
+
+          return null;
+      }
+
+      if (key[i] < lwrKeyChar) {
+          // Making lowercase of this char would make it appear after key.
+          // Therefore set llp = i.
+          llp = i;
+  }
+
+  // All first common chars of found key and the key we're looking for are equal
+  // when ignoring case.
+  if (length < lowerNeedle.length) {
+      // key was shorter than needle, meaning that we may look for key + UPPERCASE
+      // version of the rest of needle.
+      return key + upperNeedle.substr(key.length);
+  }
+
+  // Found key was longer than the key we're looking for
+  if (llp < 0) {
+      // ...and there is no way to make key we're looking for appear after found key.
+      return null;
+  } else {
+      // There is a position of a char, that if we make that char lowercase,
+      // needle will become greater than found key.
+      return key.substr(0, llp) + lowerNeedle[llp] + upperNeedle.substr(llp + 1);
+  }
+ }
+}
+
 class IDBWrapper {
   constructor(collection) {
     const methods = [
@@ -75,7 +137,9 @@ class IDBWrapper {
       getVersionRequest.onblocked = () => reject('get version request is blocked');
     });
   }
-  createObjectStore(storeName, primaryKey) {
+  createObjectStore(storeName, primaryKey, indexList) {
+    if(!storeName || !primaryKey) return;
+    if(indexList && !Array.isArray(indexList)) return;
     return new Promise((resolve, reject) => {
       console.log('get version store open')
       const getVersionRequest = indexedDB.open('reddit-post');
@@ -93,8 +157,11 @@ class IDBWrapper {
           const createStoreRequest = indexedDB.open('reddit-post', version+1);
           createStoreRequest.onupgradeneeded = function (e) {
               const db = e.target.result;
-              db.createObjectStore(storeName, {
+              const objectStore  = db.createObjectStore(storeName, {
                   keyPath: primaryKey
+              });
+              indexList.forEach(index => {
+                objectStore.createIndex('by_' + index.key, index.key, {...index.config});
               });
           };
           createStoreRequest.onsuccess = function (e) {
@@ -286,6 +353,42 @@ class IDBIndex {
               cursor.continue(searchKey);
             } else resolve(listMatchKey)
           } else resolve(listMatchKey)
+        },
+        (error, reject) => {
+          reject(error)
+        }
+      )
+    })
+  };
+  equalsIgnoreCase = (searchKey) => { 
+    const upperNeedle = searchKey.toUpperCase();
+    const lowerNeedle = searchKey.toLowerCase();
+    let listMatchKey = [];
+    let listIdMatchKey = [];
+    return this.executeQuery(async (conn) => {
+      return await this.doAsyncQuery(conn, 
+        (index) => {
+          return index.openCursor();
+        },
+        (data, resolve) => {
+          const cursor = data;
+          if (cursor) {
+            const key = cursor.key;
+            if(typeof key !== 'string') {
+              cursor.continue();
+            }
+            const lowerKey = key.toLowerCase();
+            if (lowerKey == lowerNeedle) {
+              listMatchKey.push(cursor.value);
+              listIdMatchKey.push(cursor.value.id);
+              cursor.continue();
+            } else{
+              const nextNeedle = nextCasing(key, lowerKey, upperNeedle, lowerNeedle);
+              if (nextNeedle) {
+                cursor.continue(nextNeedle);
+              } else resolve({data: listMatchKey, id: listIdMatchKey});
+            }
+          } else resolve({data: listMatchKey, id: listIdMatchKey})
         },
         (error, reject) => {
           reject(error)

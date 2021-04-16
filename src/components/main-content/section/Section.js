@@ -23,6 +23,7 @@ import CircularProgressWithLabel from './ProgressBar';
 import {CircularProgress} from '@material-ui/core';
 import idb from '../../../idb/index';
 
+
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.PureComponent {
   static contextType = HistoryContext;
@@ -65,7 +66,7 @@ class Section extends React.PureComponent {
         comments: result.replies,
         isCrawling: false
       });
-      this.tabReady();
+      this.tabReady(result.replies);
     })
     .catch((err) => {
       console.log(err);
@@ -86,7 +87,7 @@ class Section extends React.PureComponent {
             comments: this.props.replies[this.props.tab.id],
             isCrawling: false
           });
-          this.tabReady();
+          this.tabReady(this.props.replies[this.props.tab.id]);
         }
       })
       .catch((err) => {
@@ -112,19 +113,94 @@ class Section extends React.PureComponent {
     const {objectStoreNames} = await idb.getDatabaseInformation();
     return objectStoreNames.contains(id);
   }
-  tabReady = () => {
+  searchCommentIndexedDB = async (idb, storeName, searchKey, mode) => {
+    if(mode == 2) {
+      const searchArray = searchKey.replace('>', '').split(" || ");
+      return await idb[storeName].where('author').anyOf(searchArray);
+    } else {
+      const searchResult = await Promise.all(searchKey.split('').map((item) => {
+        return idb[storeName].where('indexed_author').equalsIgnoreCase(item);
+      }));
+      const fastIntersection = (arrays) => {
+        // if we process the arrays from shortest to longest
+        // then we will identify failure points faster, i.e. when 
+        // one item is not in all arrays
+        const ordered = (arrays.length === 1 ? arrays : 
+          arrays.sort((a1,a2) => a1.id.length - a2.id.length));
+        const shortest = ordered[0].id;
+        const shortestData = ordered[0].data;
+        const set = new Set(); // used for bookkeeping, Sets are faster
+        const result = []; // the intersection, conversion from Set is slow
+        // for each item in the shortest array
+        for(let i=0;i<shortest.length;i++) {
+          const item = shortest[i];
+          const rawItem = shortestData[i];
+          // see if item is in every subsequent array
+          let every = true; // don't use ordered.every ... it is slow
+          for(let j=1;j<ordered.length;j++) {
+            if(ordered[j].id.includes(item)) continue;
+            every = false;
+            break;
+          }
+          // ignore if not in every other array, or if already captured
+          if(!every || set.has(item)) continue;
+          // otherwise, add to bookeeping set and the result
+          set.add(item);
+          result[result.length] = rawItem;
+        }
+        return result;
+      }
+      return fastIntersection(searchResult);
+    }
+  }
+  fullCommentSearch = async (searchKey, mode, replies) => {
+    const set = new Set();
+    const master = this.props.tab.id;
+    const result = await this.searchCommentIndexedDB(idb, master, searchKey, mode);
+    const parentList = [];
+    await Promise.all(result.map(async (item) => {
+      let max = 10;
+      if(!set.has(item.id)) {
+        set.add(item.id);
+        let parent = item;
+        while((parent.parent !== master) && max > 0) {
+          max--;
+          const res = await idb[master].get(parent.parent);
+          if(!set.has(parent.parent)) {
+            parentList.push(res);
+            set.add(parent.parent);
+          }
+          parent = res;
+        }
+      }
+    }));
+    const all = [...result, ...parentList];
+    const rep = replies || this.props.replies[this.props.tab.id];
+    const updated = all.filter(item => item.prefixed === "").map((item => {
+      item.replies = rep.find(m => m.id == item.id);
+      return item;
+    }));
+    return {
+      data: updated,
+      id: all.map(item => item.author)
+    }
+  }
+  tabReady = (replies) => {
     const showInput = this.afterRestore();
     setTimeout(() => {
       this.setState({
         isReady: true
       });
-      this.searchComment(showInput)
+      this.searchComment(showInput, 2, replies)
     }, 3000);
 
   }
-  handleChanged = () => {
+  handleChanged = (autoSave) => {
     this.changed = true;
     this.clearPreview();
+    if(autoSave) {
+      setTimeout(() => this.savePost(), 2000);
+    }
   }
   checkAuthor = (info) => {
     if(blackList.includes(info.author.toLowerCase())) {
@@ -252,11 +328,7 @@ class Section extends React.PureComponent {
   saveNote = (note) => {
     this.setState({note});
   }
-  //Tìm kiếm comment
-  searchComment = (inp) => {
-    //Kiểm tra xem trigger từ onKeyDown hay được gọi -> lấy data
-    let input = inp || '';
-    //Lấy ra tất cả các div comments
+  showCommentAfterSearch = (input) => {
     let panel = document.getElementById(this.props.tab.id+'-panel');
     if(panel) {
       let wrap = panel.getElementsByClassName('demo');
@@ -284,7 +356,7 @@ class Section extends React.PureComponent {
             wrap[i].style.display = "none";
           }
           else {
-            //Hiển thị cả comment cha tránh việc bị display none nè, không hiển thị comment anh em
+            //Hiển thị cả comment cha tránh việc bị display none, không hiển thị comment con
             wrap[i].style.display = "";
             parent = wrap[i].parentElement;
             while(!parent.classList.contains('panel')){
@@ -296,9 +368,27 @@ class Section extends React.PureComponent {
       }
     }
   }
+  //Tìm kiếm comment
+  searchComment = async (inp, mode = 0, replies) => {
+    if(inp == null) {
+      this.setState({
+        comments: this.props.replies[this.props.tab.id]
+      })
+      this.showCommentAfterSearch('')
+    } else if (!inp) {
+      return;
+    }
+    else {
+      const {data, id} = await this.fullCommentSearch(inp, mode, replies);
+      this.setState({
+        comments: data || []
+      })
+      setTimeout(() => this.showCommentAfterSearch(id.join(' || ')), 1500);
+    }
+  }
   handleSearch = (e) => {
     this.setState({search: e.target.value});
-    this.searchComment(e.target.value);
+    if(e.target.value == '') this.searchComment(null);
   }
   //Hàm lưu trữ nội dung đã trans lại -> lưu vào mảng this.state.trans, comment được lưu trữ tạo thành cấu trúc cầu
   // 1 comments được dịch quan trọng gồm: id, level (độ sâu) ; children (tất cả các con, không quan trọng level) ; nội dung
@@ -414,7 +504,7 @@ class Section extends React.PureComponent {
   }
 
   //Lưu thông tin về post và nội dung các comment đã được dịch lại -> tabInfo -> lưu vào store
-  savePost = (first, input) => {
+  savePost = (first, input = {}) => {
     if(!this.changed && !first) return;
     const updateState = (status) => {
       this.setState({
@@ -521,7 +611,19 @@ class Section extends React.PureComponent {
           </div>
           <p className = {"restore" + (this.state.isReady ? ' hide' : '')} style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div id={this.props.tab.id+'-panel'} className = {"panel" + (this.state.isReady ? ' shown' : '')}>
-          {this.state.comments.length !== 0 ? (<input className="demo-input-search" name="search" id = {this.props.tab.id + '-search'} aria-label="seacrh" placeholder="Để tìm các subcomment vui lòng expand comment chính, search multi-comment: ngăn cách bởi ' || '" onChange = {this.handleSearch} value = {this.state.search} ></input>)
+          {this.state.comments.length !== 0 ? (
+            <div style = {{display: 'flex'}}>
+              <input 
+              className="demo-input-search" 
+              name="search" 
+              id = {this.props.tab.id + '-search'} 
+              aria-label="seacrh" 
+              placeholder="Tìm kiếm comment" 
+              onChange = {this.handleSearch} 
+              value = {this.state.search} ></input>
+              <button className="demo-button" onClick = {() => this.searchComment(this.state.search)}>Search</button>
+            </div>
+          )
            : (<div className = "progress">
                 {(!this.state.isCrawling ? 
                   (<p className="widget__message">Không biết nên dịch gì? Gợi ý một số post nhé!</p>) : 
@@ -539,7 +641,6 @@ class Section extends React.PureComponent {
                     tabID = {this.props.tab.id}
                     isBlank = {this.props.tab.category === "blank"}
                     trans = {this.state.trans}
-                    savePost = {this.savePost}
                   />
                 ))
               }
