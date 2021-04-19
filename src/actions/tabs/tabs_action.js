@@ -1,6 +1,19 @@
 import { ADD_TAB, SET_TAB, REMOVE_TAB, UPDATE_TAB,  REMOVE_ALL_TABS, UPDATE_COMMENTS } from "./types";
 import database from '../../firebase/firebase';
 import idb from '../../idb/index.js';
+
+const blank = {
+  id: null,
+  category: 'blank',
+  title : "Tab này chưa có bài dịch nào",
+  iconHref: "assets/img/icons.svg#icon-windows",
+  link: '',
+  note: '',
+  credit: '',
+  trans: null,
+  info: null 
+}
+
 //Delete all tab
 export const deleteAll = () => ({
     type: REMOVE_ALL_TABS
@@ -18,21 +31,33 @@ export const deleteAllWCloud = () => {
           });
   }
 }
-
 //Delete a tab
 export const deleteTab = (id, category) => ({
     type: REMOVE_TAB, 
     payload: {id: id, category: category}
   });
-export const deleteTabWCloud = (id, category) => {
+export const deleteTabWCloud = (id, category, setActiveSection, switchTab) => {
   console.log(id, category)
   return (dispatch, getState) => {
-    const uid = getState().auth.uid;
+    const state = getState();
+    const uid = state.auth.uid;
+    const tabs = state.tabs;
     const path = `users/${uid}/tabs/${id}`;
     return database.deleteData({path})
-          .then(() => {
+          .then(async () => {
             idb.deleteObjectStore(id);
             dispatch(deleteTab(id, category));
+            console.log(switchTab);
+            if(!switchTab) {
+              const blankTab = tabs.find((item) => item.category == 'blank');
+              console.log(blankTab)
+              if(blankTab) setActiveSection(blankTab.id);
+              else {
+                const id = await dispatch(addTab(blank));
+                setActiveSection(id || 'just_id');
+              }
+            } else setActiveSection(switchTab)
+            
           })
           .catch((err) => {
             console.log(err);
@@ -66,6 +91,7 @@ export const addTab = (tab) => {
                 type: ADD_TAB,
                 payload: tab
               });
+              return ref;
             })
             .catch((err) => {
               console.log(err);
@@ -73,6 +99,7 @@ export const addTab = (tab) => {
     }
   }
 }
+
 
 //Update a tab
 export const updateTab = (id, newInfo) => {

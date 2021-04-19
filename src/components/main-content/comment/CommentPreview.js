@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import CommentPanel from './CommentPanel';
 import CommentInput from './CommentInput';
 import idb from '../../../idb/index';
+import LazyLoad from 'react-lazy-load';
 
 const CommentPreview = (props) => {
   const hasChild = props.replies && (props.replies.length !== 0);
@@ -62,19 +63,21 @@ const CommentPreview = (props) => {
         ) : null
       }
       <div className = {!isShowComment ? 'no-display' : ''}>
-        {isShowComment !== 0 && props.replies.map((rootComment, index) => (
-                <CommentPreview
-                  key = {rootComment.id}
-                  id = {rootComment.id}
-                  index = {index}
-                  store = {props.store}
-                  parent = {[...props.parent, props.id]}
-                  replies = {rootComment.replies}
-                  tabID = {props.tabID}
-                  isBlank = {props.isBlank}
-                  trans = {props.trans}
-                />
-              ))
+        {(isShowComment !== 0 && props.replies && Array.isArray(props.replies)) && props.replies.map((rootComment, index) => (
+          <LazyLoad offsetTop = {0}>
+            <CommentPreview
+              key = {rootComment.id}
+              id = {rootComment.id}
+              index = {index}
+              store = {props.store}
+              parent = {[...props.parent, props.id]}
+              replies = {rootComment.replies}
+              tabID = {props.tabID}
+              isBlank = {props.isBlank}
+              trans = {props.trans}
+            />
+          </LazyLoad>
+        ))
         }
       </div>
       </div>

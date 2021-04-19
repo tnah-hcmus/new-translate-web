@@ -22,6 +22,7 @@ import {saveDraft, getDraft} from '../../../actions/draft/draft';
 import CircularProgressWithLabel from './ProgressBar';
 import {CircularProgress} from '@material-ui/core';
 import idb from '../../../idb/index';
+import LazyLoad from 'react-lazy-load';
 
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
@@ -209,11 +210,11 @@ class Section extends React.PureComponent {
         buttons: [
             {
             label: 'Bỏ qua :-<',
-            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category, this.props.setActiveSection);}
             },
             {
             label: 'Vẫn bỏ qua :">',
-            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+            onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category, this.props.setActiveSection);}
             }
         ]
       });
@@ -288,7 +289,7 @@ class Section extends React.PureComponent {
               buttons: [
                   {
                   label: 'Bỏ qua :-<',
-                  onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category);}
+                  onClick: () =>  {this.props.deleteTab(this.props.tab.id, this.props.tab.category, this.props.setActiveSection);}
                   },
                   {
                   label: 'Vẫn dịch :">',
@@ -534,10 +535,9 @@ class Section extends React.PureComponent {
       //nếu thuộc blank category -> chuyển category
       if(this.props.tab.category === 'blank' || this.props.tab.category !== data.category) {
         this.props.addCategory(this.state.info.subReddit);
-        this.props.deleteTab(this.props.tab.id, this.props.tab.category);
-        this.props.replaceTabID(this.props.tab.id, data.id);
         this.props.addTab(data);
-        this.props.setActiveSection(data.id);
+        this.props.replaceTabID(this.props.tab.id, data.id);
+        this.props.deleteTab(this.props.tab.id, this.props.tab.category, this.props.setActiveSection, data.id);
       }
       else {
         this.props.updateTab(this.props.tab.id, data); //Nếu không, không tạo tab mới -> cập nhật lại comment, title trên tab cũ
@@ -567,6 +567,7 @@ class Section extends React.PureComponent {
           category = {this.props.tab.category}
           iconHref = {this.props.tab.iconHref}
           isVideo = {this.state.info.isVideo}
+          setActiveSection = {this.props.setActiveSection}
           url = {this.state.info.url}
           fallbackUrl = {this.state.info.fallbackUrl}
           isImage = {this.state.info.isImage}
@@ -633,15 +634,17 @@ class Section extends React.PureComponent {
           }
               {
                 this.state.comments.map((rootComment, index) => (
-                  <CommentPreview
-                    key = {rootComment.id}
-                    id = {rootComment.id}
-                    parent = {[]}
-                    replies = {rootComment.replies}
-                    tabID = {this.props.tab.id}
-                    isBlank = {this.props.tab.category === "blank"}
-                    trans = {this.state.trans}
-                  />
+                  <LazyLoad offsetTop = {50}>
+                    <CommentPreview
+                      key = {rootComment.id}
+                      id = {rootComment.id}
+                      parent = {[]}
+                      replies = {rootComment.replies}
+                      tabID = {this.props.tab.id}
+                      isBlank = {this.props.tab.category === "blank"}
+                      trans = {this.state.trans}
+                    />
+                  </LazyLoad>
                 ))
               }
           </div>

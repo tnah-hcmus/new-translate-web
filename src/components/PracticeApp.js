@@ -1,4 +1,4 @@
-import React, {Suspense, lazy, useRef, useState}  from 'react';
+import React, {useRef, useState}  from 'react';
 import HistoryContext from '../context/history-context';
 import useHistory from '../hook/active';
 import Nav from './nav-bar/Nav';
@@ -14,7 +14,7 @@ const PracticeApp = (props) => {
   const [showNav, setShowNav] = useState(true);
   const [activeSection, setActiveSection] = useState(null);
   const selectionRef = useRef(null); //ref for highlight functional
-  const popoverRef = useRef(null)
+  const popoverRef = useRef(null);
 
   return (
     <div ref={selectionRef} className = "wrap">

@@ -9,6 +9,7 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 module.exports = (env) => {
   return {
   mode: 'production',
+  //mode: 'development',
   //devtool: 'cheap-source-map',
   entry: {
     main: './src/app.js'

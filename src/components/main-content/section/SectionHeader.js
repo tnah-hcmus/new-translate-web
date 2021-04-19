@@ -34,7 +34,7 @@ const SectionHeader = (props) => {
             buttons: [
                 {
                 label: 'Xoá',
-                onClick: () =>  {props.deleteTab(tabID, props.category); props.deleteAllReplies(tabID); deleteDraft(id, uuid);}
+                onClick: () =>  {props.deleteTab(tabID, props.category, props.setActiveSection); props.deleteAllReplies(tabID); deleteDraft(id, uuid);}
                 },
                 {
                 label: 'Mình nhầm'
