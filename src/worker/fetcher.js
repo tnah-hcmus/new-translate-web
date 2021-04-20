@@ -446,6 +446,7 @@ if( 'function' === typeof importScripts) {
           title: postInfo.title,
           text: postInfo.selftext,
           awards: this.getAward(postInfo),
+          num_comments: postInfo.num_comments,
           author,
           indexed_author,
           upvotes: this.upvoteParse(parseInt(postInfo.ups)),
@@ -501,7 +502,8 @@ if( 'function' === typeof importScripts) {
         this.fetcherWorkings = 0;
         this.totalFetcher = 0;
         this.current = 0;
-        this.maxBatch = 3;
+        this.maxBatch = 8;
+        this.maxBatchAsyncJob = 3;
         this.batch = 0;
         this.bus = new EventTarget();
       }
@@ -520,7 +522,7 @@ if( 'function' === typeof importScripts) {
         this.bus.dispatchEvent(new CustomEvent("free", {}));
       }
       donePartOfFetcher = () => {
-        if(!this.totalFetcher) this.totalFetcher = this.fetcherWorkings;
+        if(!this.fetcherWorkings) this.fetcherWorkings = this.totalFetcher;
         this.fetcherWorkings--;
         const progress = Math.ceil(((this.totalFetcher-this.fetcherWorkings)/this.totalFetcher) * 100)
         if(this.current !== progress) {
@@ -545,7 +547,7 @@ if( 'function' === typeof importScripts) {
           this.decreaseBatch();
           return data;
         }
-        if(this.batch >= this.maxBatch) {
+        if(this.batch >= this.maxBatchAsyncJob) {
           await this.waitForBatch();
           return await executeJob();
         } else {
@@ -556,6 +558,7 @@ if( 'function' === typeof importScripts) {
         const postInfo = json[0].data.children[0].data;
         const bodyRoot = this.helper.parseInfo(postInfo);
         this.id = bodyRoot.id;
+        this.totalFetcher = bodyRoot.num_comments;
         this.root = { data: bodyRoot, replies: [] };
         try {
           const result = await this.db.createObjectStore(this.id, 'id', [
@@ -571,7 +574,6 @@ if( 'function' === typeof importScripts) {
         }
       };
       fetchUrl = (url, isOK, json, parsePost, callback) => {
-        this.fetcherWorkings++;
         return fetch(url)
           .then((data) => this.queueAsyncJob(isOK, data))
           .then((data) => this.queueAsyncJob(json, data))
@@ -598,21 +600,27 @@ if( 'function' === typeof importScripts) {
               callback
             );
           } else {
-            let listPromise = [];
-            for (let item of this.moreChild) {
-              const domain = "https://www.reddit.com";
-              const url = domain + location + item + ".json";
-              listPromise.push(
-                this.fetchUrl(
-                  url,
-                  this.status,
-                  this.json,
-                  (json) => this.getCommentsFromJSON(json, parent, prefix),
-                  callback
+            let listPromises = [];
+            let i = 0;
+            const domain = "https://www.reddit.com";
+            while(i < this.moreChild.length) {
+              const url = domain + location + this.moreChild[i] + ".json";
+              if(listPromises.length < this.maxBatch) {
+                listPromises.push(
+                  this.fetchUrl(
+                    url,
+                    this.status,
+                    this.json,
+                    (json) => this.getCommentsFromJSON(json, parent, prefix),
+                    callback
+                  )
                 )
-              );
+              } else if(listPromises.length == this.maxBatch) {
+                await Promise.all(listPromises);
+                listPromises = [];
+              }
+              i++; 
             }
-            await Promise.all(listPromise);
           }
         } catch (e) {
           console.log(e);
