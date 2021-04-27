@@ -51,7 +51,7 @@ const PermissionModal = (props) => {
         </div>
         <h3>Bạn đã có permission chưa ? Nếu chưa có hãy xin permission theo mẫu ở dưới nhé!</h3>
         <p>{props.content.replace('xxxx', props.author)}</p>
-        <button><a href = "https://docs.google.com/spreadsheets/d/1qlccnLkRCkflo2lJjjZnN0cdKSpUvBQ05XL164I2DGw/htmlview" target = "_blank">Cập nhật permission</a></button>
+        <button><a href = "https://docs.google.com/spreadsheets/d/1qlccnLkRCkflo2lJjjZnN0cdKSpUvBQ05XL164I2DGw" target = "_blank">Cập nhật permission</a></button>
         </Modal>
         )
 }

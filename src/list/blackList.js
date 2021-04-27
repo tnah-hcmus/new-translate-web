@@ -3,5 +3,6 @@ const blackList = [
     "u/EaPAtbp",
     "u/Zithero",
     "u/fainting--goat",
+    "u/Pippinacious"
 ]
 export default blackList;
