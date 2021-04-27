@@ -23,7 +23,7 @@ import CircularProgressWithLabel from './ProgressBar';
 import {CircularProgress} from '@material-ui/core';
 import idb from '../../../idb/index';
 import LazyLoad from 'react-lazy-load';
-
+import { Virtuoso } from 'react-virtuoso';
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
 class Section extends React.PureComponent {
@@ -632,9 +632,11 @@ class Section extends React.PureComponent {
                 )}
               </div>)
           }
-              {
-                this.state.comments.map((rootComment, index) => (
-                  <LazyLoad offsetTop = {50}>
+          {
+            <Virtuoso
+              style = {{height: '800px', marginTop: '30px'}}
+              data={this.state.comments || []}
+              itemContent={(index, rootComment) => (
                     <CommentPreview
                       key = {rootComment.id}
                       id = {rootComment.id}
@@ -644,9 +646,9 @@ class Section extends React.PureComponent {
                       isBlank = {this.props.tab.category === "blank"}
                       trans = {this.state.trans}
                     />
-                  </LazyLoad>
-                ))
-              }
+                )}
+            />
+          }
           </div>
         </InputContext.Provider>
         {

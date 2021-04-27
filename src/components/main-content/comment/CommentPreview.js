@@ -82,7 +82,7 @@ const CommentPreview = (props) => {
       </div>
       </div>
     </div>
-  ) : null)
+  ) : <div style = {{height: 60.7, width: '100%'}}></div>)
 };
 const areEqual = (prevProps, nextProps) => {
   if(prevProps.parent.length === nextProps.parent.length && prevProps.parent.every((value, index) => value === nextProps.parent[index])) return true;
