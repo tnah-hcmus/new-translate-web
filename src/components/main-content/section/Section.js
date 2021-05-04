@@ -22,7 +22,6 @@ import {saveDraft, getDraft} from '../../../actions/draft/draft';
 import CircularProgressWithLabel from './ProgressBar';
 import {CircularProgress} from '@material-ui/core';
 import idb from '../../../idb/index';
-import LazyLoad from 'react-lazy-load';
 import { Virtuoso } from 'react-virtuoso';
 
 //Chứa toàn bộ content của post, gồm SectionHeader (input link, bộ button helper) + Title (dùng để dịch title) + Comment (toàn bộ comment)
@@ -31,8 +30,10 @@ class Section extends React.PureComponent {
   constructor(props) {
     super(props)
     this.changed = false;
+    const isFull = localStorage.getItem('RVN-full');
     this.state = {
       saveState: 0,
+      fullCrawl: isFull  === null ? true : isFull,
       link: this.props.tab.link || '',
       info: this.props.tab.info || {},
       isCrawling: false,
@@ -51,6 +52,13 @@ class Section extends React.PureComponent {
     }
   }
 
+  updateCrawl = (state) => {
+    localStorage.setItem('RVN-full', state);
+    this.setState({
+      fullCrawl: state
+    });
+  }
+
   sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time))
   }
@@ -60,7 +68,7 @@ class Section extends React.PureComponent {
     })
   }
   reCrawl = () => {
-    crawler(this.props.tab.link.replace(/\?[^?]+$/,''), this.updateProgressBar)
+    crawler(this.props.tab.link.replace(/\?[^?]+$/,''), this.updateProgressBar, this.state.fullCrawl)
     .then((result) => {
       this.props.addReplies(this.props.tab.id, result.replies);
       this.setState({
@@ -227,7 +235,7 @@ class Section extends React.PureComponent {
     this.setState({
       isCrawling: true
     })
-    crawler(link.replace(/\?[^?]+$/,''), this.updateProgressBar).then(async (result) => {
+    crawler(link.replace(/\?[^?]+$/,''), this.updateProgressBar, this.state.fullCrawl).then(async (result) => {
       this.props.addReplies(this.props.tab.id, result.replies);
       this.setState({
         link: flag ? result.data.link : link.replace(/\?[^?]+$/,''),
@@ -564,6 +572,8 @@ class Section extends React.PureComponent {
       <Suspense fallback = {<div></div>} key = {this.props.tab.id + '-header-suspense'}>
         <SectionHeader
           key = {this.props.tab.id + '-header'}
+          fullCrawl = {this.state.fullCrawl}
+          updateCrawl = {this.updateCrawl}
           category = {this.props.tab.category}
           iconHref = {this.props.tab.iconHref}
           isVideo = {this.state.info.isVideo}

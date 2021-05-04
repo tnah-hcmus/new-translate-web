@@ -203,7 +203,10 @@
   /* Demo Controls ----------------------------- */
   
   
-  
+  .demo-text {
+    font: inherit !important;
+    font-size: 1.2em !important;
+  }
   .demo-button {
     align-self: flex-start;
     margin-right: 1em;

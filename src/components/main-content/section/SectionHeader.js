@@ -7,12 +7,67 @@ import downloadImg from '../../../crawler/img-downloader';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {deleteDraft} from '../../../actions/draft/draft';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import {withStyles} from '@material-ui/core/styles';
 const saveStateMap = {
     0: 'Save',
     1: 'Saving',
     2: 'Saved'
   }
+
+  const IOSSwitch = withStyles((theme) => ({
+    root: {
+      width: 42,
+      height: 26,
+      padding: 0,
+      margin: theme.spacing(1),
+    },
+    switchBase: {
+      padding: 1,
+      '&$checked': {
+        transform: 'translateX(16px)',
+        color: theme.palette.common.white,
+        '& + $track': {
+          backgroundColor: 'var(--color-accent)',
+          opacity: 1,
+          border: 'none',
+        },
+      },
+      '&$focusVisible $thumb': {
+        color: 'var(--color-accent)',
+        border: '6px solid #fff',
+      },
+    },
+    thumb: {
+      width: 24,
+      height: 24,
+    },
+    track: {
+      borderRadius: 26 / 2,
+      border: `1px solid ${theme.palette.grey[200]}`,
+      backgroundColor: theme.palette.grey[50],
+      opacity: 1,
+      transition: theme.transitions.create(['background-color', 'border']),
+    },
+    checked: {},
+    focusVisible: {},
+  }))(({ classes, ...props }) => {
+    return (
+      <Switch
+        focusVisibleClassName={classes.focusVisible}
+        disableRipple
+        classes={{
+          root: classes.root,
+          switchBase: classes.switchBase,
+          thumb: classes.thumb,
+          track: classes.track,
+          checked: classes.checked,
+        }}
+        {...props}
+      />
+    );
+  });
 
 const SectionHeader = (props) => {
     const [openNote, setOpenNote] = useState(false);
@@ -26,6 +81,10 @@ const SectionHeader = (props) => {
 
     const handleChange = (e) => {
         setValue(e.target.value);
+    }
+    const handleSwitchTranslator = (e) => {
+        props.setHelper(e.target.checked);
+        props.setGoogleHelper();
     }
     const deletePost = () => {
         confirmAlert({
@@ -87,7 +146,32 @@ const SectionHeader = (props) => {
                     </div>
                     <div className = "wrap" style = {{justifyContent: 'space-between', marginRight: '10%', marginTop: '10px'}}>
                         <button className="demo-button download" id={tabID + '-download-video'} onClick = {startDownloadVideo}  disabled = {downloadVideo || !props.isVideo}>{props.isVideo ? 'Download Video' : 'No video found'}</button>
-                        <button className="demo-button download" id={tabID + '-g-trans'} onClick = {() => {props.setHelper(props.helper ? false : true); props.setGoogleHelper();}}>{props.helper ? 'Translator helper: ON' : 'Translator helper: OFF'}</button>
+                        <FormControlLabel
+                            classes = {{
+                                label: 'demo-text'
+                            }}
+                            control={
+                            <IOSSwitch
+                                checked={props.helper}
+                                onChange={handleSwitchTranslator}
+                                name="translatorHelper"
+                            />
+                            }
+                            label="Translator helper"
+                        />
+                        <FormControlLabel
+                            classes = {{
+                                label: 'demo-text'
+                            }}
+                            control={
+                            <IOSSwitch
+                                checked={props.fullCrawl}
+                                onChange={(e) => props.updateCrawl(e.target.checked)}
+                                name="Fullcomment"
+                            />
+                            }
+                            label="Full comments"
+                        />
                         <button className="demo-button" id={tabID + '-download-image'} onClick = {startDownloadImage} disabled = {downloadImage || !props.isImage}>{props.isImage ? 'Download Image' : 'No image found'}</button>
                     </div>
                     {downloadVideo && <iframe

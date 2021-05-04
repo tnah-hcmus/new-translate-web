@@ -492,7 +492,8 @@ if( 'function' === typeof importScripts) {
   }
     
   class Fetcher {
-      constructor(url, callback) {
+      constructor(url, isFull, callback) {
+        this.isFull = isFull;
         this.helper = new PostParser();
         this.url = this.helper.standardlizeUrl(url);
         this.isDataExist = false;
@@ -589,6 +590,7 @@ if( 'function' === typeof importScripts) {
           });
       };
       fetch = async (more, location, parent, prefix, callback) => {
+        console.log(this.isFull);
         callback = callback || null;
         try {
           if (!more) {
@@ -599,7 +601,7 @@ if( 'function' === typeof importScripts) {
               this.parsePost,
               callback
             );
-          } else {
+          } else if(this.isFull) {
             let listPromises = [];
             let i = 0;
             const domain = "https://www.reddit.com";
@@ -678,8 +680,8 @@ if( 'function' === typeof importScripts) {
       event => {
       switch (event.data.cmd) {
           case "crawl": {
-              const {url} = event.data.data;
-              const fetcher = new Fetcher(url, () => {
+              const {url, isFull} = event.data.data;
+              const fetcher = new Fetcher(url, isFull, () => {
                 //console.log("Done fetch");
               });
               fetcher.fetch().then(async () => {

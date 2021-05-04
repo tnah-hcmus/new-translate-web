@@ -119,8 +119,8 @@ worker.addEventListener("message", event => {
   }
 });
 //Hàm thu thập thông tin của 1 post trả về comment (root) và info của post đó
-const crawler = async (url, updateCallback) => {
-  worker.postMessage({cmd: "crawl", id, data: {url}});
+const crawler = async (url, updateCallback, isFull) => {
+  worker.postMessage({cmd: "crawl", id, data: {url, isFull}});
   updateBarCallback = updateCallback;
   const result = await new Promise(resolve => {crawlListeners[id] = resolve; id++;});
   result.db = idb;
