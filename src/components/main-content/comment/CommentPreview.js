@@ -3,11 +3,12 @@ import CommentPanel from './CommentPanel';
 import CommentInput from './CommentInput';
 import idb from '../../../idb/index';
 import LazyLoad from 'react-lazy-load';
+import CheckIcon from '@material-ui/icons/Check';
 
 const CommentPreview = (props) => {
   const hasChild = props.replies && (props.replies.length !== 0);
-  const [isOpen, setOpen] = useState(props.trans[props.id] ? true : false);
-  const [isShowComment, setShowComment] = useState(props.trans[props.id] ? true : 0);
+  const [isOpen, setOpen] = useState((props.inSearch && props.trans[props.id]) ? true : false);
+  const [isShowComment, setShowComment] = useState((props.inSearch && props.trans[props.id]) ? true : 0);
   const [info, setInfo] = useState(null);
   useEffect(() => {
     let isComponentExist = true;
@@ -38,11 +39,17 @@ const CommentPreview = (props) => {
       <div className="demo-wrapper">
       <div className = {isShowComment ? 'is-open' : ''}>
         <button id={props.id + "-demo-toggle"} className={"js-container-target demo-toggle-button" + (!hasChild ? " disabled-demo-button": "")} onClick = {showReplies}>
-          {info.prefixed}{info.author}
-          <label className="checkbox-label">
+          <div 
+          style = {{ display: 'flex',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',}}
+          >
+            <span>{info.prefixed}{info.author}</span>{props.trans[props.id] && !isOpen && <CheckIcon classes = {{root: 'custom-icon'}}/>}
+            <label className="checkbox-label">
             <input type="checkbox" onChange={showComment} defaultChecked = {isOpen}/>
             <span className="checkbox-custom rectangular" id={props.id + "-span"}></span>
           </label> 
+          </div>
             <div className="demo-meta u-avoid-clicks">{info.awards} {info.awards && <span className="demo-meta-divider">|</span>} Upvote: {info.upvotes}</div>
         </button>
       </div>

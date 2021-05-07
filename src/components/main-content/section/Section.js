@@ -47,6 +47,7 @@ class Section extends React.PureComponent {
       popover: false,
       transText: 'Đang dịch',
       search: '',
+      inSearch: false,
       progressBarInfo: null,
       alert: false
     }
@@ -381,13 +382,17 @@ class Section extends React.PureComponent {
   searchComment = async (inp, mode = 0, replies) => {
     if(inp == null) {
       this.setState({
-        comments: this.props.replies[this.props.tab.id]
+        comments: this.props.replies[this.props.tab.id],
+        inSearch: false
       })
       this.showCommentAfterSearch('')
     } else if (!inp) {
       return;
     }
     else {
+      this.setState({
+        inSearch: true
+      })
       const {data, id} = await this.fullCommentSearch(inp, mode, replies);
       this.setState({
         comments: data || []
@@ -650,6 +655,7 @@ class Section extends React.PureComponent {
                     <CommentPreview
                       key = {rootComment.id}
                       id = {rootComment.id}
+                      inSearch = {this.state.inSearch}
                       parent = {[]}
                       replies = {rootComment.replies}
                       tabID = {this.props.tab.id}
