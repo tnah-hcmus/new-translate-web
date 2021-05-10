@@ -2,14 +2,15 @@ import React, {useState, useEffect} from 'react';
 import CommentPanel from './CommentPanel';
 import CommentInput from './CommentInput';
 import idb from '../../../idb/index';
-import LazyLoad from 'react-lazy-load';
 import CheckIcon from '@material-ui/icons/Check';
 
 const CommentPreview = (props) => {
+  if(!Array.isArray(props.replies) && props.replies.replies) props.replies = props.replies.replies;
   const hasChild = props.replies && (props.replies.length !== 0);
-  const [isOpen, setOpen] = useState((props.inSearch && props.trans[props.id]) ? true : false);
-  const [isShowComment, setShowComment] = useState((props.inSearch && props.trans[props.id]) ? true : 0);
+  const [isOpen, setOpen] = useState((props.inSearch && props.trans[props.id]) ? true : !!props.openComments[props.id]);
+  const [isShowComment, setShowComment] = useState((props.inSearch && props.trans[props.id]) ? true : (props.showComments[props.id] === 'undefined' ? 0 : !!props.showComments[props.id]));
   const [info, setInfo] = useState(null);
+  if(props.id === 'gv4x6ze') console.log(isShowComment);
   useEffect(() => {
     let isComponentExist = true;
     if(!props.isBlank) {
@@ -28,11 +29,16 @@ const CommentPreview = (props) => {
     return () => isComponentExist = false;
   }, [])
   const showComment = () => {
+    props.updateOpenComments(props.id, !isOpen)
     setOpen(!isOpen);
+
   }
   const showReplies = () => {
     if(!hasChild) return;
-    else setShowComment(isShowComment ? false : true);
+    else {
+      props.updateShowComments(props.id, isShowComment ? false : true)
+      setShowComment(isShowComment ? false : true);
+    }
   }
   return (info && !props.isBlank ? (
     <div className="demo" id = {props.id + '-comment-wrap'}>
@@ -71,19 +77,22 @@ const CommentPreview = (props) => {
       }
       <div className = {!isShowComment ? 'no-display' : ''}>
         {(isShowComment !== 0 && props.replies && Array.isArray(props.replies)) && props.replies.map((rootComment, index) => (
-          <LazyLoad offsetTop = {0}>
-            <CommentPreview
-              key = {rootComment.id}
-              id = {rootComment.id}
-              index = {index}
-              store = {props.store}
-              parent = {[...props.parent, props.id]}
-              replies = {rootComment.replies}
-              tabID = {props.tabID}
-              isBlank = {props.isBlank}
-              trans = {props.trans}
-            />
-          </LazyLoad>
+          <CommentPreview
+            key = {rootComment.id}
+            id = {rootComment.id}
+            index = {index}
+            store = {props.store}
+            parent = {[...props.parent, props.id]}
+            inSearch = {props.inSearch}
+            replies = {rootComment.replies}
+            tabID = {props.tabID}
+            isBlank = {props.isBlank}
+            trans = {props.trans}
+            showComments = {props.showComments}
+            openComments = {props.openComments}
+            updateOpenComments = {props.updateOpenComments}
+            updateShowComments = {props.updateShowComments}
+          />
         ))
         }
       </div>

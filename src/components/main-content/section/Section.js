@@ -49,8 +49,18 @@ class Section extends React.PureComponent {
       search: '',
       inSearch: false,
       progressBarInfo: null,
-      alert: false
+      alert: false,
     }
+    this.openComments = {};
+    this.showComments = {};
+  }
+
+  updateOpenComments = (id, state) => {
+    this.openComments[id] = state;
+  }
+
+  updateShowComments = (id, state) => {
+    this.showComments[id] = state;
   }
 
   updateCrawl = (state) => {
@@ -627,7 +637,7 @@ class Section extends React.PureComponent {
           </div>
           <p className = {"restore" + (this.state.isReady ? ' hide' : '')} style = {{textAlign: 'center'}}>Restoring your trans comments, hold your apple...</p>
           <div id={this.props.tab.id+'-panel'} className = {"panel" + (this.state.isReady ? ' shown' : '')}>
-          {this.state.comments.length !== 0 ? (
+          {(this.state.comments.length !== 0 || this.state.inSearch) ? (
             <div style = {{display: 'flex'}}>
               <input 
               className="demo-input-search" 
@@ -648,7 +658,25 @@ class Section extends React.PureComponent {
               </div>)
           }
           {
-            <Virtuoso
+            this.state.inSearch ? (
+              this.state.comments.map((rootComment) => 
+                <CommentPreview
+                  key = {rootComment.id}
+                  id = {rootComment.id}
+                  inSearch = {this.state.inSearch}
+                  openComments = {this.openComments}
+                  updateOpenComments = {this.updateOpenComments}
+                  showComments = {this.showComments}
+                  updateShowComments = {this.updateShowComments}
+                  parent = {[]}
+                  replies = {rootComment.replies}
+                  tabID = {this.props.tab.id}
+                  isBlank = {this.props.tab.category === "blank"}
+                  trans = {this.state.trans}
+                />
+              )
+            ) :
+            (<Virtuoso
               style = {{height: '800px', marginTop: '30px'}}
               data={this.state.comments || []}
               itemContent={(index, rootComment) => (
@@ -656,6 +684,10 @@ class Section extends React.PureComponent {
                       key = {rootComment.id}
                       id = {rootComment.id}
                       inSearch = {this.state.inSearch}
+                      openComments = {this.openComments}
+                      updateOpenComments = {this.updateOpenComments}
+                      showComments = {this.showComments}
+                      updateShowComments = {this.updateShowComments}
                       parent = {[]}
                       replies = {rootComment.replies}
                       tabID = {this.props.tab.id}
@@ -663,7 +695,7 @@ class Section extends React.PureComponent {
                       trans = {this.state.trans}
                     />
                 )}
-            />
+            />)
           }
           </div>
         </InputContext.Provider>

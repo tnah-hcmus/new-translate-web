@@ -15,7 +15,7 @@
   left: 0;
   width: 2px;
   height: 50.2%;
-  background-color: hsl(0,0%,22%);
+  background-color: var(--toggle-color);
   transition: transform .2s cubic-bezier(.4,.1,0,1);
 }
 %box-class {
@@ -92,11 +92,11 @@
       .disabled-demo-button{
         &:before {
           cursor: default;
-          background-color:  hsl(0,0%,88%);
+          background-color:  var(--disable-toggle-color);
         }
         &:after {
           cursor: default;
-          background-color:  hsl(0,0%,88%);
+          background-color:  var(--disable-toggle-color);
         }
         
       }
