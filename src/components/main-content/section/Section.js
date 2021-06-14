@@ -33,7 +33,7 @@ class Section extends React.PureComponent {
     const isFull = localStorage.getItem('RVN-full');
     this.state = {
       saveState: 0,
-      fullCrawl: isFull  === null ? true : isFull,
+      fullCrawl: isFull  === null ? false : isFull,
       link: this.props.tab.link || '',
       info: this.props.tab.info || {},
       isCrawling: false,
