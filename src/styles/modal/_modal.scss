@@ -5,7 +5,7 @@
   content: ' ';
   height: 33px;
   width: 2px;
-  background-color: darken($color:hsl(222, 53%, 50%) , $amount: 30);
+  background-color: var(--font-color);
 }
 
 .preview-modal {
