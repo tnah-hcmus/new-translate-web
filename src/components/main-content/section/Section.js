@@ -416,7 +416,7 @@ class Section extends React.PureComponent {
   }
   //Hàm lưu trữ nội dung đã trans lại -> lưu vào mảng this.state.trans, comment được lưu trữ tạo thành cấu trúc cầu
   // 1 comments được dịch quan trọng gồm: id, level (độ sâu) ; children (tất cả các con, không quan trọng level) ; nội dung
-  addTransComment = (id, level, prefixed, parent, author, info, children) => {
+  addTransComment = (id, level = 0, prefixed, parent, author, info, children) => {
     //comment được truyền vào có parent -> chuyển parent này thành các thuộc tính children của các comment parent tương ứng
     let trans = this.state.trans;
     if(parent) {
@@ -471,7 +471,7 @@ class Section extends React.PureComponent {
       return content;
     }
     comments.children.map((id) => {
-      if(array[id].level === level) 
+      if(array[id]?.level === level) 
       content = content + endLine +  this.getTransReplies('', array[id], array, level+1);
     })
     if(!(comments.body.trim() === '')) content = comments.prefixed+ comments.author + comments.description.replace(/points\ points/, 'points').replace(/point\ points/, 'point')  + endLine + comments.body + endLine + content;
@@ -493,7 +493,7 @@ class Section extends React.PureComponent {
       content = content + 'Link Reddit: '+ info.shortenLink + endLine + commentSeparator + endLine;
       //DFS trans comment
       for(let id in trans) {
-        if(trans[id].level === 1) {
+        if(trans[id]?.level === 1) {
           let deep = this.getTransReplies('', trans[id], trans, 2);
           if(deep.trim() !== '') content = content + deep + commentSeparator + endLine;
         }
@@ -519,7 +519,7 @@ class Section extends React.PureComponent {
     let showInput = ''; //nội dung để chèn vào thẻ input nhằm ẩn các comment chưa được dịch, chỉ hiện những comment được dịch sau khi restore
     const trans = this.state.trans;
     for(let id in trans) {
-      if(trans[id].author && trans[id].level > 0) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
+      if(trans[id].author && trans[id]?.level > 0) showInput = showInput + trans[id].prefixed + trans[id].author + authorSeparator; //thêm comment để hiện sau khi restore
     }
     showInput = showInput.replace(/\ \|\|\ $/,'')
     //Chèn nội dung vào thanh search, ẩn các comment chưa được dịch 
