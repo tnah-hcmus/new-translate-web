@@ -50,7 +50,7 @@ const CommentPreview = (props) => {
                       alignItems: 'center',
                       flexWrap: 'wrap',}}
           >
-            <span>{info.prefixed}{info.author}</span>{props.trans[props.id] && !isOpen && <CheckIcon classes = {{root: 'custom-icon'}}/>}
+            <span style = {{width: 'auto'}}>{info.prefixed}{info.author}</span>{props.trans[props.id] && !isOpen && <CheckIcon classes = {{root: 'custom-icon'}}/>}
             <label className="checkbox-label">
             <input type="checkbox" onChange={showComment} defaultChecked = {isOpen}/>
             <span className="checkbox-custom rectangular" id={props.id + "-span"}></span>

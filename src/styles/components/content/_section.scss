@@ -127,7 +127,6 @@
       display: none;
       width: 85%;
       margin: 0 auto;
-      padding-bottom: 300px;
       .progress {
         text-align: center;
         padding-top: 5%;
@@ -209,7 +208,14 @@
 
 
 @media only screen and (max-width: 768px) {
+  .section {
+    max-width: Max(0px, calc((100% - 120px)*999));
+    overflow-x: hidden;
+  }
   .section.section-wrapper.demo-input-search {
     margin-left:0;
+  }
+  .demo-input-search {
+    margin: 0 !important;
   }
 }
