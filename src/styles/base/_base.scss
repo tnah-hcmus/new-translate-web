@@ -151,10 +151,57 @@ html {
   cursor: pointer;
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.floating-button {
+  position: fixed;
+  width: 3rem;
+  height: 3rem;
+  bottom: 2em;
+  z-index: 1000;
+  cursor: pointer;
+  animation: fadeIn 0.3s;
+  transition: opacity 0.4s;
+  fill: var(--font-color);
+  opacity: 0.75;
+  right: 3em;
+  background: transparent;
+  border: none;
+  &:focus {
+  -webkit-animation: fadeUp 0.3s;
+          animation: fadeUp 0.3s;
+  }
+  &:active {
+  -webkit-animation: none;
+          animation: none;
+  }
+}
+
+
 
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   .content * {
     width: 100%;
+  }
+  .floating-button {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }

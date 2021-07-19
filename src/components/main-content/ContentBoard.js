@@ -99,7 +99,7 @@ const ContentBoard = (props) => {
     return false;
   }
   return (
-    <main className="content js-content">
+    <main id = "main-content" className="content js-content">
       {props.tabs.length === 0 && <p className="widget__message"></p>}
       {
         listSection.map((tab, index) =>  {
