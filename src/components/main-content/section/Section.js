@@ -476,7 +476,7 @@ class Section extends React.PureComponent {
         comments: this.props.replies[this.props.tab.id],
         inSearch: false,
       });
-      this.showCommentAfterSearch("");
+      //this.showCommentAfterSearch("");
     } else if (!inp) {
       return;
     } else {
@@ -487,7 +487,7 @@ class Section extends React.PureComponent {
       this.setState({
         comments: data || [],
       });
-      setTimeout(() => this.showCommentAfterSearch(id.join(" || ")), 1500);
+      //setTimeout(() => this.showCommentAfterSearch(id.join(" || ")), 1500);
     }
   };
   handleSearch = (e) => {

@@ -10,7 +10,6 @@ const CommentPreview = (props) => {
   const [isOpen, setOpen] = useState((props.inSearch && props.trans[props.id]) ? true : !!props.openComments[props.id]);
   const [isShowComment, setShowComment] = useState((props.inSearch && props.trans[props.id]) ? true : (props.showComments[props.id] === 'undefined' ? 0 : !!props.showComments[props.id]));
   const [info, setInfo] = useState(null);
-  if(props.id === 'gv4x6ze') console.log(isShowComment);
   useEffect(() => {
     let isComponentExist = true;
     if(!props.isBlank) {
