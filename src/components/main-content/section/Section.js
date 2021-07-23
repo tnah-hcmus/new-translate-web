@@ -897,8 +897,6 @@ class Section extends React.PureComponent {
                 <Virtuoso
                   style={{ height: "800px", marginTop: "30px" }}
                   data={this.state.comments || []}
-                  defaultItemHeight = {250}
-									overscan = {250}
                   itemContent={(index, rootComment) => (
                     <CommentPreview
                       key={rootComment.id}
