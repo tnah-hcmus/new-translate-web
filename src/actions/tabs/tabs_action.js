@@ -37,31 +37,28 @@ export const deleteTab = (id, category) => ({
     payload: {id: id, category: category}
   });
 export const deleteTabWCloud = (id, category, setActiveSection, switchTab) => {
-  console.log(id, category)
   return (dispatch, getState) => {
     const state = getState();
     const uid = state.auth.uid;
     const tabs = state.tabs;
     const path = `users/${uid}/tabs/${id}`;
-    return database.deleteData({path})
-          .then(async () => {
-            idb.deleteObjectStore(id);
-            dispatch(deleteTab(id, category));
-            console.log(switchTab);
-            if(!switchTab) {
-              const blankTab = tabs.find((item) => item.category == 'blank');
-              console.log(blankTab)
-              if(blankTab) setActiveSection(blankTab.id);
-              else {
-                const id = await dispatch(addTab(blank));
-                setActiveSection(id || 'just_id');
-              }
-            } else setActiveSection(switchTab)
-            
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+    return database
+      .deleteData({ path })
+      .then(async () => {
+        idb.deleteObjectStore(id);
+        dispatch(deleteTab(id, category));
+        if (!switchTab) {
+          const blankTab = tabs.find((item) => item.category == "blank");
+          if (blankTab && blankTab.id !== id) setActiveSection(blankTab.id);
+          else {
+            const id = await dispatch(addTab(blank));
+            setActiveSection(id || "just_id");
+          }
+        } else setActiveSection(switchTab);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 }
 
@@ -156,7 +153,13 @@ export const startSetTabs = () => {
           .then((snapshot) => {
             let tabs = [];
             if(snapshot) {
-              tabs = Object.keys(snapshot).map((key) => snapshot[key].id ? snapshot[key] : Object.assign(snapshot[key], {id: key}))
+              tabs = Object.keys(snapshot).map((key) => {
+                if (/^[A-Za-z0-9]+$/.test(key)) {
+                  return snapshot[key].id
+                    ? snapshot[key]
+                    : Object.assign(snapshot[key], { id: key });
+                } else return null;
+              }).filter(item => item);
             }
             dispatch(setTabs(tabs));
           })

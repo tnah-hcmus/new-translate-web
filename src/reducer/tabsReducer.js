@@ -118,7 +118,7 @@ export default (state = INITIAL_STATE, action) => {
           });
     case REMOVE_TAB:
         const result = state.filter((item) => {
-        return item.id !== action.payload.id || item.category !== action.payload.category;
+          return item.id !== action.payload.id || item.category !== action.payload.category;
         });
         if(result.length >= 4) return result;
         else return BASE_STATE;

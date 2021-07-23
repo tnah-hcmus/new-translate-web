@@ -590,7 +590,6 @@ if( 'function' === typeof importScripts) {
           });
       };
       fetch = async (more, location, parent, prefix, callback) => {
-        console.log(this.isFull);
         callback = callback || null;
         try {
           if (!more) {

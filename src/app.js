@@ -13,6 +13,12 @@ import {startSetTabs} from './actions/tabs/tabs_action';
 import {startSetCategories} from './actions/tabs/category_action';
 
 const isResetDB = localStorage.getItem('reset-db');
+let blockedAuthor = [
+  "___test@author@RVN___",
+  "u/Zithero",
+  "u/fainting--goat",
+  "u/Pippinacious",
+];
 if(!isResetDB) {
   indexedDB.deleteDatabase('reddit-post');
   localStorage.setItem('reset-db', 'already');
@@ -22,13 +28,31 @@ const getBlockedList = () => {
   const path = `blocked`;
   return database.readData({path})
         .then((snapshot) => {
-          return snapshot ? Object.keys(snapshot).map((key) => snapshot[key]) : [];
+          return snapshot
+            ? Object.keys(snapshot)
+                .filter((key) => !key.includes("author"))
+                .map((key) => snapshot[key])
+            : [];
         })
         .catch((err) => {
           console.log(err);
           return [];
         });
 }
+
+const getBlockedAuthorList = () => {
+  const path = `blocked`;
+  return database
+    .readData({ path })
+    .then((snapshot) => {
+      const fetchBlockedAuthor = snapshot ? Object.keys(snapshot).filter(key => key.includes('author')).map((key) => snapshot[key]) : [];
+      blockedAuthor = [...blockedAuthor, ...fetchBlockedAuthor].map((item => item.toLowerCase()));
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 const renderApp = () => {
   if (!hasRendered) {
     ReactDOM.render(<Router/>, document.getElementById('app'));
@@ -49,7 +73,8 @@ firebase.auth().onAuthStateChanged(async (user) => {
       let initPromise = [
         store.dispatch(startSetCredit()),
         store.dispatch(startSetTabs()),
-        store.dispatch(startSetCategories())
+        store.dispatch(startSetCategories()),
+        getBlockedAuthorList()
       ];
       Promise.all(initPromise).then(()=>{
         renderApp();
@@ -60,5 +85,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
     renderApp();
   }
 });
+
+export {blockedAuthor};
 
 serviceWorker.unregister();

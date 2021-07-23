@@ -30,7 +30,7 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import moment from "moment";
 import PermissionModal from "../modal/PermissionModal";
-import blackList from "../../../list/blackList";
+import { blockedAuthor } from "../../../app";
 import warningList from "../../../list/graySubList";
 import { saveDraft, getDraft } from "../../../actions/draft/draft";
 import CircularProgressWithLabel from "./ProgressBar";
@@ -277,7 +277,7 @@ class Section extends React.PureComponent {
     }
   };
   checkAuthor = (info) => {
-    if (blackList.includes(info.author.toLowerCase())) {
+    if (blockedAuthor.includes(info.author.toLowerCase())) {
       confirmAlert({
         title: "Author này không cho phép dịch post trong group bạn nhé :<",
         buttons: [
@@ -303,9 +303,8 @@ class Section extends React.PureComponent {
           },
         ],
       });
-    } else {
-      this.savePost(true, { id: info.id });
-    }
+      return false;
+    } else return true;
   };
   crawlPost = (link, flag) => {
     this.setState({
@@ -324,10 +323,10 @@ class Section extends React.PureComponent {
         isCrawling: true,
       });
       await this.sleep(1000);
-      if (warningList.includes(result.data.subReddit.toLowerCase())) {
-        this.setState({ alert: true });
-      } else {
-        this.checkAuthor(result.data);
+      if(this.checkAuthor(result.data)) {
+        if (warningList.includes(result.data.subReddit.toLowerCase())) {
+          this.setState({ alert: true });
+        } else this.savePost(true, { id: result.data.id });
       }
     });
   };
@@ -751,7 +750,6 @@ class Section extends React.PureComponent {
   //show alert
   showAlert = () => {
     this.setState({ alert: false });
-    this.checkAuthor(this.state.info);
   };
 
   render() {
